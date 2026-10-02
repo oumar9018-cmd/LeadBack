@@ -208,7 +208,7 @@ function App() {
                 <div className="dashboard-heading">
                   <div>
                     <span className="muted-label">Overview</span>
-                    <h2>Good morning, Alex</h2>
+                    <h2>Your workspace overview</h2>
                   </div>
                   <button className="date-button">Last 30 days⌄</button>
                 </div>
@@ -216,19 +216,19 @@ function App() {
                 <div className="metric-grid">
                   <div className="metric-card featured">
                     <span>Revenue recovered</span>
-                    <strong>₹18,450</strong>
+                    <strong>—</strong>
                     <small>Recovery overview · Live workspace</small>
                   </div>
 
                   <div className="metric-card">
                     <span>Customers recovered</span>
-                    <strong>7</strong>
-                    <small>From 34 inquiries</small>
+                    <strong>—</strong>
+                    <small>Live workspace data</small>
                   </div>
 
                   <div className="metric-card">
                     <span>Recovery rate</span>
-                    <strong>21%</strong>
+                    <strong>—</strong>
                     <small>Inquiry → customer</small>
                   </div>
                 </div>
