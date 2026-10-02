@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+Disallow: /app
+Disallow: /app/
+Disallow: /ceo
+Disallow: /trial
+Disallow: /login
+
+Sitemap: https://leadback.app/sitemap.xml

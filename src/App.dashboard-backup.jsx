@@ -1,0 +1,316 @@
+import React, { useState } from 'react'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import Home from './Home.jsx'
+import './App.css'
+
+const inquiries = [
+  { id: 1, name: 'Rahul Sharma', service: 'Full Car Detailing', value: 4500, status: 'followup', date: 'Today', phone: '+91 98765 43210' },
+  { id: 2, name: 'Aman Khan', service: 'Ceramic Coating', value: 8000, status: 'replied', date: 'Today', phone: '+91 98111 22334' },
+  { id: 3, name: 'Sameer Ali', service: 'Interior Detailing', value: 2500, status: 'followup', date: 'Yesterday', phone: '+91 99001 11223' },
+  { id: 4, name: 'Arjun Mehta', service: 'Paint Protection Film', value: 15000, status: 'recovered', date: 'Yesterday', phone: '+91 98222 33445' },
+  { id: 5, name: 'Zoya Mir', service: 'Basic Wash', value: 1200, status: 'new', date: 'Yesterday', phone: '+91 97979 44556' },
+  { id: 6, name: 'Kabir Singh', service: 'Ceramic Coating', value: 9000, status: 'recovered', date: '2 days ago', phone: '+91 97666 77889' },
+  { id: 7, name: 'Rohan Verma', service: 'Full Car Detailing', value: 5000, status: 'lost', date: '2 days ago', phone: '+91 98888 99111' },
+  { id: 8, name: 'Aisha Khan', service: 'Interior Detailing', value: 2800, status: 'followup', date: '3 days ago', phone: '+91 97777 66554' },
+  { id: 9, name: 'Vikram Joshi', service: 'Paint Correction', value: 6500, status: 'replied', date: '3 days ago', phone: '+91 96666 55443' },
+  { id: 10, name: 'Faizan Dar', service: 'Full Car Detailing', value: 4200, status: 'new', date: '4 days ago', phone: '+91 95555 44332' },
+  { id: 11, name: 'Neha Kapoor', service: 'Ceramic Coating', value: 8500, status: 'recovered', date: '5 days ago', phone: '+91 94444 33221' },
+  { id: 12, name: 'Adil Khan', service: 'Basic Wash', value: 1000, status: 'lost', date: '5 days ago', phone: '+91 93333 22110' },
+  { id: 13, name: 'Sahil Bhat', service: 'Interior Detailing', value: 3200, status: 'followup', date: '6 days ago', phone: '+91 92222 11009' },
+  { id: 14, name: 'Mehak Sharma', service: 'Paint Correction', value: 6000, status: 'replied', date: '6 days ago', phone: '+91 91111 00998' },
+  { id: 15, name: 'Danish Mir', service: 'Full Car Detailing', value: 4800, status: 'new', date: '7 days ago', phone: '+91 90000 88776' },
+  { id: 16, name: 'Tariq Ahmed', service: 'Ceramic Coating', value: 7800, status: 'followup', date: '8 days ago', phone: '+91 98876 55443' },
+  { id: 17, name: 'Ishita Rao', service: 'Basic Wash', value: 1100, status: 'recovered', date: '9 days ago', phone: '+91 98765 11223' },
+  { id: 18, name: 'Ayaan Malik', service: 'Paint Protection Film', value: 14000, status: 'lost', date: '10 days ago', phone: '+91 97654 33445' },
+  { id: 19, name: 'Musa Khan', service: 'Interior Detailing', value: 2700, status: 'new', date: '11 days ago', phone: '+91 96543 22334' },
+  { id: 20, name: 'Riya Gupta', service: 'Full Car Detailing', value: 4600, status: 'replied', date: '12 days ago', phone: '+91 95432 11223' },
+  { id: 21, name: 'Omar Sheikh', service: 'Ceramic Coating', value: 8200, status: 'followup', date: '13 days ago', phone: '+91 94321 99887' },
+  { id: 22, name: 'Ankit Sood', service: 'Basic Wash', value: 900, status: 'new', date: '14 days ago', phone: '+91 93210 88776' },
+  { id: 23, name: 'Sana Mir', service: 'Paint Correction', value: 5500, status: 'recovered', date: '16 days ago', phone: '+91 92109 77665' },
+  { id: 24, name: 'Imran Shah', service: 'Full Car Detailing', value: 4300, status: 'lost', date: '18 days ago', phone: '+91 91098 66554' },
+  { id: 25, name: 'Priya Nair', service: 'Interior Detailing', value: 3000, status: 'followup', date: '20 days ago', phone: '+91 90987 55443' },
+]
+
+const statusLabels = {
+  new: 'New',
+  followup: 'Follow up',
+  replied: 'Replied',
+  recovered: 'Recovered',
+  lost: 'Lost',
+}
+
+function money(value) {
+  return new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+    maximumFractionDigits: 0,
+  }).format(value)
+}
+
+function Dashboard() {
+  const [items, setItems] = useState(inquiries)
+  const [filter, setFilter] = useState('all')
+  const [search, setSearch] = useState('')
+
+  const recovered = items.filter(item => item.status === 'recovered')
+  const pending = items.filter(item => item.status === 'followup')
+  const replied = items.filter(item => item.status === 'replied')
+  const recoveredRevenue = recovered.reduce((sum, item) => sum + item.value, 0)
+
+  const filteredItems = items.filter(item => {
+    const matchesFilter = filter === 'all' || item.status === filter
+    const query = search.toLowerCase()
+    const matchesSearch =
+      item.name.toLowerCase().includes(query) ||
+      item.service.toLowerCase().includes(query)
+
+    return matchesFilter && matchesSearch
+  })
+
+  function updateStatus(id, status) {
+    setItems(current =>
+      current.map(item => item.id === id ? { ...item, status } : item)
+    )
+  }
+
+  return (
+    <div className="app-shell">
+      <aside className="app-sidebar">
+        <div className="app-logo">
+          <span className="brand-mark">L</span>
+          <span>LeadBack</span>
+        </div>
+
+        <nav className="side-nav">
+          <a className="side-link active" href="/app">Overview</a>
+          <a className="side-link" href="#inquiries">Inquiries</a>
+          <a className="side-link" href="#followups">Follow-ups</a>
+          <a className="side-link" href="#revenue">Revenue</a>
+        </nav>
+
+        <div className="sidebar-bottom">
+          <div className="business-mini">
+            <div className="business-avatar">AD</div>
+            <div>
+              <strong>AutoDetail Pro</strong>
+              <span>Demo workspace</span>
+            </div>
+          </div>
+          <a className="side-link logout" href="/">← Back to website</a>
+        </div>
+      </aside>
+
+      <main className="app-main">
+        <header className="app-header">
+          <div>
+            <span className="app-eyebrow">Overview</span>
+            <h1>Good morning, Alex</h1>
+            <p>Here's what is happening with your customer inquiries.</p>
+          </div>
+
+          <div className="header-actions">
+            <button className="range-button">Last 30 days⌄</button>
+            <button className="primary-action">+ Add inquiry</button>
+          </div>
+        </header>
+
+        <section className="stat-grid">
+          <div className="stat-card stat-primary">
+            <div className="stat-top">
+              <span>Revenue recovered</span>
+              <span className="stat-icon">₹</span>
+            </div>
+            <strong>{money(recoveredRevenue)}</strong>
+            <small>From {recovered.length} recovered customers</small>
+          </div>
+
+          <div className="stat-card">
+            <div className="stat-top">
+              <span>Pending follow-ups</span>
+              <span className="stat-icon">◷</span>
+            </div>
+            <strong>{pending.length}</strong>
+            <small>Customers waiting for contact</small>
+          </div>
+
+          <div className="stat-card">
+            <div className="stat-top">
+              <span>Replies</span>
+              <span className="stat-icon">↗</span>
+            </div>
+            <strong>{replied.length}</strong>
+            <small>Conversations responded</small>
+          </div>
+
+          <div className="stat-card">
+            <div className="stat-top">
+              <span>Recovery rate</span>
+              <span className="stat-icon">%</span>
+            </div>
+            <strong>{Math.round((recovered.length / items.length) * 100)}%</strong>
+            <small>Inquiry → recovered</small>
+          </div>
+        </section>
+
+        <section className="workspace-card" id="inquiries">
+          <div className="workspace-heading">
+            <div>
+              <span className="app-eyebrow">Customer pipeline</span>
+              <h2>Inquiries</h2>
+            </div>
+            <span className="demo-label">DEMO DATA</span>
+          </div>
+
+          <div className="toolbar">
+            <div className="search-box">
+              <span>⌕</span>
+              <input
+                value={search}
+                onChange={event => setSearch(event.target.value)}
+                placeholder="Search customers or services..."
+              />
+            </div>
+
+            <div className="filter-row">
+              {['all', 'new', 'followup', 'replied', 'recovered', 'lost'].map(status => (
+                <button
+                  key={status}
+                  className={`filter-button ${filter === status ? 'selected' : ''}`}
+                  onClick={() => setFilter(status)}
+                >
+                  {status === 'all' ? 'All' : statusLabels[status]}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="inquiries-table">
+            <div className="table-head">
+              <span>Customer</span>
+              <span>Service</span>
+              <span>Value</span>
+              <span>Status</span>
+              <span>Action</span>
+            </div>
+
+            {filteredItems.map(item => (
+              <div className="table-row" key={item.id}>
+                <div className="customer-cell">
+                  <div className="customer-avatar">
+                    {item.name.charAt(0)}
+                  </div>
+                  <div>
+                    <strong>{item.name}</strong>
+                    <span>{item.date}</span>
+                  </div>
+                </div>
+
+                <span className="service-cell">{item.service}</span>
+                <strong className="value-cell">{money(item.value)}</strong>
+
+                <span className={`status status-${item.status}`}>
+                  {statusLabels[item.status]}
+                </span>
+
+                <div className="row-actions">
+                  {item.status === 'followup' && (
+                    <button onClick={() => updateStatus(item.id, 'replied')}>
+                      Mark replied
+                    </button>
+                  )}
+
+                  {item.status === 'replied' && (
+                    <button onClick={() => updateStatus(item.id, 'recovered')}>
+                      Recover
+                    </button>
+                  )}
+
+                  {(item.status === 'new' || item.status === 'lost') && (
+                    <button onClick={() => updateStatus(item.id, 'followup')}>
+                      Follow up
+                    </button>
+                  )}
+
+                  {item.status === 'recovered' && (
+                    <span className="completed">✓ Recovered</span>
+                  )}
+                </div>
+              </div>
+            ))}
+
+            {filteredItems.length === 0 && (
+              <div className="empty-state">
+                No inquiries match your search.
+              </div>
+            )}
+          </div>
+        </section>
+
+        <section className="bottom-grid">
+          <div className="mini-panel" id="followups">
+            <div className="panel-heading">
+              <div>
+                <span className="app-eyebrow">Next actions</span>
+                <h3>Follow-up queue</h3>
+              </div>
+              <span>{pending.length} pending</span>
+            </div>
+
+            {pending.slice(0, 4).map(item => (
+              <div className="queue-item" key={item.id}>
+                <div className="queue-avatar">{item.name.charAt(0)}</div>
+                <div>
+                  <strong>{item.name}</strong>
+                  <span>{item.service}</span>
+                </div>
+                <button onClick={() => updateStatus(item.id, 'replied')}>Follow up</button>
+              </div>
+            ))}
+          </div>
+
+          <div className="mini-panel" id="revenue">
+            <div className="panel-heading">
+              <div>
+                <span className="app-eyebrow">Revenue</span>
+                <h3>Recovery summary</h3>
+              </div>
+            </div>
+
+            <div className="revenue-number">{money(recoveredRevenue)}</div>
+            <p>Recovered from existing customer interest.</p>
+
+            <div className="revenue-bar">
+              <span style={{ width: `${Math.min((recoveredRevenue / 50000) * 100, 100)}%` }} />
+            </div>
+
+            <div className="revenue-meta">
+              <span>Recovered <strong>{recovered.length}</strong></span>
+              <span>Total inquiries <strong>{items.length}</strong></span>
+            </div>
+          </div>
+        </section>
+
+        <footer className="app-footer">
+          <span>LeadBack · Demo workspace</span>
+          <span>Local mode · Firebase not connected</span>
+        </footer>
+      </main>
+    </div>
+  )
+}
+
+
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/app" element={<Dashboard />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
+  )
+}
+
+export default App
