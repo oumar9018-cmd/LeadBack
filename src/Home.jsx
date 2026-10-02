@@ -216,19 +216,19 @@ function App() {
                 <div className="metric-grid">
                   <div className="metric-card featured">
                     <span>Revenue recovered</span>
-                    <strong>—</strong>
+                    <strong>₹18,450</strong>
                     <small>Recovery overview · Live workspace</small>
                   </div>
 
                   <div className="metric-card">
                     <span>Customers recovered</span>
-                    <strong>—</strong>
-                    <small>Live workspace data</small>
+                    <strong>7</strong>
+                    <small>From 34 inquiries</small>
                   </div>
 
                   <div className="metric-card">
                     <span>Recovery rate</span>
-                    <strong>—</strong>
+                    <strong>21%</strong>
                     <small>Inquiry → customer</small>
                   </div>
                 </div>
@@ -239,37 +239,37 @@ function App() {
                       <span className="muted-label">Follow-up queue</span>
                       <h3>Recent inquiries</h3>
                     </div>
-                    <span className="queue-count">4 pending</span>
+                    <span className="queue-count">Ready</span>
                   </div>
 
                   <div className="inquiry-list">
                     <div className="inquiry-row">
-                      <div className="avatar avatar-one">R</div>
+                      <div className="avatar avatar-one">+</div>
                       <div className="inquiry-person">
-                        <strong>Customer inquiry</strong>
-                        <span>Full car detailing</span>
+                        <strong>New inquiry</strong>
+                        <span>Customer interest</span>
                       </div>
-                      <div className="inquiry-value">₹4,500</div>
+                      <div className="inquiry-value">—</div>
                       <span className="followup-badge">Follow up</span>
                     </div>
 
                     <div className="inquiry-row">
-                      <div className="avatar avatar-two">A</div>
+                      <div className="avatar avatar-two">+</div>
                       <div className="inquiry-person">
-                        <strong>Customer inquiry</strong>
-                        <span>Ceramic coating</span>
+                        <strong>New inquiry</strong>
+                        <span>Customer interest</span>
                       </div>
-                      <div className="inquiry-value">₹8,000</div>
+                      <div className="inquiry-value">—</div>
                       <span className="reply-badge">Replied</span>
                     </div>
 
                     <div className="inquiry-row">
-                      <div className="avatar avatar-three">S</div>
+                      <div className="avatar avatar-three">+</div>
                       <div className="inquiry-person">
-                        <strong>Customer inquiry</strong>
-                        <span>Interior detailing</span>
+                        <strong>New inquiry</strong>
+                        <span>Customer interest</span>
                       </div>
-                      <div className="inquiry-value">₹2,500</div>
+                      <div className="inquiry-value">—</div>
                       <span className="followup-badge">Follow up</span>
                     </div>
                   </div>
