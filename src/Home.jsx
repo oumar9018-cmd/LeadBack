@@ -216,19 +216,19 @@ function App() {
                 <div className="metric-grid">
                   <div className="metric-card featured">
                     <span>Revenue recovered</span>
-                    <strong>₹18,450</strong>
+                    <strong>—</strong>
                     <small>Recovery overview · Live workspace</small>
                   </div>
 
                   <div className="metric-card">
                     <span>Customers recovered</span>
-                    <strong>7</strong>
-                    <small>From 34 inquiries</small>
+                    <strong>—</strong>
+                    <small>Live workspace data</small>
                   </div>
 
                   <div className="metric-card">
                     <span>Recovery rate</span>
-                    <strong>21%</strong>
+                    <strong>—</strong>
                     <small>Inquiry → customer</small>
                   </div>
                 </div>
@@ -246,7 +246,7 @@ function App() {
                     <div className="inquiry-row">
                       <div className="avatar avatar-one">R</div>
                       <div className="inquiry-person">
-                        <strong>Rahul Sharma</strong>
+                        <strong>Customer inquiry</strong>
                         <span>Full car detailing</span>
                       </div>
                       <div className="inquiry-value">₹4,500</div>
@@ -256,7 +256,7 @@ function App() {
                     <div className="inquiry-row">
                       <div className="avatar avatar-two">A</div>
                       <div className="inquiry-person">
-                        <strong>Aman Khan</strong>
+                        <strong>Customer inquiry</strong>
                         <span>Ceramic coating</span>
                       </div>
                       <div className="inquiry-value">₹8,000</div>
@@ -266,7 +266,7 @@ function App() {
                     <div className="inquiry-row">
                       <div className="avatar avatar-three">S</div>
                       <div className="inquiry-person">
-                        <strong>Sameer Ali</strong>
+                        <strong>Customer inquiry</strong>
                         <span>Interior detailing</span>
                       </div>
                       <div className="inquiry-value">₹2,500</div>
