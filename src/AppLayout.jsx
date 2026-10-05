@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { NavLink, Link, Outlet } from 'react-router-dom'
+import { url } from './basePath.js'
 
 /**
  * AppShell — shared sidebar + top-bar layout used by all authenticated /app/* pages.
@@ -76,7 +77,7 @@ export default function AppLayout() {
       console.error('Sign out failed:', error)
     }
     // Use replace to avoid going back to a protected page.
-    window.location.replace('/login')
+    window.location.replace(url('/login'))
   }
 
   function closeSidebar() {

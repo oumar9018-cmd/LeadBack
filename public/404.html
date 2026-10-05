@@ -9,6 +9,11 @@
       // this 404.html. We redirect to index.html while preserving the original
       // path + query + hash in sessionStorage so our bootstrap script in
       // index.html can replace the URL without a history entry.
+      // Keep SITE_BASE in sync with `base` in vite.config.js: the directory
+      // the site is deployed to. On the GitHub Pages project site that is
+      // '/LeadBack/', not the origin root.
+      var SITE_BASE = '/LeadBack/';
+
       (function () {
         var location = window.location;
         // Store the full path (pathname + search + hash) so index.html can
@@ -17,11 +22,9 @@
           'leadback-redirect',
           location.pathname + location.search + location.hash
         );
-        // Replace the URL with the root so the SPA loads from /.
+        // Replace the URL with the site root so the SPA loads from there.
         // Using replace() keeps the broken URL out of browser history.
-        location.replace(
-          location.origin + '/'
-        );
+        location.replace(location.origin + SITE_BASE);
       })();
     </script>
   </head>

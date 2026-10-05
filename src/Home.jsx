@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import './Home.css'
+import { url } from './basePath.js'
 
 const features = [
   {
@@ -45,11 +46,11 @@ function App() {
         const account = snapshot.exists ? snapshot.data() : null
 
         if (account?.role === 'ceo') {
-          window.location.href = '/ceo'
+          window.location.href = url('/ceo')
         } else if (account?.trialRedeemed) {
-          window.location.href = '/app'
+          window.location.href = url('/app')
         } else if (account) {
-          window.location.href = '/trial'
+          window.location.href = url('/trial')
         }
       } catch (error) {
         console.error('Homepage session check failed:', error)
@@ -66,7 +67,7 @@ function App() {
     const firebase = window.firebase
 
     if (!auth || !firebase) {
-      window.location.href = '/login'
+      window.location.href = url('/login')
       return
     }
 
@@ -96,18 +97,18 @@ function App() {
           updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
         }, { merge: true })
 
-        window.location.href = '/trial'
+        window.location.href = url('/trial')
         return
       }
 
       const account = snapshot.data()
 
       if (account?.role === 'ceo') {
-        window.location.href = '/ceo'
+        window.location.href = url('/ceo')
       } else if (account?.trialRedeemed) {
-        window.location.href = '/app'
+        window.location.href = url('/app')
       } else {
-        window.location.href = '/trial'
+        window.location.href = url('/trial')
       }
     } catch (error) {
       console.error('Homepage Google sign-in failed:', error)

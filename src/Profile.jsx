@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { url } from './basePath.js'
 
 export default function Profile() {
   const [user, setUser] = useState(() => (
@@ -24,7 +25,7 @@ export default function Profile() {
       console.error('Sign out failed:', error)
     }
     // Use replace so the browser's Back button can't return to a protected page.
-    window.location.replace('/login')
+    window.location.replace(url('/login'))
   }
 
   const displayName = user?.displayName || 'Google account'

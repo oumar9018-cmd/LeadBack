@@ -20,6 +20,7 @@ import Revenue from './Revenue.jsx'
 import CEO from './CEO.jsx'
 import Trial from './Trial.jsx'
 import AppLayout from './AppLayout.jsx'
+import { ROUTER_BASENAME } from './basePath.js'
 import './App.css'
 
 const statusLabels = {
@@ -1038,7 +1039,7 @@ function RequireCEO({ children }) {
 /* ------------------------------------------------------------------ */
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={ROUTER_BASENAME}>
       <Routes>
         {/* Public marketing pages */}
         <Route path="/" element={<Home />} />
