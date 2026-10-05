@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>LeadBack — Turn Missed Inquiries Into Customers</title>
+    <script>
+      // GitHub Pages SPA fallback:
+      // When a deep link like /app/inquiries is refreshed, GitHub Pages serves
+      // this 404.html. We redirect to index.html while preserving the original
+      // path + query + hash in sessionStorage so our bootstrap script in
+      // index.html can replace the URL without a history entry.
+      (function () {
+        var location = window.location;
+        // Store the full path (pathname + search + hash) so index.html can
+        // restore it after load.
+        sessionStorage.setItem(
+          'leadback-redirect',
+          location.pathname + location.search + location.hash
+        );
+        // Replace the URL with the root so the SPA loads from /.
+        // Using replace() keeps the broken URL out of browser history.
+        location.replace(
+          location.origin + '/'
+        );
+      })();
+    </script>
+  </head>
+  <body>
+    <p>Redirecting to LeadBack…</p>
+  </body>
+</html>

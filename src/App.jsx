@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { BrowserRouter, Routes, Route, Navigate, useSearchParams, useLocation } from 'react-router-dom'
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  useSearchParams,
+  useLocation,
+} from 'react-router-dom'
 import Home from './Home.jsx'
 import SEOPage from './SEOPage.jsx'
 import Customers from './Customers.jsx'
@@ -12,6 +19,7 @@ import Followups from './Followups.jsx'
 import Revenue from './Revenue.jsx'
 import CEO from './CEO.jsx'
 import Trial from './Trial.jsx'
+import AppLayout from './AppLayout.jsx'
 import './App.css'
 
 const statusLabels = {
@@ -37,11 +45,15 @@ function money(value, currency = 'INR') {
   }).format(value)
 }
 
+/* ------------------------------------------------------------------ */
+/* Dashboard — main overview page.                                     */
+/* The sidebar/header/footer shell is now provided by <AppLayout/> so  */
+/* this component renders only its content.                            */
+/* ------------------------------------------------------------------ */
 function Dashboard() {
-  const [authUser, setAuthUser] = useState(() => (
-    window.firebase?.auth?.().currentUser || null
-  ))
-
+  const [authUser, setAuthUser] = useState(
+    () => window.firebase?.auth?.().currentUser || null
+  )
   const [profileOpen, setProfileOpen] = useState(false)
   const [businessName, setBusinessName] = useState('')
   const [profileName, setProfileName] = useState('')
@@ -61,9 +73,7 @@ function Dashboard() {
       }
 
       setProfileName(
-        typeof user.displayName === 'string'
-          ? user.displayName.trim()
-          : ''
+        typeof user.displayName === 'string' ? user.displayName.trim() : ''
       )
 
       try {
@@ -79,9 +89,7 @@ function Dashboard() {
         const savedCurrency = data?.currency
 
         setBusinessName(
-          typeof savedName === 'string'
-            ? savedName.trim()
-            : ''
+          typeof savedName === 'string' ? savedName.trim() : ''
         )
 
         setCurrency(
@@ -100,7 +108,6 @@ function Dashboard() {
 
   useEffect(() => {
     const firebaseAuth = window.firebase?.auth?.()
-
     if (!firebaseAuth) return
 
     setAuthUser(firebaseAuth.currentUser)
@@ -175,10 +182,7 @@ function Dashboard() {
     const userRef = db.collection('users').doc(user.uid)
 
     items.forEach(item => {
-      const inquiryRef = userRef
-        .collection('inquiries')
-        .doc(String(item.id))
-
+      const inquiryRef = userRef.collection('inquiries').doc(String(item.id))
       batch.set(inquiryRef, item, { merge: true })
     })
 
@@ -189,7 +193,7 @@ function Dashboard() {
     }
   }, [items, inquiriesLoaded])
 
-const [filter, setFilter] = useState('all')
+  const [filter, setFilter] = useState('all')
   const [search, setSearch] = useState('')
   const [showAddInquiry, setShowAddInquiry] = useState(false)
   const [selectedInquiry, setSelectedInquiry] = useState(null)
@@ -198,17 +202,14 @@ const [filter, setFilter] = useState('all')
 
   React.useEffect(() => {
     const inquiryId = searchParams.get('inquiry')
-
     if (!inquiryId) return
 
-    const inquiry = items.find(
-      item => String(item.id) === inquiryId
-    )
-
+    const inquiry = items.find(item => String(item.id) === inquiryId)
     if (inquiry) {
       setSelectedInquiry(inquiry)
     }
   }, [items, searchParams])
+
   const [followupForm, setFollowupForm] = useState({
     date: '',
     time: '',
@@ -230,7 +231,7 @@ const [filter, setFilter] = useState('all')
   const replied = items.filter(item => item.status === 'replied')
 
   const recoveredRevenue = recovered.reduce(
-    (sum, item) => sum + item.value,
+    (sum, item) => sum + Number(item.value || 0),
     0
   )
 
@@ -239,50 +240,35 @@ const [filter, setFilter] = useState('all')
     const query = search.toLowerCase()
 
     const matchesSearch =
-      item.name.toLowerCase().includes(query) ||
-      item.service.toLowerCase().includes(query)
+      item.name?.toLowerCase().includes(query) ||
+      item.service?.toLowerCase().includes(query)
 
     return matchesFilter && matchesSearch
   })
 
   function updateStatus(id, status) {
     setItems(current =>
-      current.map(item =>
-        item.id === id ? { ...item, status } : item
-      )
+      current.map(item => (item.id === id ? { ...item, status } : item))
     )
   }
 
   function getFollowupState(item) {
-    if (!item.followup?.date || !item.followup?.time) {
-      return null
-    }
+    if (!item.followup?.date || !item.followup?.time) return null
 
-    const scheduled = new Date(
-      `${item.followup.date}T${item.followup.time}`
-    )
-
+    const scheduled = new Date(`${item.followup.date}T${item.followup.time}`)
     const now = new Date()
 
-    if (scheduled < now) {
-      return 'overdue'
-    }
+    if (scheduled < now) return 'overdue'
 
     const today = now.toISOString().slice(0, 10)
-
-    if (item.followup.date === today) {
-      return 'today'
-    }
+    if (item.followup.date === today) return 'today'
 
     return 'upcoming'
   }
 
   function scheduleFollowup() {
     if (!selectedInquiry) return
-
-    if (!followupForm.date || !followupForm.time) {
-      return
-    }
+    if (!followupForm.date || !followupForm.time) return
 
     const followup = {
       date: followupForm.date,
@@ -305,10 +291,7 @@ const [filter, setFilter] = useState('all')
               ...item,
               status: 'followup',
               followup,
-              followupHistory: [
-                ...(item.followupHistory || []),
-                historyEntry,
-              ],
+              followupHistory: [...(item.followupHistory || []), historyEntry],
             }
           : item
       )
@@ -324,11 +307,7 @@ const [filter, setFilter] = useState('all')
       ],
     })
 
-    setFollowupForm({
-      date: '',
-      time: '',
-      note: '',
-    })
+    setFollowupForm({ date: '', time: '', note: '' })
   }
 
   function handleAddInquiry(event) {
@@ -357,706 +336,546 @@ const [filter, setFilter] = useState('all')
 
     setItems(current => [newInquiry, ...current])
 
-    setForm({
-      name: '',
-      phone: '',
-      service: '',
-      value: '',
-      status: 'new',
-    })
-
+    setForm({ name: '', phone: '', service: '', value: '', status: 'new' })
     setFormError('')
     setShowAddInquiry(false)
     setFilter('all')
     setSearch('')
   }
 
-  const [sidebarOpen, setSidebarOpen] = useState(false)
-
   return (
-    <div className={`app-shell ${sidebarOpen ? 'sidebar-open' : ''}`}>
-      <button
-        type="button"
-        className="mobile-menu-button"
-        aria-label={sidebarOpen ? 'Close navigation' : 'Open navigation'}
-        onClick={() => setSidebarOpen(value => !value)}
-      >
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-
-      {sidebarOpen && (
-        <button
-          type="button"
-          className="mobile-sidebar-overlay"
-          aria-label="Close navigation"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-
-      <aside className="sidebar">
-        <div className="sidebar-brand">
-          <div className="brand-mark">L</div>
-          <span>LeadBack</span>
+    <>
+      <div className="dashboard-overview-header">
+        <div>
+          <span className="app-eyebrow">OVERVIEW</span>
+          <h1>Good to see you, {profileName || 'there'}.</h1>
+          <p>Here's what is happening with your customer inquiries.</p>
         </div>
 
-        <div className="workspace">
-          <span className="workspace-label">WORKSPACE</span>
-          <strong>AutoDetail Pro</strong>
-        </div>
+        <div className="header-actions">
+          <button className="date-button" type="button">Last 30 days⌄</button>
 
-        <nav className="side-nav">
-          <a className="active" href="/app">Overview</a>
-          <a href="/app/inquiries">Inquiries</a>
-          <a href="/app/followups">Follow-ups</a>
-          <a href="/app/revenue">Revenue</a>
-          <a href="/app/billing">Billing</a>
-          <a href="/app/settings">Settings</a>
-          <a href="/app/profile">Profile</a>
-        </nav>
-
-        <div className="sidebar-bottom">
-          <a href="/">← Back to website</a>
-          
-        </div>
-      </aside>
-
-      <main className="app-main">
-        <header className="app-header">
-          <div>
-            <span className="app-eyebrow">OVERVIEW</span>
-            <h1>
-              Good to see you, {profileName || 'there'}.
-            </h1>
-            <p>Here's what is happening with your customer inquiries.</p>
-          </div>
-
-          <div className="header-actions">
-            <button
-              type="button"
-              className="profile-button"
-              onClick={() => setProfileOpen(value => !value)}
-            >
-              {authUser?.photoURL ? (
-                <img
-                  src={authUser.photoURL}
-                  alt={authUser.displayName || 'Profile'}
-                  className="profile-avatar"
-                />
-              ) : (
-                <span className="profile-avatar profile-avatar-fallback">
-                  {(authUser?.displayName || authUser?.email || 'U')
-                    .charAt(0)
-                    .toUpperCase()}
-                </span>
-              )}
-
-              <span className="profile-name">
-                {authUser?.displayName || 'Account'}
-              </span>
-
-              <span className="profile-chevron">⌄</span>
-            </button>
-
-            {profileOpen && (
-              <div className="profile-menu">
-                <div className="profile-menu-user">
-                  {authUser?.photoURL ? (
-                    <img
-                      src={authUser.photoURL}
-                      alt=""
-                      className="profile-menu-avatar"
-                    />
-                  ) : (
-                    <span className="profile-menu-avatar profile-avatar-fallback">
-                      {(authUser?.displayName || authUser?.email || 'U')
-                        .charAt(0)
-                        .toUpperCase()}
-                    </span>
-                  )}
-
-                  <div>
-                    <strong>{authUser?.displayName || 'Google account'}</strong>
-                    <span>{authUser?.email || ''}</span>
-                  </div>
-                </div>
-
-                <div className="profile-menu-divider" />
-
-                <a href="/app/settings">Settings</a>
-                <a href="/app/billing">Billing</a>
-
-                <button
-                  type="button"
-                  onClick={async () => {
-                    await window.firebase.auth().signOut()
-                    window.location.href = '/login'
-                  }}
-                >
-                  Sign out
-                </button>
-              </div>
-            )}
-
-            <button className="date-button">Last 30 days⌄</button>
-
-            <button
-              className="primary-action"
-              onClick={() => setShowAddInquiry(true)}
-            >
-              + Add inquiry
-            </button>
-          </div>
-        </header>
-
-        <section className="stats-grid">
-          <div className="stat-card">
-            <span>Recovered revenue</span>
-            <strong>{money(recoveredRevenue, currency)}</strong>
-            <small>Revenue from recovered inquiries</small>
-          </div>
-
-          <div className="stat-card">
-            <span>Pending follow-ups</span>
-            <strong>{pending.length}</strong>
-            <small>Customers waiting for follow-up</small>
-          </div>
-
-          <div className="stat-card">
-            <span>Replies</span>
-            <strong>{replied.length}</strong>
-            <small>Customers who replied</small>
-          </div>
-
-          <div className="stat-card">
-            <span>Recovery rate</span>
-            <strong>
-              {items.length
-                ? Math.round((recovered.length / items.length) * 100)
-                : 0}%
-            </strong>
-            <small>Inquiries converted to revenue</small>
-          </div>
-        </section>
-
-        <section className="dashboard-panel">
-          <div className="panel-header">
-            <div>
-              <h2>Customer inquiries</h2>
-              <p>Track every opportunity from first contact to recovery.</p>
-            </div>
-
-            <input
-              className="search-input"
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              placeholder="Search customers..."
-            />
-          </div>
-
-          <div className="filter-row">
-            {['all', 'new', 'followup', 'replied', 'recovered', 'lost'].map(
-              status => (
-                <button
-                  key={status}
-                  className={filter === status ? 'filter active' : 'filter'}
-                  onClick={() => setFilter(status)}
-                >
-                  {status === 'all' ? 'All' : statusLabels[status]}
-                </button>
-              )
-            )}
-          </div>
-
-          <div className="inquiry-list">
-            {filteredItems.map(item => (
-              <div className="inquiry-row" key={item.id}>
-                <div className="customer-info">
-                  <div className="customer-avatar">
-                    {item.name.charAt(0)}
-                  </div>
-
-                  <div>
-                    <button
-                      className="customer-name-button"
-                      onClick={() => setSelectedInquiry(item)}
-                    >
-                      {item.name}
-                    </button>
-                    <span>{item.phone}</span>
-                  </div>
-                </div>
-
-                <div className="inquiry-service">
-                  <strong>{item.service}</strong>
-                  <span>{item.date}</span>
-                </div>
-
-                <div className="inquiry-value">
-                  {money(item.value, currency)}
-                </div>
-
-                <div>
-                  <span className={`status status-${item.status}`}>
-                    {statusLabels[item.status]}
-                  </span>
-                </div>
-
-                <div className="row-action">
-                  {item.status === 'followup' && (
-                    <button onClick={() => updateStatus(item.id, 'replied')}>
-                      Mark replied
-                    </button>
-                  )}
-
-                  {item.status === 'replied' && (
-                    <button onClick={() => updateStatus(item.id, 'recovered')}>
-                      Mark recovered
-                    </button>
-                  )}
-
-                  {(item.status === 'new' || item.status === 'lost') && (
-                    <button onClick={() => updateStatus(item.id, 'followup')}>
-                      Follow up
-                    </button>
-                  )}
-
-                  {item.status === 'recovered' && (
-                    <span className="completed">Completed</span>
-                  )}
-                </div>
-              </div>
-            ))}
-
-            {inquiriesLoading && (
-              <div className="empty-state">
-                Loading inquiries…
-              </div>
-            )}
-
-            {!inquiriesLoading && inquiriesError && (
-              <div className="empty-state">
-                {inquiriesError}
-              </div>
-            )}
-
-            {!inquiriesLoading &&
-              !inquiriesError &&
-              filteredItems.length === 0 && (
-                <div className="empty-state">
-                  No inquiries found.
-                </div>
-              )}
-          </div>
-        </section>
-
-        <section className="bottom-grid">
-          <div className="dashboard-panel compact-panel">
-            <div className="panel-header">
-              <div>
-                <h2>Follow-up queue</h2>
-                <p>Customers who need attention.</p>
-              </div>
-            </div>
-
-            {pending.slice(0, 5).map(item => {
-              const followupState = getFollowupState(item)
-
-              return (
-                <div className="queue-row" key={item.id}>
-                  <div>
-                    <button
-                      className="queue-customer-button"
-                      onClick={() => setSelectedInquiry(item)}
-                    >
-                      {item.name}
-                    </button>
-                    <span>
-                      {item.followup
-                        ? `${item.followup.date} · ${item.followup.time}`
-                        : item.service}
-                    </span>
-                    {item.followup?.note && (
-                      <small>{item.followup.note}</small>
-                    )}
-                    {followupState && (
-                      <em className={`queue-status queue-${followupState}`}>
-                        {followupState === 'overdue'
-                          ? 'Overdue'
-                          : followupState === 'today'
-                            ? 'Due today'
-                            : 'Upcoming'}
-                      </em>
-                    )}
-                  </div>
-                  <strong>{money(item.value, currency)}</strong>
-                </div>
-              )
-            })}
-          </div>
-
-          <div className="dashboard-panel compact-panel">
-            <div className="panel-header">
-              <div>
-                <h2>Revenue summary</h2>
-                <p>Recovered customer value.</p>
-              </div>
-            </div>
-
-            <div className="revenue-highlight">
-              <span>Total recovered</span>
-              <strong>{money(recoveredRevenue, currency)}</strong>
-            </div>
-
-            <div className="revenue-line">
-              <span>Recovered inquiries</span>
-              <strong>{recovered.length}</strong>
-            </div>
-
-            <div className="revenue-line">
-              <span>Average recovery</span>
-              <strong>
-                {recovered.length
-                  ? money(Math.round(recoveredRevenue / recovered.length), currency)
-                  : money(0, currency)}
-              </strong>
-            </div>
-          </div>
-        </section>
-
-        {showAddInquiry && (
-          <div
-            className="modal-backdrop"
-            onMouseDown={event => {
-              if (event.target === event.currentTarget) {
-                setShowAddInquiry(false)
-              }
-            }}
+          <button
+            className="primary-action"
+            type="button"
+            onClick={() => setShowAddInquiry(true)}
           >
-            <div className="inquiry-modal">
-              <div className="modal-header">
+            + Add inquiry
+          </button>
+        </div>
+      </div>
+
+      <section className="stats-grid">
+        <div className="stat-card">
+          <span>Recovered revenue</span>
+          <strong>{money(recoveredRevenue, currency)}</strong>
+          <small>Revenue from recovered inquiries</small>
+        </div>
+
+        <div className="stat-card">
+          <span>Pending follow-ups</span>
+          <strong>{pending.length}</strong>
+          <small>Customers waiting for follow-up</small>
+        </div>
+
+        <div className="stat-card">
+          <span>Replies</span>
+          <strong>{replied.length}</strong>
+          <small>Customers who replied</small>
+        </div>
+
+        <div className="stat-card">
+          <span>Recovery rate</span>
+          <strong>
+            {items.length ? Math.round((recovered.length / items.length) * 100) : 0}%
+          </strong>
+          <small>Inquiries converted to revenue</small>
+        </div>
+      </section>
+
+      <section className="dashboard-panel">
+        <div className="panel-header">
+          <div>
+            <h2>Customer inquiries</h2>
+            <p>Track every opportunity from first contact to recovery.</p>
+          </div>
+
+          <input
+            className="search-input"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="Search customers..."
+          />
+        </div>
+
+        <div className="filter-row">
+          {['all', 'new', 'followup', 'replied', 'recovered', 'lost'].map(
+            status => (
+              <button
+                key={status}
+                className={filter === status ? 'filter active' : 'filter'}
+                onClick={() => setFilter(status)}
+                type="button"
+              >
+                {status === 'all' ? 'All' : statusLabels[status]}
+              </button>
+            )
+          )}
+        </div>
+
+        <div className="inquiry-list">
+          {filteredItems.map(item => (
+            <div className="inquiry-row" key={item.id}>
+              <div className="customer-info">
+                <div className="customer-avatar">{item.name?.charAt(0)}</div>
+
                 <div>
-                  <span className="app-eyebrow">NEW CUSTOMER</span>
-                  <h2>Add inquiry</h2>
-                  <p>Capture a customer before the opportunity disappears.</p>
-                </div>
-
-                <button
-                  className="modal-close"
-                  onClick={() => setShowAddInquiry(false)}
-                  aria-label="Close"
-                >
-                  ×
-                </button>
-              </div>
-
-              <form onSubmit={handleAddInquiry}>
-                <div className="form-grid">
-                  <label>
-                    Customer name
-                    <input
-                      value={form.name}
-                      onChange={e =>
-                        setForm({ ...form, name: e.target.value })
-                      }
-                      placeholder="e.g. Rahul Sharma"
-                    />
-                  </label>
-
-                  <label>
-                    Phone
-                    <input
-                      value={form.phone}
-                      onChange={e =>
-                        setForm({ ...form, phone: e.target.value })
-                      }
-                      placeholder="+91 98765 43210"
-                    />
-                  </label>
-
-                  <label className="full-field">
-                    Service
-                    <input
-                      value={form.service}
-                      onChange={e =>
-                        setForm({ ...form, service: e.target.value })
-                      }
-                      placeholder="e.g. Ceramic Coating"
-                    />
-                  </label>
-
-                  <label>
-                    Estimated value
-                    <div className="money-input">
-                      <span>₹</span>
-                      <input
-                        type="number"
-                        min="0"
-                        value={form.value}
-                        onChange={e =>
-                          setForm({ ...form, value: e.target.value })
-                        }
-                        placeholder="5000"
-                      />
-                    </div>
-                  </label>
-
-                  <label>
-                    Initial status
-                    <select
-                      value={form.status}
-                      onChange={e =>
-                        setForm({ ...form, status: e.target.value })
-                      }
-                    >
-                      <option value="new">New</option>
-                      <option value="followup">Follow up</option>
-                      <option value="replied">Replied</option>
-                    </select>
-                  </label>
-                </div>
-
-                {formError && (
-                  <div className="form-error">{formError}</div>
-                )}
-
-                <div className="modal-actions">
                   <button
                     type="button"
-                    className="cancel-button"
-                    onClick={() => setShowAddInquiry(false)}
+                    className="customer-name-button"
+                    onClick={() => setSelectedInquiry(item)}
                   >
-                    Cancel
+                    {item.name}
                   </button>
-
-                  <button type="submit" className="save-button">
-                    Add inquiry
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
-
-        {selectedInquiry && (
-          <div
-            className="modal-backdrop"
-            onMouseDown={event => {
-              if (event.target === event.currentTarget) {
-                setSelectedInquiry(null)
-              }
-            }}
-          >
-            <div className="inquiry-modal detail-modal">
-              <div className="modal-header">
-                <div>
-                  <span className="app-eyebrow">INQUIRY DETAILS</span>
-                  <h2>{selectedInquiry.name}</h2>
-                  <p>{selectedInquiry.phone}</p>
-                </div>
-
-                <button
-                  className="modal-close"
-                  onClick={() => setSelectedInquiry(null)}
-                  aria-label="Close"
-                >
-                  ×
-                </button>
-              </div>
-
-              <div className="detail-grid">
-                <div className="detail-card">
-                  <span>Service</span>
-                  <strong>{selectedInquiry.service}</strong>
-                </div>
-
-                <div className="detail-card">
-                  <span>Estimated value</span>
-                  <strong>{money(selectedInquiry.value)}</strong>
-                </div>
-
-                <div className="detail-card">
-                  <span>Status</span>
-                  <strong>
-                    <span className={`status status-${selectedInquiry.status}`}>
-                      {statusLabels[selectedInquiry.status]}
-                    </span>
-                  </strong>
-                </div>
-
-                <div className="detail-card">
-                  <span>Added</span>
-                  <strong>{selectedInquiry.date}</strong>
+                  <span>{item.phone}</span>
                 </div>
               </div>
 
-              <div className="followup-section">
-                <div className="followup-heading">
-                  <span className="app-eyebrow">FOLLOW-UP</span>
-                  <h3>Schedule next contact</h3>
-                  <p>Set when you want to contact this customer again.</p>
-                </div>
-
-                <div className="followup-grid">
-                  <label>
-                    Date
-                    <input
-                      type="date"
-                      value={followupForm.date}
-                      onChange={e =>
-                        setFollowupForm({
-                          ...followupForm,
-                          date: e.target.value,
-                        })
-                      }
-                    />
-                  </label>
-
-                  <label>
-                    Time
-                    <input
-                      type="time"
-                      value={followupForm.time}
-                      onChange={e =>
-                        setFollowupForm({
-                          ...followupForm,
-                          time: e.target.value,
-                        })
-                      }
-                    />
-                  </label>
-
-                  <label className="full-field">
-                    Note
-                    <textarea
-                      value={followupForm.note}
-                      onChange={e =>
-                        setFollowupForm({
-                          ...followupForm,
-                          note: e.target.value,
-                        })
-                      }
-                      placeholder="e.g. Customer asked to call after payday"
-                      rows="3"
-                    />
-                  </label>
-                </div>
+              <div className="inquiry-service">
+                <strong>{item.service}</strong>
+                <span>{item.date}</span>
               </div>
 
-              {selectedInquiry.followupHistory?.length > 0 && (
-                <div className="followup-history">
-                  <div className="followup-history-header">
-                    <div>
-                      <span className="app-eyebrow">ACTIVITY</span>
-                      <h3>Follow-up history</h3>
-                    </div>
-                    <span>
-                      {selectedInquiry.followupHistory.length} event
-                      {selectedInquiry.followupHistory.length === 1 ? '' : 's'}
-                    </span>
-                  </div>
+              <div className="inquiry-value">
+                {money(Number(item.value) || 0, currency)}
+              </div>
 
-                  <div className="history-list">
-                    {[...selectedInquiry.followupHistory]
-                      .reverse()
-                      .map(entry => (
-                        <div className="history-item" key={entry.id}>
-                          <div className="history-dot"></div>
+              <div>
+                <span className={`status status-${item.status}`}>
+                  {statusLabels[item.status]}
+                </span>
+              </div>
 
-                          <div className="history-content">
-                            <strong>
-                              {entry.type === 'scheduled'
-                                ? 'Follow-up scheduled'
-                                : entry.type}
-                            </strong>
-
-                            <span>
-                              {entry.date} · {entry.time}
-                            </span>
-
-                            {entry.note && (
-                              <p>{entry.note}</p>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                  </div>
-                </div>
-              )}
-
-              <div className="detail-actions">
-                <button
-                  className="save-button"
-                  onClick={scheduleFollowup}
-                  disabled={!followupForm.date || !followupForm.time}
-                >
-                  Save follow-up
-                </button>
-                {selectedInquiry.status === 'new' && (
+              <div className="row-action">
+                {item.status === 'followup' && (
                   <button
-                    className="save-button"
-                    onClick={() => {
-                      updateStatus(selectedInquiry.id, 'followup')
-                      setSelectedInquiry({
-                        ...selectedInquiry,
-                        status: 'followup',
-                      })
-                    }}
-                  >
-                    Start follow-up
-                  </button>
-                )}
-
-                {selectedInquiry.status === 'followup' && (
-                  <button
-                    className="save-button"
-                    onClick={() => {
-                      updateStatus(selectedInquiry.id, 'replied')
-                      setSelectedInquiry({
-                        ...selectedInquiry,
-                        status: 'replied',
-                      })
-                    }}
+                    type="button"
+                    onClick={() => updateStatus(item.id, 'replied')}
                   >
                     Mark replied
                   </button>
                 )}
 
-                {selectedInquiry.status === 'replied' && (
+                {item.status === 'replied' && (
                   <button
-                    className="save-button"
-                    onClick={() => {
-                      updateStatus(selectedInquiry.id, 'recovered')
-                      setSelectedInquiry({
-                        ...selectedInquiry,
-                        status: 'recovered',
-                      })
-                    }}
+                    type="button"
+                    onClick={() => updateStatus(item.id, 'recovered')}
                   >
                     Mark recovered
                   </button>
                 )}
 
-                <button
-                  className="cancel-button"
-                  onClick={() => setSelectedInquiry(null)}
-                >
-                  Close
-                </button>
+                {(item.status === 'new' || item.status === 'lost') && (
+                  <button
+                    type="button"
+                    onClick={() => updateStatus(item.id, 'followup')}
+                  >
+                    Follow up
+                  </button>
+                )}
+
+                {item.status === 'recovered' && (
+                  <span className="completed">Completed</span>
+                )}
               </div>
             </div>
-          </div>
-        )}
+          ))}
 
-        <footer className="app-footer">
-          LeadBack · Revenue recovery workspace
-        </footer>
-      </main>
-    </div>
+          {inquiriesLoading && <div className="empty-state">Loading inquiries…</div>}
+
+          {!inquiriesLoading && inquiriesError && (
+            <div className="empty-state">{inquiriesError}</div>
+          )}
+
+          {!inquiriesLoading && !inquiriesError && filteredItems.length === 0 && (
+            <div className="empty-state">No inquiries found.</div>
+          )}
+        </div>
+      </section>
+
+      <section className="bottom-grid">
+        <div className="dashboard-panel compact-panel">
+          <div className="panel-header">
+            <div>
+              <h2>Follow-up queue</h2>
+              <p>Customers who need attention.</p>
+            </div>
+          </div>
+
+          {pending.slice(0, 5).map(item => {
+            const followupState = getFollowupState(item)
+
+            return (
+              <div className="queue-row" key={item.id}>
+                <div>
+                  <button
+                    type="button"
+                    className="queue-customer-button"
+                    onClick={() => setSelectedInquiry(item)}
+                  >
+                    {item.name}
+                  </button>
+                  <span>
+                    {item.followup
+                      ? `${item.followup.date} · ${item.followup.time}`
+                      : item.service}
+                  </span>
+                  {item.followup?.note && <small>{item.followup.note}</small>}
+                  {followupState && (
+                    <em className={`queue-status queue-${followupState}`}>
+                      {followupState === 'overdue'
+                        ? 'Overdue'
+                        : followupState === 'today'
+                          ? 'Due today'
+                          : 'Upcoming'}
+                    </em>
+                  )}
+                </div>
+                <strong>{money(Number(item.value) || 0, currency)}</strong>
+              </div>
+            )
+          })}
+        </div>
+
+        <div className="dashboard-panel compact-panel">
+          <div className="panel-header">
+            <div>
+              <h2>Revenue summary</h2>
+              <p>Recovered customer value.</p>
+            </div>
+          </div>
+
+          <div className="revenue-highlight">
+            <span>Total recovered</span>
+            <strong>{money(recoveredRevenue, currency)}</strong>
+          </div>
+
+          <div className="revenue-line">
+            <span>Recovered inquiries</span>
+            <strong>{recovered.length}</strong>
+          </div>
+
+          <div className="revenue-line">
+            <span>Average recovery</span>
+            <strong>
+              {recovered.length
+                ? money(Math.round(recoveredRevenue / recovered.length), currency)
+                : money(0, currency)}
+            </strong>
+          </div>
+        </div>
+      </section>
+
+      {showAddInquiry && (
+        <div
+          className="modal-backdrop"
+          onMouseDown={event => {
+            if (event.target === event.currentTarget) setShowAddInquiry(false)
+          }}
+        >
+          <div className="inquiry-modal">
+            <div className="modal-header">
+              <div>
+                <span className="app-eyebrow">NEW CUSTOMER</span>
+                <h2>Add inquiry</h2>
+                <p>Capture a customer before the opportunity disappears.</p>
+              </div>
+
+              <button
+                type="button"
+                className="modal-close"
+                onClick={() => setShowAddInquiry(false)}
+                aria-label="Close"
+              >
+                ×
+              </button>
+            </div>
+
+            <form onSubmit={handleAddInquiry}>
+              <div className="form-grid">
+                <label>
+                  Customer name
+                  <input
+                    value={form.name}
+                    onChange={e => setForm({ ...form, name: e.target.value })}
+                    placeholder="e.g. Rahul Sharma"
+                  />
+                </label>
+
+                <label>
+                  Phone
+                  <input
+                    value={form.phone}
+                    onChange={e => setForm({ ...form, phone: e.target.value })}
+                    placeholder="+91 98765 43210"
+                  />
+                </label>
+
+                <label className="full-field">
+                  Service
+                  <input
+                    value={form.service}
+                    onChange={e => setForm({ ...form, service: e.target.value })}
+                    placeholder="e.g. Ceramic Coating"
+                  />
+                </label>
+
+                <label>
+                  Estimated value
+                  <div className="money-input">
+                    <span>₹</span>
+                    <input
+                      type="number"
+                      min="0"
+                      value={form.value}
+                      onChange={e => setForm({ ...form, value: e.target.value })}
+                      placeholder="5000"
+                    />
+                  </div>
+                </label>
+
+                <label>
+                  Initial status
+                  <select
+                    value={form.status}
+                    onChange={e => setForm({ ...form, status: e.target.value })}
+                  >
+                    <option value="new">New</option>
+                    <option value="followup">Follow up</option>
+                    <option value="replied">Replied</option>
+                  </select>
+                </label>
+              </div>
+
+              {formError && <div className="form-error">{formError}</div>}
+
+              <div className="modal-actions">
+                <button
+                  type="button"
+                  className="cancel-button"
+                  onClick={() => setShowAddInquiry(false)}
+                >
+                  Cancel
+                </button>
+
+                <button type="submit" className="save-button">
+                  Add inquiry
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {selectedInquiry && (
+        <div
+          className="modal-backdrop"
+          onMouseDown={event => {
+            if (event.target === event.currentTarget) setSelectedInquiry(null)
+          }}
+        >
+          <div className="inquiry-modal detail-modal">
+            <div className="modal-header">
+              <div>
+                <span className="app-eyebrow">INQUIRY DETAILS</span>
+                <h2>{selectedInquiry.name}</h2>
+                <p>{selectedInquiry.phone}</p>
+              </div>
+
+              <button
+                type="button"
+                className="modal-close"
+                onClick={() => setSelectedInquiry(null)}
+                aria-label="Close"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="detail-grid">
+              <div className="detail-card">
+                <span>Service</span>
+                <strong>{selectedInquiry.service}</strong>
+              </div>
+
+              <div className="detail-card">
+                <span>Estimated value</span>
+                <strong>{money(Number(selectedInquiry.value) || 0)}</strong>
+              </div>
+
+              <div className="detail-card">
+                <span>Status</span>
+                <strong>
+                  <span className={`status status-${selectedInquiry.status}`}>
+                    {statusLabels[selectedInquiry.status]}
+                  </span>
+                </strong>
+              </div>
+
+              <div className="detail-card">
+                <span>Added</span>
+                <strong>{selectedInquiry.date}</strong>
+              </div>
+            </div>
+
+            <div className="followup-section">
+              <div className="followup-heading">
+                <span className="app-eyebrow">FOLLOW-UP</span>
+                <h3>Schedule next contact</h3>
+                <p>Set when you want to contact this customer again.</p>
+              </div>
+
+              <div className="followup-grid">
+                <label>
+                  Date
+                  <input
+                    type="date"
+                    value={followupForm.date}
+                    onChange={e =>
+                      setFollowupForm({ ...followupForm, date: e.target.value })
+                    }
+                  />
+                </label>
+
+                <label>
+                  Time
+                  <input
+                    type="time"
+                    value={followupForm.time}
+                    onChange={e =>
+                      setFollowupForm({ ...followupForm, time: e.target.value })
+                    }
+                  />
+                </label>
+
+                <label className="full-field">
+                  Note
+                  <textarea
+                    value={followupForm.note}
+                    onChange={e =>
+                      setFollowupForm({ ...followupForm, note: e.target.value })
+                    }
+                    placeholder="e.g. Customer asked to call after payday"
+                    rows="3"
+                  />
+                </label>
+              </div>
+            </div>
+
+            {selectedInquiry.followupHistory?.length > 0 && (
+              <div className="followup-history">
+                <div className="followup-history-header">
+                  <div>
+                    <span className="app-eyebrow">ACTIVITY</span>
+                    <h3>Follow-up history</h3>
+                  </div>
+                  <span>
+                    {selectedInquiry.followupHistory.length} event
+                    {selectedInquiry.followupHistory.length === 1 ? '' : 's'}
+                  </span>
+                </div>
+
+                <div className="history-list">
+                  {[...selectedInquiry.followupHistory].reverse().map(entry => (
+                    <div className="history-item" key={entry.id}>
+                      <div className="history-dot"></div>
+
+                      <div className="history-content">
+                        <strong>
+                          {entry.type === 'scheduled'
+                            ? 'Follow-up scheduled'
+                            : entry.type}
+                        </strong>
+
+                        <span>
+                          {entry.date} · {entry.time}
+                        </span>
+
+                        {entry.note && <p>{entry.note}</p>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="detail-actions">
+              <button
+                type="button"
+                className="save-button"
+                onClick={scheduleFollowup}
+                disabled={!followupForm.date || !followupForm.time}
+              >
+                Save follow-up
+              </button>
+
+              {selectedInquiry.status === 'new' && (
+                <button
+                  type="button"
+                  className="save-button"
+                  onClick={() => {
+                    updateStatus(selectedInquiry.id, 'followup')
+                    setSelectedInquiry({ ...selectedInquiry, status: 'followup' })
+                  }}
+                >
+                  Start follow-up
+                </button>
+              )}
+
+              {selectedInquiry.status === 'followup' && (
+                <button
+                  type="button"
+                  className="save-button"
+                  onClick={() => {
+                    updateStatus(selectedInquiry.id, 'replied')
+                    setSelectedInquiry({ ...selectedInquiry, status: 'replied' })
+                  }}
+                >
+                  Mark replied
+                </button>
+              )}
+
+              {selectedInquiry.status === 'replied' && (
+                <button
+                  type="button"
+                  className="save-button"
+                  onClick={() => {
+                    updateStatus(selectedInquiry.id, 'recovered')
+                    setSelectedInquiry({ ...selectedInquiry, status: 'recovered' })
+                  }}
+                >
+                  Mark recovered
+                </button>
+              )}
+
+              <button
+                type="button"
+                className="cancel-button"
+                onClick={() => setSelectedInquiry(null)}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   )
 }
 
+/* ------------------------------------------------------------------ */
+/* Auth / route guards                                                 */
+/* ------------------------------------------------------------------ */
 function RequireAuth({ children }) {
   const location = useLocation()
   const [user, setUser] = useState(null)
@@ -1094,18 +913,12 @@ function RequireAuth({ children }) {
           .get()
 
         if (!active) return
-
         setAccount(snapshot.exists ? snapshot.data() : null)
       } catch (error) {
         console.error('Account access check failed:', error)
-
-        if (active) {
-          setAccount(null)
-        }
+        if (active) setAccount(null)
       } finally {
-        if (active) {
-          setChecking(false)
-        }
+        if (active) setChecking(false)
       }
     })
 
@@ -1127,9 +940,7 @@ function RequireAuth({ children }) {
     )
   }
 
-  if (!user) {
-    return <Navigate to="/login" replace />
-  }
+  if (!user) return <Navigate to="/login" replace />
 
   const isBillingPage = location.pathname === '/app/billing'
   const isTrialPage = location.pathname === '/trial'
@@ -1141,7 +952,6 @@ function RequireAuth({ children }) {
   const trialEndsAt = account?.trialEndsAt
 
   let trialEndTime = null
-
   if (trialEndsAt?.toDate) {
     trialEndTime = trialEndsAt.toDate().getTime()
   } else if (trialEndsAt) {
@@ -1153,12 +963,10 @@ function RequireAuth({ children }) {
     Number.isFinite(trialEndTime) &&
     Date.now() >= trialEndTime
 
-  // Trial automatically expires when trialEndsAt is reached.
   if (trialExpired && !isBillingPage) {
     return <Navigate to="/app/billing" replace />
   }
 
-  // New customer who has not redeemed the trial yet.
   if (
     !account?.trialRedeemed &&
     !isPaid &&
@@ -1192,14 +1000,10 @@ function RequireCEO({ children }) {
       }
 
       try {
-        const snapshot = await db
-          .collection('users')
-          .doc(user.uid)
-          .get()
+        const snapshot = await db.collection('users').doc(user.uid).get()
 
         setAllowed(
-          snapshot.exists &&
-          snapshot.data()?.role === 'ceo'
+          snapshot.exists && snapshot.data()?.role === 'ceo'
         )
       } catch (error) {
         console.error('CEO access check failed:', error)
@@ -1224,35 +1028,67 @@ function RequireCEO({ children }) {
     )
   }
 
-  if (!allowed) {
-    return <Navigate to="/app" replace />
-  }
+  if (!allowed) return <Navigate to="/app" replace />
 
   return children
 }
 
+/* ------------------------------------------------------------------ */
+/* App root                                                            */
+/* ------------------------------------------------------------------ */
 function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Public marketing pages */}
         <Route path="/" element={<Home />} />
         <Route path="/features" element={<SEOPage type="features" />} />
         <Route path="/how-it-works" element={<SEOPage type="how-it-works" />} />
         <Route path="/pricing" element={<SEOPage type="pricing" />} />
         <Route path="/industries" element={<SEOPage type="industries" />} />
-<Route path="/industries/car-detailing" element={<SEOPage type="car-detailing" />} />
+        <Route
+          path="/industries/car-detailing"
+          element={<SEOPage type="car-detailing" />}
+        />
         <Route path="/resources" element={<SEOPage type="resources" />} />
-        <Route path="/trial" element={<RequireAuth><Trial /></RequireAuth>} />
+
+        {/* Auth pages */}
         <Route path="/login" element={<Login />} />
-        <Route path="/ceo" element={<RequireCEO><CEO /></RequireCEO>} />
-        <Route path="/app" element={<RequireAuth><Dashboard /></RequireAuth>} />
-        <Route path="/app/inquiries" element={<RequireAuth><Inquiries /></RequireAuth>} />
-        <Route path="/app/followups" element={<RequireAuth><Followups /></RequireAuth>} />
-        <Route path="/app/revenue" element={<RequireAuth><Revenue /></RequireAuth>} />
-        <Route path="/app/customers" element={<RequireAuth><Customers /></RequireAuth>} />
-        <Route path="/app/billing" element={<RequireAuth><Billing /></RequireAuth>} />
-        <Route path="/app/settings" element={<RequireAuth><Settings /></RequireAuth>} />
-        <Route path="/app/profile" element={<RequireAuth><Profile /></RequireAuth>} />
+        <Route
+          path="/trial"
+          element={
+            <RequireAuth>
+              <Trial />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/ceo"
+          element={
+            <RequireCEO>
+              <CEO />
+            </RequireCEO>
+          }
+        />
+
+        {/* Authenticated workspace — all wrapped in AppLayout (with sidebar) */}
+        <Route
+          element={
+            <RequireAuth>
+              <AppLayout />
+            </RequireAuth>
+          }
+        >
+          <Route path="/app" element={<Dashboard />} />
+          <Route path="/app/inquiries" element={<Inquiries />} />
+          <Route path="/app/followups" element={<Followups />} />
+          <Route path="/app/revenue" element={<Revenue />} />
+          <Route path="/app/customers" element={<Customers />} />
+          <Route path="/app/billing" element={<Billing />} />
+          <Route path="/app/settings" element={<Settings />} />
+          <Route path="/app/profile" element={<Profile />} />
+        </Route>
+
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import './Home.css'
 
 const features = [
@@ -431,7 +432,7 @@ function App() {
           <a href="#how-it-works">How it works</a>
           <a href="#features">Features</a>
           <a href="#pricing">Pricing</a>
-          <a href="/login">Get started</a>
+          <Link to="/login">Get started</Link>
         </div>
 
         <div className="footer-bottom">

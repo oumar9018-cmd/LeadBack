@@ -5266,3 +5266,82 @@ a {
   color: #b91c1c;
   font-size: 12px;
 }
+
+/* ==================================================================
+   Layout fixes (post-refactor)
+   ================================================================== */
+
+/* Dashboard's page-specific header that now sits in <Outlet/> instead
+   of the outer .app-header */
+.dashboard-overview-header {
+  max-width: 1280px;
+  margin: 0 auto 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+}
+
+.dashboard-overview-header h1 {
+  margin: 0;
+  font-family: Manrope, sans-serif;
+  font-size: clamp(23px, 3vw, 31px);
+  line-height: 1.15;
+  letter-spacing: -.045em;
+}
+
+.dashboard-overview-header p {
+  margin: 8px 0 0;
+  color: var(--app-muted);
+  font-size: 12px;
+}
+
+/* Ensure NavLink/Link rendered inside the sidebar pick up the existing
+   anchor styles (the original CSS targets `.side-nav a`). */
+.side-nav a.active {
+  background: var(--app-blue-soft);
+  color: var(--app-blue);
+}
+
+/* Nested pages (inquiries/billing/settings/…) already come wrapped in a
+   .*-page container that sets its own min-height, padding and
+   background. When they are rendered inside .app-main we need to
+   neutralise those so the sidebar shell stays in control. */
+.app-main .inquiries-page,
+.app-main .followups-page,
+.app-main .revenue-page,
+.app-main .customers-page,
+.app-main .billing-page,
+.app-main .settings-page,
+.app-main .profile-page {
+  min-height: 0;
+  padding: 0;
+  background: transparent;
+}
+
+.app-main .inquiries-inner,
+.app-main .followups-inner,
+.app-main .revenue-inner,
+.app-main .customers-page-inner,
+.app-main .billing-inner,
+.app-main .settings-inner {
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+/* Hide the "Back to dashboard" button on these inner pages — the
+   sidebar already provides navigation, so it's redundant. */
+.app-main .inquiries-header .primary-button,
+.app-main .followups-header .primary-button,
+.app-main .revenue-header .primary-button,
+.app-main .customers-page-header .primary-button,
+.app-main .billing-header .primary-button,
+.app-main .settings-header .primary-button {
+  display: none;
+}
+
+/* Make sure the profile page content is centered nicely too */
+.app-main .profile-page {
+  display: block;
+}

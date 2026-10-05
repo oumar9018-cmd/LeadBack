@@ -72,6 +72,26 @@
 </head>
   <body>
     <div id="root"></div>
+    <script>
+      // GitHub Pages SPA restore:
+      // If 404.html redirected us here after a deep-link refresh, restore the
+      // original path/query/hash so React Router renders the correct page.
+      (function () {
+        try {
+          var stored = sessionStorage.getItem('leadback-redirect');
+          if (stored) {
+            sessionStorage.removeItem('leadback-redirect');
+            // Only restore if we're on the root (where 404.html sent us).
+            if (window.location.pathname === '/' || window.location.pathname === '/index.html') {
+              // Replace history state so Back doesn't land on the broken URL.
+              window.history.replaceState(null, '', stored);
+            }
+          }
+        } catch (e) {
+          // sessionStorage can be blocked; ignore and fall through to /.
+        }
+      })();
+    </script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import './SEOPage.css'
 
 const carDetailingPage = {
@@ -137,21 +138,21 @@ export default function SEOPage({ type }) {
   return (
     <div className="seo-shell">
       <header className="seo-nav">
-        <a className="seo-brand" href="/">
+        <Link className="seo-brand" to="/">
           <span className="seo-brand-mark">L</span>
           <span>LeadBack</span>
-        </a>
+        </Link>
 
         <nav>
-          <a href="/features">Features</a>
-          <a href="/how-it-works">How it works</a>
-          <a href="/pricing">Pricing</a>
-          <a href="/industries">Industries</a>
+          <Link to="/features">Features</Link>
+          <Link to="/how-it-works">How it works</Link>
+          <Link to="/pricing">Pricing</Link>
+          <Link to="/industries">Industries</Link>
         </nav>
 
-        <a className="seo-nav-cta" href="/">
+        <Link className="seo-nav-cta" to="/">
           Start free
-        </a>
+        </Link>
       </header>
 
       <main className="seo-main">
@@ -177,19 +178,19 @@ export default function SEOPage({ type }) {
             Start with a 1-month free trial and build a clearer follow-up
             workflow for your business.
           </p>
-          <a href="/" className="seo-cta-button">
+          <Link to="/" className="seo-cta-button">
             Start free 1-month trial →
-          </a>
+          </Link>
         </section>
       </main>
 
       <footer className="seo-footer">
         <span>© LeadBack</span>
         <div>
-          <a href="/">Home</a>
-          <a href="/features">Features</a>
-          <a href="/pricing">Pricing</a>
-          <a href="/industries">Industries</a>
+          <Link to="/">Home</Link>
+          <Link to="/features">Features</Link>
+          <Link to="/pricing">Pricing</Link>
+          <Link to="/industries">Industries</Link>
         </div>
       </footer>
     </div>
