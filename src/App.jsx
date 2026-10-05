@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { BrowsarRouter, Routes, Route, Navigate, useSearchParams, useLocation } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useSearchParams, useLocation } from 'react-router-dom'
 import Home from './Home.jsx'
 import SEOPage from './SEOPage.jsx'
 import Customers from './Customers.jsx'
