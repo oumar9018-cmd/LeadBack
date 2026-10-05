@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { url } from './basePath.js'
 
 export default function Login() {
   const navigate = useNavigate()
@@ -95,11 +96,11 @@ export default function Login() {
       }
 
       if (accountData?.role === 'ceo') {
-        window.location.href = '/ceo'
+        window.location.href = url('/ceo')
       } else if (accountData?.trialRedeemed) {
-        window.location.href = '/app'
+        window.location.href = url('/app')
       } else {
-        window.location.href = '/trial'
+        window.location.href = url('/trial')
       }
     } catch (error) {
       console.error('Google Sign-In failed:', error)
