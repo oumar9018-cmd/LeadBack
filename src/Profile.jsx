@@ -18,8 +18,13 @@ export default function Profile() {
   }, [])
 
   async function handleSignOut() {
-    await window.firebase.auth().signOut()
-    window.location.href = '/login'
+    try {
+      await window.firebase.auth().signOut()
+    } catch (error) {
+      console.error('Sign out failed:', error)
+    }
+    // Use replace so the browser's Back button can't return to a protected page.
+    window.location.replace('/login')
   }
 
   const displayName = user?.displayName || 'Google account'
