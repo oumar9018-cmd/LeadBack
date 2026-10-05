@@ -15,4 +15,8 @@ export default defineConfig({
     // Allow the Arena preview proxy host in development.
     allowedHosts: true,
   },
+  preview: {
+    // Same for `vite preview` (serves the prerendered production build).
+    allowedHosts: true,
+  },
 })

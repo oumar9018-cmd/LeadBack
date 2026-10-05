@@ -2,6 +2,13 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import './Home.css'
 import { url } from './basePath.js'
+// Marketing navigation + Home's SEO metadata, shared with the dedicated
+// landing pages so the whole site links to the same canonical URLs.
+import { NAV_LINKS, FOOTER_GROUPS, getSeoPage } from './seo/pages.js'
+import { useSEO } from './seo/useSEO.js'
+
+/** SEO metadata for the homepage (title, description, canonical, JSON-LD…). */
+const HOME_SEO = getSeoPage('home')
 
 const features = [
   {
@@ -32,6 +39,9 @@ const industries = [
 
 function App() {
   const [authBusy, setAuthBusy] = useState(false)
+
+  // Apply this page's <title>, meta description, canonical and JSON-LD.
+  useSEO(HOME_SEO)
 
   useEffect(() => {
     const auth = window.firebase?.auth?.()
@@ -132,11 +142,17 @@ function App() {
           <span>LeadBack</span>
         </a>
 
+        {/*
+          Real router links to the dedicated landing pages (not #anchors) so
+          crawlers can discover and pass link equity to /features, /use-cases,
+          /pricing, /how-it-works, /industries and /about.
+        */}
         <nav className="nav-links" aria-label="Main navigation">
-          <a href="#how-it-works">How it works</a>
-          <a href="#features">Features</a>
-          <a href="#industries">Industries</a>
-          <a href="#pricing">Pricing</a>
+          {NAV_LINKS.map((link) => (
+            <Link key={link.to} to={link.to}>
+              {link.label}
+            </Link>
+          ))}
         </nav>
 
         <div className="nav-actions">
@@ -357,11 +373,11 @@ function App() {
 
           <div className="industry-grid">
             {industries.map((industry, index) => (
-              <div className="industry-card" key={industry}>
+              <Link className="industry-card" to="/industries" key={industry}>
                 <span>0{index + 1}</span>
                 <strong>{industry}</strong>
                 <span className="industry-arrow">↗</span>
-              </div>
+              </Link>
             ))}
           </div>
         </section>
@@ -429,11 +445,31 @@ function App() {
           <p>Turn missed inquiries into customers.</p>
         </div>
 
-        <div className="footer-links">
-          <a href="#how-it-works">How it works</a>
-          <a href="#features">Features</a>
-          <a href="#pricing">Pricing</a>
-          <Link to="/login">Get started</Link>
+        <div className="footer-nav">
+          {FOOTER_GROUPS.map((group) => (
+            <div className="footer-group" key={group.title}>
+              <p className="footer-group-title">{group.title}</p>
+              <ul>
+                {group.links.map((link) => (
+                  <li key={`${group.title}-${link.to}-${link.label}`}>
+                    <Link to={link.to}>{link.label}</Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+
+          <div className="footer-group">
+            <p className="footer-group-title">Get started</p>
+            <ul>
+              <li>
+                <Link to="/login">Log in</Link>
+              </li>
+              <li>
+                <Link to="/login">Start free trial</Link>
+              </li>
+            </ul>
+          </div>
         </div>
 
         <div className="footer-bottom">

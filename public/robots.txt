@@ -1,6 +1,7 @@
 User-agent: *
 Allow: /
 
+# Private / app surfaces - no value in the index, and they need auth anyway.
 Disallow: /app
 Disallow: /app/
 Disallow: /ceo

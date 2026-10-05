@@ -1,16 +1,78 @@
-# React + Vite
+# LeadBack
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+LeadBack helps growing businesses recover missed customer inquiries, organize
+follow-ups, and turn more conversations into paying customers.
 
-Currently, two official plugins are available:
+React 19 + Vite SPA, deployed to GitHub Pages.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Getting started
 
-## React Compiler
+```bash
+npm install
+npm run dev      # local dev server
+npm run build    # production build + SEO prerender
+npm run preview  # serve the built site (includes the prerendered pages)
+npm run lint     # oxlint (this is a plain-JS project, not TypeScript)
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## SEO architecture
 
-## Expanding the Oxlint configuration
+This is a single-page app, which is normally a bad starting point for search
+ranking: without extra work every URL serves the *same* `index.html`, so
+crawlers see the homepage's `<title>` and description on every page.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+LeadBack solves that with a manifest-driven setup:
+
+| File | Role |
+| --- | --- |
+| `src/seo/pages.js` | **Single source of truth.** Content + meta for every marketing page. |
+| `src/seo/site.js` | Site-wide constants (origin, default title, OG image). |
+| `src/seo/schema.js` | JSON-LD builders (Organization, WebSite, SoftwareApplication, WebPage, BreadcrumbList, FAQPage). |
+| `src/seo/useSEO.js` | Applies `<title>`/meta/canonical/JSON-LD at runtime on client-side navigation. |
+| `src/SEOPage.jsx` | Renders a page from the manifest (hero, steps, plans, cards, FAQ, CTA). |
+| `scripts/prerender-seo.mjs` | Bakes per-route meta + server-rendered HTML into `dist/<route>/index.html` at build time. |
+| `scripts/entry-server.jsx` | Server-render entry used only by the prerenderer. |
+| `scripts/generate-og-image.py` | Optional one-off generator for `public/og-image.png` (needs Pillow; not part of `npm run build`). |
+
+### Adding a page
+
+Append an entry to `SEO_PAGES` in `src/seo/pages.js`. That is the only step —
+the route, the prerendered HTML, the sitemap entry and (if you set `navLabel`)
+the header link are all derived from the array.
+
+To also surface it in the footer, add it to `FOOTER_GROUPS` in the same file.
+
+### What each page ships
+
+Every route gets, both in the prerendered HTML and on client-side navigation:
+
+- unique `<title>` (≤ 60 chars) and `<meta name="description">` (≤ 155 chars)
+- `<link rel="canonical">` pointing at its own URL
+- Open Graph + Twitter card tags, with `public/og-image.png` as the share image
+- JSON-LD `@graph`: Organization, WebSite, SoftwareApplication (with pricing
+  offers), WebPage, BreadcrumbList and — where the page defines an `faq` array —
+  `FAQPage` for rich results
+- server-rendered body content, so the page is indexable without JavaScript
+
+### Pages
+
+`/` · `/features` · `/use-cases` · `/pricing` · `/how-it-works` ·
+`/use-cases/missed-inquiries` · `/use-cases/follow-up-management` ·
+`/use-cases/revenue-recovery` · `/industries` · `/industries/car-detailing` ·
+`/about` · `/resources`
+
+## Deployment
+
+Pushes to `main` run `.github/workflows/deploy.yml`, which builds and publishes
+to GitHub Pages. `vite.config.js` sets `base: '/LeadBack/'` for the project site
+(`oumar9018-cmd.github.io/LeadBack/`); if the `leadback.app` custom domain is
+ever enabled in Pages settings, that must go back to `/`.
+
+`public/404.html` is the SPA fallback for authenticated deep links (`/app/*`).
+The marketing pages no longer rely on it — they are real directories.
+
+## Product surfaces
+
+- **Marketing/SEO pages** — `src/Home.jsx`, `src/SEOPage.jsx`
+- **Authenticated workspace** — `src/AppLayout.jsx` + the `/app/*` routes in `src/App.jsx`
+- **Auth** — `src/Login.jsx`, `src/Trial.jsx` (Firebase Google sign-in, 1-month free trial)
