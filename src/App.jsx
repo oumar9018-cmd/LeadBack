@@ -21,6 +21,10 @@ import CEO from './CEO.jsx'
 import Trial from './Trial.jsx'
 import AppLayout from './AppLayout.jsx'
 import { ROUTER_BASENAME } from './basePath.js'
+// Single source of truth for the marketing routes — see src/seo/pages.js.
+// Adding a page to SEO_PAGES registers its route, nav link, sitemap entry and
+// prerendered HTML automatically.
+import { ROUTED_SEO_PAGES } from './seo/pages.js'
 import './App.css'
 
 const statusLabels = {
@@ -1037,21 +1041,47 @@ function RequireCEO({ children }) {
 /* ------------------------------------------------------------------ */
 /* App root                                                            */
 /* ------------------------------------------------------------------ */
+
+/**
+ * Reset scroll on navigation. Without this, clicking a link in the footer of a
+ * long landing page lands the user halfway down the next page.
+ *
+ * Skipped for in-page hash links (e.g. the "#top" brand link) so anchors
+ * still jump within the page instead of scrolling back to the top.
+ */
+function ScrollToTop() {
+  const { pathname, hash } = useLocation()
+
+  useEffect(() => {
+    if (hash) return
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+  }, [pathname, hash])
+
+  return null
+}
+
 function App() {
   return (
     <BrowserRouter basename={ROUTER_BASENAME}>
+      <ScrollToTop />
       <Routes>
         {/* Public marketing pages */}
         <Route path="/" element={<Home />} />
-        <Route path="/features" element={<SEOPage type="features" />} />
-        <Route path="/how-it-works" element={<SEOPage type="how-it-works" />} />
-        <Route path="/pricing" element={<SEOPage type="pricing" />} />
-        <Route path="/industries" element={<SEOPage type="industries" />} />
-        <Route
-          path="/industries/car-detailing"
-          element={<SEOPage type="car-detailing" />}
-        />
-        <Route path="/resources" element={<SEOPage type="resources" />} />
+
+        {/*
+          Dedicated SEO landing pages, generated from the manifest in
+          src/seo/pages.js: /features, /use-cases (+3 sub-pages), /pricing,
+          /how-it-works, /industries, /industries/car-detailing, /about and
+          /resources. Each one renders <SEOPage> with its own <title>,
+          description, canonical, Open Graph/Twitter tags and JSON-LD.
+        */}
+        {ROUTED_SEO_PAGES.map((page) => (
+          <Route
+            key={page.path}
+            path={page.path}
+            element={<SEOPage type={page.type} />}
+          />
+        ))}
 
         {/* Auth pages */}
         <Route path="/login" element={<Login />} />
