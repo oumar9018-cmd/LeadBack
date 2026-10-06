@@ -15,6 +15,48 @@ npm run preview  # serve the built site (includes the prerendered pages)
 npm run lint     # oxlint (this is a plain-JS project, not TypeScript)
 ```
 
+## Razorpay test checkout
+
+The browser uses the public Razorpay Key ID from `.env.local`:
+
+```bash
+cp .env.example .env.local
+# Set VITE_RAZORPAY_KEY_ID to your Razorpay test Key ID in .env.local
+```
+
+Orders and payment verification run in the Firebase Cloud Functions under
+`functions/`. The browser never receives the Razorpay Key Secret. Set that
+secret through Firebase Secret Manager (do not put it in a Vite `VITE_*`
+variable or commit it):
+
+```bash
+npm ci --prefix functions
+npx firebase-tools login
+npx firebase-tools functions:secrets:set RAZORPAY_KEY_SECRET
+npx firebase-tools deploy --only firestore:rules,functions
+```
+
+The function parameter `RAZORPAY_KEY_ID` is read from
+`functions/.env.<firebase-project-id>`; copy `functions/.env.example` to that
+file and set the same public Key ID. The functions are deployed to
+`asia-south1`. In test-key mode, the existing trial button uses a ₹499 test
+order and starts the existing one-month trial only after server verification.
+With a live key (or no test key), the trial button activates the free trial
+without a charge. The Billing page creates server-priced monthly/yearly orders
+and only updates `users/{uid}` after checking Razorpay's signature and captured
+payment. A successful billing checkout grants one month or one year of access;
+it does not set up automatic renewal. Firestore rules keep subscription fields
+and Razorpay order records server-only. This repository previously had no
+rules file, so review `firestore.rules` against any console-only rules or
+collections before deploying it; deploying replaces the project's current
+Firestore rules.
+
+For GitHub Pages builds, add the public Key ID as the repository Actions
+variable `VITE_RAZORPAY_KEY_ID`. The Razorpay Secret remains in Firebase Secret
+Manager and is never needed by the static-site build. Firebase Cloud Functions
+require a Blaze (pay-as-you-go) Firebase project and must be deployed separately
+from the GitHub Pages site.
+
 ## SEO architecture
 
 This is a single-page app, which is normally a bad starting point for search

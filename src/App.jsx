@@ -950,9 +950,21 @@ function RequireAuth({ children }) {
   const isBillingPage = location.pathname === '/app/billing'
   const isTrialPage = location.pathname === '/trial'
 
-  const isPaid =
+  const hasPaidStatus =
     account?.subscriptionStatus === 'active' ||
     account?.subscriptionStatus === 'subscribed'
+
+  const subscriptionEndsAt = account?.subscriptionEndsAt
+  const subscriptionEndTime = subscriptionEndsAt?.toDate
+    ? subscriptionEndsAt.toDate().getTime()
+    : subscriptionEndsAt
+      ? new Date(subscriptionEndsAt).getTime()
+      : null
+  const paidExpired =
+    hasPaidStatus &&
+    Number.isFinite(subscriptionEndTime) &&
+    Date.now() >= subscriptionEndTime
+  const isPaid = hasPaidStatus && !paidExpired
 
   const trialEndsAt = account?.trialEndsAt
 
@@ -968,7 +980,7 @@ function RequireAuth({ children }) {
     Number.isFinite(trialEndTime) &&
     Date.now() >= trialEndTime
 
-  if (trialExpired && !isBillingPage) {
+  if ((trialExpired || paidExpired) && !isBillingPage) {
     return <Navigate to="/app/billing" replace />
   }
 
