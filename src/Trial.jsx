@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { activateFreeTrial, launchRazorpayCheckout } from './payments/razorpay.js'
 import './Trial.css'
 
 export default function Trial() {
@@ -9,6 +10,7 @@ export default function Trial() {
   const [checking, setChecking] = useState(true)
   const [starting, setStarting] = useState(false)
   const [error, setError] = useState('')
+  const isTestMode = import.meta.env.VITE_RAZORPAY_KEY_ID?.startsWith('rzp_test_')
 
   useEffect(() => {
     const auth = window.firebase?.auth?.()
@@ -34,45 +36,18 @@ export default function Trial() {
     setError('')
 
     try {
-      const db = window.firebase.firestore()
-      const firebase = window.firebase
-
-      const userRef = db
-        .collection('users')
-        .doc(user.uid)
-
-      const snapshot = await userRef.get()
-
-      const existing = snapshot.exists
-        ? snapshot.data()
-        : {}
-
-      if (existing.trialStartedAt || existing.trialEndsAt) {
-        navigate('/app', { replace: true })
-        return
+      if (isTestMode) {
+        // Exercise the complete payment verification path with a test-only
+        // ₹499 order; the successful test payment starts the free trial.
+        await launchRazorpayCheckout({ plan: 'monthly', user, purpose: 'trial' })
+      } else {
+        await activateFreeTrial(user)
       }
-
-      const now = new Date()
-      const ends = new Date(now)
-
-      ends.setMonth(ends.getMonth() + 1)
-
-      await userRef.set(
-        {
-          trialStartedAt: firebase.firestore.Timestamp.fromDate(now),
-          trialEndsAt: firebase.firestore.Timestamp.fromDate(ends),
-          subscriptionStatus: 'trialing',
-          plan: 'trial',
-          trialRedeemed: true,
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-        },
-        { merge: true }
-      )
 
       navigate('/app', { replace: true })
     } catch (err) {
-      console.error('Trial activation failed:', err)
-      setError('Unable to start your free trial. Please try again.')
+      console.error('Trial checkout failed:', err)
+      setError(err?.message || 'Unable to complete checkout. Please try again.')
     } finally {
       setStarting(false)
     }
@@ -132,7 +107,7 @@ export default function Trial() {
         </div>
 
         {error && (
-          <div className="trial-error">
+          <div className="trial-error" role="alert">
             {error}
           </div>
         )}
@@ -143,12 +118,14 @@ export default function Trial() {
           disabled={starting}
         >
           {starting
-            ? 'Activating trial…'
+            ? (isTestMode ? 'Verifying test payment…' : 'Activating trial…')
             : 'Start 1-month free trial'}
         </button>
 
         <small>
-          No charge during your free trial.
+          {isTestMode
+            ? '₹499 test checkout; no real funds are transferred in test mode.'
+            : 'No charge during your free trial.'}
         </small>
 
       </div>

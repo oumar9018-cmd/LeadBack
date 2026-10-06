@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { launchRazorpayCheckout } from './payments/razorpay.js'
 
 const PLANS = {
   monthly: {
@@ -36,12 +37,22 @@ function formatDate(value) {
   }
 }
 
+function timestampValue(value) {
+  if (value?.toDate) return value.toDate().getTime()
+  if (!value) return null
+
+  const time = new Date(value).getTime()
+  return Number.isFinite(time) ? time : null
+}
+
 export default function Billing() {
   const navigate = useNavigate()
 
   const [plan, setPlan] = useState('monthly')
   const [account, setAccount] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [processingPayment, setProcessingPayment] = useState(false)
+  const [paymentError, setPaymentError] = useState('')
 
   useEffect(() => {
     const auth = window.firebase?.auth?.()
@@ -70,7 +81,12 @@ export default function Billing() {
           .get()
 
         if (active) {
-          setAccount(snapshot.exists ? snapshot.data() : null)
+          const data = snapshot.exists ? snapshot.data() : null
+          setAccount(data)
+
+          if (['monthly', 'yearly'].includes(data?.plan)) {
+            setPlan(data.plan)
+          }
         }
       } catch (error) {
         console.error('Billing account load failed:', error)
@@ -92,38 +108,76 @@ export default function Billing() {
   }, [])
 
   const status = account?.subscriptionStatus || 'trialing'
-  const isPaid =
-    status === 'active' ||
-    status === 'subscribed'
+  const hasPaidStatus = status === 'active' || status === 'subscribed'
+  const subscriptionEnd = account?.subscriptionEndsAt
+  const subscriptionEndTime = timestampValue(subscriptionEnd)
+  const paidExpired =
+    hasPaidStatus &&
+    Number.isFinite(subscriptionEndTime) &&
+    Date.now() >= subscriptionEndTime
+  const isPaid = hasPaidStatus && !paidExpired
 
   const trialEnd = account?.trialEndsAt
-
-  const trialEndTime = trialEnd?.toDate
-    ? trialEnd.toDate().getTime()
-    : trialEnd
-      ? new Date(trialEnd).getTime()
-      : null
-
+  const trialEndTime = timestampValue(trialEnd)
   const trialExpired =
     status === 'trialing' &&
     Number.isFinite(trialEndTime) &&
     Date.now() >= trialEndTime
+  const trialActive =
+    status === 'trialing' &&
+    Boolean(trialEnd) &&
+    !trialExpired
 
   const currentStatus = isPaid
     ? 'Active'
-    : trialExpired
-      ? 'Trial ended'
-      : 'Active'
+    : paidExpired
+      ? 'Expired'
+      : trialExpired
+        ? 'Trial ended'
+        : trialActive
+          ? 'Active'
+          : 'Inactive'
 
-  const currentPlan = isPaid
+  const currentPlan = isPaid || paidExpired
     ? (account?.plan || 'paid')
     : '1-month free trial'
 
-  function handlePayment() {
-    console.log('Payment provider not connected yet.', {
-      plan,
-      price: PLANS[plan].price,
-    })
+  async function handlePayment() {
+    if (loading || processingPayment) return
+
+    const user = window.firebase?.auth?.()?.currentUser
+
+    if (!user) {
+      setPaymentError('Please sign in before continuing to checkout.')
+      navigate('/login')
+      return
+    }
+
+    setProcessingPayment(true)
+    setPaymentError('')
+
+    try {
+      await launchRazorpayCheckout({ plan, user })
+
+      try {
+        const snapshot = await window.firebase
+          .firestore()
+          .collection('users')
+          .doc(user.uid)
+          .get()
+
+        setAccount(snapshot.exists ? snapshot.data() : null)
+      } catch (refreshError) {
+        console.error('Verified billing account refresh failed:', refreshError)
+      }
+    } catch (error) {
+      console.error('Razorpay checkout failed:', error)
+      setPaymentError(
+        error?.message || 'Payment could not be completed. Please try again.'
+      )
+    } finally {
+      setProcessingPayment(false)
+    }
   }
 
   return (
@@ -158,14 +212,24 @@ export default function Billing() {
             <p>
               {isPaid
                 ? 'Your LeadBack subscription is active.'
-                : trialExpired
-                  ? 'Your free trial has ended. Choose a plan to continue.'
-                  : 'Your 1-month free trial is active.'}
+                : paidExpired
+                  ? 'Your paid access has ended. Choose a plan to continue.'
+                  : trialExpired
+                    ? 'Your free trial has ended. Choose a plan to continue.'
+                    : trialActive
+                      ? 'Your 1-month free trial is active.'
+                      : 'Choose a plan to activate LeadBack.'}
             </p>
 
-            {!isPaid && trialEnd && !trialExpired && (
+            {!isPaid && trialActive && (
               <p style={{ marginTop: 7 }}>
                 Trial ends {formatDate(trialEnd)}
+              </p>
+            )}
+
+            {isPaid && subscriptionEnd && (
+              <p style={{ marginTop: 7 }}>
+                Access through {formatDate(subscriptionEnd)}
               </p>
             )}
           </div>
@@ -222,7 +286,7 @@ export default function Billing() {
             <div>
               <span>Access</span>
               <strong>
-                {isPaid || (!trialExpired && !loading)
+                {isPaid || (trialActive && !loading)
                   ? 'Full product'
                   : 'Upgrade required'}
               </strong>
@@ -233,14 +297,15 @@ export default function Billing() {
         <button
           className="billing-upgrade"
           onClick={handlePayment}
-          disabled={loading}
+          disabled={loading || processingPayment}
         >
-          Continue with {PLANS[plan].name.toLowerCase()} plan
+          {processingPayment
+            ? 'Verifying payment…'
+            : `Continue with ${PLANS[plan].name.toLowerCase()} plan`}
         </button>
 
-        <p className="billing-note">
-          Secure payment will be enabled before production launch.
-          Your selected plan is {PLANS[plan].price} {PLANS[plan].period}.
+        <p className="billing-note" role={paymentError ? 'alert' : undefined}>
+          {paymentError || `Secure Razorpay checkout. Selected plan: ${PLANS[plan].price} ${PLANS[plan].period}. This payment does not auto-renew.`}
         </p>
 
       </div>

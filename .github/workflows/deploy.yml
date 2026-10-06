@@ -34,6 +34,10 @@ jobs:
 
       - name: Build
         run: npm run build
+        env:
+          # Public Razorpay Key ID; configure as a repository Actions variable.
+          VITE_RAZORPAY_KEY_ID: ${{ vars.VITE_RAZORPAY_KEY_ID }}
+          VITE_FIREBASE_FUNCTIONS_REGION: asia-south1
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

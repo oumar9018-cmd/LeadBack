@@ -1,0 +1,72 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return signedIn() && request.auth.uid == userId;
+    }
+
+    function isCeo() {
+      return signedIn() &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'ceo';
+    }
+
+    function subscriptionFields() {
+      return [
+        'subscriptionStatus',
+        'plan',
+        'trialRedeemed',
+        'trialStartedAt',
+        'trialEndsAt',
+        'subscriptionStartedAt',
+        'subscriptionPeriodStartedAt',
+        'subscriptionEndsAt',
+        'lastPaymentAt',
+        'lastPaymentAmount',
+        'lastPaymentCurrency',
+        'razorpayOrderId',
+        'razorpayPaymentId'
+      ];
+    }
+
+    match /users/{userId} {
+      allow get: if isOwner(userId) || isCeo();
+      allow list: if isCeo();
+
+      // New accounts can only create a customer profile. Entitlement and role
+      // fields are written by trusted server code, never by the browser.
+      allow create: if isOwner(userId) &&
+        request.resource.data.uid == userId &&
+        request.resource.data.role == 'customer' &&
+        !request.resource.data.keys().hasAny(subscriptionFields());
+
+      allow update: if isOwner(userId) &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'uid', 'name', 'email', 'displayName', 'photoURL', 'updatedAt'
+        ]);
+      allow delete: if false;
+
+      match /inquiries/{inquiryId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      match /settings/{settingId} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+
+    // Razorpay order state is server-only. Cloud Functions Admin SDK bypasses
+    // these client rules after payment verification.
+    match /razorpayOrders/{orderId} {
+      allow read, write: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
