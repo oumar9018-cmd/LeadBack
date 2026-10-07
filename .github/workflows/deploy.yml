@@ -32,6 +32,17 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Check Razorpay config
+        run: |
+          if [ -n "$VITE_RAZORPAY_KEY_ID" ]; then
+            echo "Razorpay Key ID is available"
+          else
+            echo "Razorpay Key ID is MISSING"
+            exit 1
+          fi
+        env:
+          VITE_RAZORPAY_KEY_ID: ${{ vars.VITE_RAZORPAY_KEY_ID }}
+
       - name: Build
         run: npm run build
         env:
