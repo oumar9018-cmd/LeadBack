@@ -1,5 +1,4 @@
 const CHECKOUT_SCRIPT_URL = 'https://checkout.razorpay.com/v1/checkout.js'
-const FUNCTIONS_REGION = import.meta.env.VITE_FIREBASE_FUNCTIONS_REGION || 'asia-south1'
 
 let checkoutScriptPromise
 
@@ -33,16 +32,54 @@ function loadRazorpayCheckout() {
   return checkoutScriptPromise
 }
 
-function getFirebaseFunctions() {
-  const firebase = window.firebase
-
-  if (!firebase?.functions || !firebase?.auth) {
-    throw new Error('Firebase payment services are not available.')
+/**
+ * Fetches from the Cloudflare Worker Razorpay backend.
+ * The worker expects Authorization: Bearer <Firebase ID token> header.
+ */
+async function callWorkerEndpoint(path, data = {}) {
+  const keyId = import.meta.env.VITE_RAZORPAY_KEY_ID
+  if (!keyId) {
+    throw new Error('Razorpay is not configured. Set VITE_RAZORPAY_KEY_ID in the environment.')
   }
 
-  return firebase.app().functions(FUNCTIONS_REGION)
+  // Get the authenticated user - try Firebase Auth first
+  let uid = null
+  const firebase = window.firebase
+  if (firebase?.auth?.()) {
+    const user = firebase.auth().currentUser
+    if (user?.uid) {
+      uid = user.uid
+    }
+  }
+  // If no current user, we'll rely on the worker to verify the token
+
+  const url = `https://leadback-payment.mohiqbal6864.workers.dev/${path}`
+
+  // Prepare the request with the user's Firebase token
+  const token = firebase?.auth?.()?.currentUser?.getIdToken ? await firebase.auth().currentUser.getIdToken() : null
+
+  const headers = {
+    'Content-Type': 'application/json',
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  }
+
+  const body = JSON.stringify({ ...data, uid })
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers,
+    body,
+  })
+
+  if (!response.ok) {
+    const errorText = await response.text()
+    throw new Error(`Worker error: ${response.status} - ${errorText}`)
+  }
+
+  return response.json()
 }
 
+/** Same as before: load the Razorpay checkout script */
 function cancellationError() {
   const error = new Error('Payment was cancelled. No subscription changes were made.')
   error.code = 'payment/cancelled'
@@ -51,7 +88,7 @@ function cancellationError() {
 
 /**
  * Starts a server-created Razorpay order, opens Checkout, and only resolves
- * after the Firebase callable has verified the payment with Razorpay.
+ * after the Cloudflare Worker verifies the payment with Razorpay.
  */
 export async function launchRazorpayCheckout({ plan, user, purpose = 'purchase' }) {
   const keyId = import.meta.env.VITE_RAZORPAY_KEY_ID
@@ -60,6 +97,7 @@ export async function launchRazorpayCheckout({ plan, user, purpose = 'purchase' 
     throw new Error('Razorpay is not configured. Set VITE_RAZORPAY_KEY_ID in the environment.')
   }
 
+  // Get the authenticated user
   const firebase = window.firebase
   const authenticatedUser = user || firebase?.auth?.()?.currentUser
 
@@ -75,10 +113,8 @@ export async function launchRazorpayCheckout({ plan, user, purpose = 'purchase' 
     throw new Error('Please select a valid checkout purpose.')
   }
 
-  const functions = getFirebaseFunctions()
-  const createOrder = functions.httpsCallable('createRazorpayOrder')
-  const verifyPayment = functions.httpsCallable('verifyRazorpayPayment')
-  const { data: order } = await createOrder({ plan, purpose })
+  // Call the worker to create the order
+  const { data: order } = await callWorkerEndpoint('create-order', { plan, purpose })
 
   if (!order?.orderId || !Number.isInteger(Number(order.amount)) || order.currency !== 'INR') {
     throw new Error('The server returned an invalid Razorpay order.')
@@ -116,7 +152,7 @@ export async function launchRazorpayCheckout({ plan, user, purpose = 'purchase' 
         verificationStarted = true
 
         try {
-          const { data } = await verifyPayment({
+          const { data } = await callWorkerEndpoint('verify-payment', {
             orderId: response.razorpay_order_id,
             paymentId: response.razorpay_payment_id,
             signature: response.razorpay_signature,
@@ -160,8 +196,7 @@ export async function activateFreeTrial(user) {
     throw new Error('Please sign in before activating your trial.')
   }
 
-  const activateTrial = getFirebaseFunctions().httpsCallable('startFreeTrial')
-  const { data } = await activateTrial({})
+  const { data } = await callWorkerEndpoint('start-trial', {})
 
   if (!data?.trialStarted) {
     throw new Error('The free trial could not be activated.')
