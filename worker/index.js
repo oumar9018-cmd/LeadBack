@@ -48,47 +48,42 @@ function getRazorpayAuthHeader() {
  */
 async function verifyFirebaseToken(token) {
   try {
-    // Split the JWT into parts
-    const parts = token.split('.');
-    if (parts.length !== 3) {
+    if (!token || typeof token !== 'string') {
       return null;
     }
 
-    // Decode the payload (second part of JWT)
-    let payload;
-    try {
-      // JWT payload is base64url encoded
-      const payloadBase64 = parts[1].replace(/-/g, '').replace(/_/g, '');
-      payload = JSON.parse(atob(payloadBase64));
-    } catch (e) {
+    const response = await fetch(
+      `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${firebaseApiKey}`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          idToken: token
+        })
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Firebase token verification failed:', response.status, errorText);
       return null;
     }
 
-    // Check essential claims
-    if (!payload.uid || typeof payload.uid !== 'string') {
+    const data = await response.json();
+
+    if (!data.users || !Array.isArray(data.users) || data.users.length === 0) {
       return null;
     }
 
-    // Check expiry (exp claim is seconds from epoch)
-    if (payload.exp && payload.exp * 1000 < Date.now()) {
-      return null; // Token expired
-    }
+    const user = data.users[0];
 
-    // Check issuer (iss should be firebase project)
-    const validIssuers = [
-      `https://securetoken.google.com/${firebaseProjectId}`,
-      `https://firebase.google.com/projects/${firebaseProjectId}`,
-    ];
-    if (payload.iss && !validIssuers.includes(payload.iss)) {
+    if (!user.localId || typeof user.localId !== 'string') {
       return null;
     }
 
-    // Check subject (uid should exist)
-    if (!payload.sub) {
-      return null;
-    }
-
-    return payload.uid;
+    return user.localId;
   } catch (error) {
     console.error('Firebase token verification error:', error);
     return null;
@@ -828,30 +823,42 @@ export default {
     const path = url.pathname;
     const method = request.method;
 
+    const withCors = (response) => {
+      const headers = new Headers(response.headers);
+      Object.entries(corsHeaders).forEach(([key, value]) => {
+        headers.set(key, value);
+      });
+      return new Response(response.body, {
+        status: response.status,
+        statusText: response.statusText,
+        headers
+      });
+    };
+
     // Health check
     if (path === '/' || path === '/health') {
-      return handleHealth(request);
+      return withCors(await handleHealth(request));
     }
 
     // POST /create-order
     if (method === 'POST' && path === '/create-order') {
-      return await handleCreateOrder(request);
+      return withCors(await handleCreateOrder(request));
     }
 
     // POST /verify-payment
     if (method === 'POST' && path === '/verify-payment') {
-      return await handleVerifyPayment(request);
+      return withCors(await handleVerifyPayment(request));
     }
 
     // POST /start-trial
     if (method === 'POST' && path === '/start-trial') {
-      return await handleStartTrial(request);
+      return withCors(await handleStartTrial(request));
     }
 
     // 404 for unknown routes
-    return new Response(
+    return withCors(new Response(
       JSON.stringify({ error: 'Not found' }),
       { status: 404, headers: { 'Content-Type': 'application/json' } }
-    );
+    ));
   },
 };
