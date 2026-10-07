@@ -70,6 +70,30 @@ async function callWorkerEndpoint(path, data = {}) {
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
   }
 
+  // TEMP DEBUG: ask Worker to verify the current Firebase ID token.
+  if (path === 'start-trial') {
+    try {
+      const debugResponse = await fetch(
+        'https://leadback-payment.mohiqbal6864.workers.dev/debug-auth',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+        }
+      )
+
+      const debugData = await debugResponse.json()
+      console.log('[LeadBack Firebase Debug]', debugData)
+      alert(`Firebase Debug: ${JSON.stringify(debugData)}`)
+    } catch (debugError) {
+      console.error('[LeadBack Firebase Debug Error]', debugError)
+      alert(`Firebase Debug Error: ${debugError.message}`)
+    }
+  }
+
+
   const body = JSON.stringify({ ...data, uid })
 
   const response = await fetch(url, {
