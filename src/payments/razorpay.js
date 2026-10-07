@@ -58,6 +58,13 @@ async function callWorkerEndpoint(path, data = {}) {
   // Prepare the request with the user's Firebase token
   const token = firebase?.auth?.()?.currentUser?.getIdToken ? await firebase.auth().currentUser.getIdToken() : null
 
+  console.log('[LeadBack Auth]', {
+    hasToken: Boolean(token),
+    tokenLength: token ? token.length : 0,
+    uid,
+    hasCurrentUser: Boolean(firebase?.auth?.()?.currentUser)
+  })
+
   const headers = {
     'Content-Type': 'application/json',
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
