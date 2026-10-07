@@ -12,11 +12,11 @@
 
 // Firebase configuration
 const firebaseProjectId = 'leadback-3345f';
-const firebaseApiKey = import.env?.FIREBASE_API_KEY || '';
+let firebaseApiKey = '';
 
 // Razorpay configuration
-const RAZORPAY_KEY_ID = import.env?.RAZORPAY_KEY_ID || '';
-const RAZORPAY_KEY_SECRET = import.env?.RAZORPAY_KEY_SECRET || '';
+let RAZORPAY_KEY_ID = '';
+let RAZORPAY_KEY_SECRET = '';
 
 const PLANS = Object.freeze({
   monthly: { amount: 49900, months: 1 },
@@ -812,6 +812,9 @@ async function handleStartTrial(request) {
  */
 export default {
   async fetch(request, env, ctx) {
+    firebaseApiKey = env.FIREBASE_API_KEY || "";
+    RAZORPAY_KEY_ID = env.RAZORPAY_KEY_ID || "";
+    RAZORPAY_KEY_SECRET = env.RAZORPAY_KEY_SECRET || "";
     const url = new URL(request.url);
     const path = url.pathname;
     const method = request.method;
