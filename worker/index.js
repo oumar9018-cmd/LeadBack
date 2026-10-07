@@ -812,6 +812,15 @@ async function handleStartTrial(request) {
  */
 export default {
   async fetch(request, env, ctx) {
+    const corsHeaders = {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization"
+    };
+
+    if (request.method === "OPTIONS") {
+      return new Response(null, { status: 204, headers: corsHeaders });
+    }
     firebaseApiKey = env.FIREBASE_API_KEY || "";
     RAZORPAY_KEY_ID = env.RAZORPAY_KEY_ID || "";
     RAZORPAY_KEY_SECRET = env.RAZORPAY_KEY_SECRET || "";
