@@ -1,0 +1,12 @@
+name = "leadback-payment"
+
+# Compatibility date for Cloudflare Worker features
+compatibility_date = "2024-09-01"
+
+# Enable ES module syntax
+[env.production]
+compatibility_date = "2024-09-01"
+
+# For development
+[env.dev]
+compatibility_date = "2024-09-01"
