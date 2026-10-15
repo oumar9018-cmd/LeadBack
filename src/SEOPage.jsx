@@ -203,7 +203,7 @@ function Hero({ page }) {
 
       <div className="seo-hero-actions">
         <Link className="seo-button seo-button-primary" to="/login">
-          Start free 1-month trial <span aria-hidden="true">→</span>
+          Get early access <span aria-hidden="true">→</span>
         </Link>
         <Link className="seo-button seo-button-ghost" to="/how-it-works">
           See how it works
@@ -406,11 +406,11 @@ export default function SEOPage({ type }) {
           <span className="seo-kicker">LEADBACK</span>
           <h2>Turn missed inquiries into customers.</h2>
           <p>
-            Start with a 1-month free trial and build a clearer follow-up
-            workflow for your business. No credit card required.
+            Get early access and build a clearer follow-up
+            workflow for your business. Free during early access.
           </p>
           <Link className="seo-button seo-button-primary" to="/login">
-            Start free 1-month trial <span aria-hidden="true">→</span>
+            Get early access <span aria-hidden="true">→</span>
           </Link>
         </section>
       </main>

@@ -10,7 +10,6 @@ import {
 import Home from './Home.jsx'
 import SEOPage from './SEOPage.jsx'
 import Customers from './Customers.jsx'
-import Billing from './Billing.jsx'
 import Settings from './Settings.jsx'
 import Profile from './Profile.jsx'
 import Login from './Login.jsx'
@@ -18,7 +17,6 @@ import Inquiries from './Inquiries.jsx'
 import Followups from './Followups.jsx'
 import Revenue from './Revenue.jsx'
 import CEO from './CEO.jsx'
-import Trial from './Trial.jsx'
 import AppLayout from './AppLayout.jsx'
 import { ROUTER_BASENAME } from './basePath.js'
 // Single source of truth for the marketing routes — see src/seo/pages.js.
@@ -884,53 +882,22 @@ function Dashboard() {
 function RequireAuth({ children }) {
   const location = useLocation()
   const [user, setUser] = useState(null)
-  const [account, setAccount] = useState(null)
   const [checking, setChecking] = useState(true)
 
   useEffect(() => {
     const auth = window.firebase?.auth?.()
-    const db = window.firebase?.firestore?.()
 
-    if (!auth || !db) {
+    if (!auth) {
       setChecking(false)
       return
     }
 
-    let active = true
-
-    const unsubscribe = auth.onAuthStateChanged(async currentUser => {
-      if (!active) return
-
-      if (!currentUser) {
-        setUser(null)
-        setAccount(null)
-        setChecking(false)
-        return
-      }
-
+    const unsubscribe = auth.onAuthStateChanged(currentUser => {
       setUser(currentUser)
-      setChecking(true)
-
-      try {
-        const snapshot = await db
-          .collection('users')
-          .doc(currentUser.uid)
-          .get()
-
-        if (!active) return
-        setAccount(snapshot.exists ? snapshot.data() : null)
-      } catch (error) {
-        console.error('Account access check failed:', error)
-        if (active) setAccount(null)
-      } finally {
-        if (active) setChecking(false)
-      }
+      setChecking(false)
     })
 
-    return () => {
-      active = false
-      unsubscribe()
-    }
+    return unsubscribe
   }, [])
 
   if (checking) {
@@ -946,52 +913,6 @@ function RequireAuth({ children }) {
   }
 
   if (!user) return <Navigate to="/login" replace />
-
-  const isBillingPage = location.pathname === '/app/billing'
-  const isTrialPage = location.pathname === '/trial'
-
-  const hasPaidStatus =
-    account?.subscriptionStatus === 'active' ||
-    account?.subscriptionStatus === 'subscribed'
-
-  const subscriptionEndsAt = account?.subscriptionEndsAt
-  const subscriptionEndTime = subscriptionEndsAt?.toDate
-    ? subscriptionEndsAt.toDate().getTime()
-    : subscriptionEndsAt
-      ? new Date(subscriptionEndsAt).getTime()
-      : null
-  const paidExpired =
-    hasPaidStatus &&
-    Number.isFinite(subscriptionEndTime) &&
-    Date.now() >= subscriptionEndTime
-  const isPaid = hasPaidStatus && !paidExpired
-
-  const trialEndsAt = account?.trialEndsAt
-
-  let trialEndTime = null
-  if (trialEndsAt?.toDate) {
-    trialEndTime = trialEndsAt.toDate().getTime()
-  } else if (trialEndsAt) {
-    trialEndTime = new Date(trialEndsAt).getTime()
-  }
-
-  const trialExpired =
-    account?.subscriptionStatus === 'trialing' &&
-    Number.isFinite(trialEndTime) &&
-    Date.now() >= trialEndTime
-
-  if ((trialExpired || paidExpired) && !isBillingPage) {
-    return <Navigate to="/app/billing" replace />
-  }
-
-  if (
-    !account?.trialRedeemed &&
-    !isPaid &&
-    !isTrialPage &&
-    !isBillingPage
-  ) {
-    return <Navigate to="/trial" replace />
-  }
 
   return children
 }
@@ -1098,14 +1019,6 @@ function App() {
         {/* Auth pages */}
         <Route path="/login" element={<Login />} />
         <Route
-          path="/trial"
-          element={
-            <RequireAuth>
-              <Trial />
-            </RequireAuth>
-          }
-        />
-        <Route
           path="/ceo"
           element={
             <RequireCEO>
@@ -1127,7 +1040,6 @@ function App() {
           <Route path="/app/followups" element={<Followups />} />
           <Route path="/app/revenue" element={<Revenue />} />
           <Route path="/app/customers" element={<Customers />} />
-          <Route path="/app/billing" element={<Billing />} />
           <Route path="/app/settings" element={<Settings />} />
           <Route path="/app/profile" element={<Profile />} />
         </Route>

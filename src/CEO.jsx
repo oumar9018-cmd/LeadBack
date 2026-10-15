@@ -48,20 +48,8 @@ export default function CEO() {
   }, [])
 
   const stats = useMemo(() => {
-    const trials = users.filter(
-      user => user.subscriptionStatus === 'trialing'
-    ).length
-
-    const subscriptions = users.filter(
-      user =>
-        user.subscriptionStatus === 'active' ||
-        user.subscriptionStatus === 'subscribed'
-    ).length
-
     return {
       customers: users.length,
-      trials,
-      subscriptions,
     }
   }, [users])
 
@@ -100,40 +88,6 @@ export default function CEO() {
 
             <small>
               Registered customer accounts
-            </small>
-          </div>
-
-          <div className="ceo-card">
-            <span>Revenue</span>
-
-            <strong>₹—</strong>
-
-            <small>
-              Awaiting billing integration
-            </small>
-          </div>
-
-          <div className="ceo-card">
-            <span>Trials</span>
-
-            <strong>
-              {loading ? '…' : stats.trials}
-            </strong>
-
-            <small>
-              Active trials
-            </small>
-          </div>
-
-          <div className="ceo-card">
-            <span>Subscriptions</span>
-
-            <strong>
-              {loading ? '…' : stats.subscriptions}
-            </strong>
-
-            <small>
-              Active subscriptions
             </small>
           </div>
 
@@ -178,7 +132,7 @@ export default function CEO() {
                   </div>
 
                   <span className="ceo-user-role">
-                    {user.subscriptionStatus || 'customer'}
+                    {user.role || 'customer'}
                   </span>
                 </div>
               ))}

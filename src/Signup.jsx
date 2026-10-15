@@ -19,7 +19,7 @@ export default function Signup() {
         <div className="auth-heading">
           <span className="app-eyebrow">START FREE</span>
           <h1>Create your LeadBack account</h1>
-          <p>Start your 1-month free trial and recover more missed inquiries.</p>
+          <p>Get early access and recover more missed inquiries.</p>
         </div>
 
         <button
@@ -43,7 +43,7 @@ export default function Signup() {
         <div className="auth-benefits">
           <div>
             <span>✓</span>
-            <p>1-month free trial</p>
+            <p>Free during early access</p>
           </div>
           <div>
             <span>✓</span>

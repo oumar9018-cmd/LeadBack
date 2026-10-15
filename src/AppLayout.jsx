@@ -124,7 +124,6 @@ export default function AppLayout() {
           <NavLink to="/app/inquiries" onClick={closeSidebar}>Inquiries</NavLink>
           <NavLink to="/app/followups" onClick={closeSidebar}>Follow-ups</NavLink>
           <NavLink to="/app/revenue" onClick={closeSidebar}>Revenue</NavLink>
-          <NavLink to="/app/billing" onClick={closeSidebar}>Billing</NavLink>
           <NavLink to="/app/settings" onClick={closeSidebar}>Settings</NavLink>
           <NavLink to="/app/profile" onClick={closeSidebar}>Profile</NavLink>
         </nav>
@@ -195,7 +194,6 @@ export default function AppLayout() {
                 <div className="profile-menu-divider" />
 
                 <Link to="/app/settings" onClick={() => setProfileOpen(false)}>Settings</Link>
-                <Link to="/app/billing" onClick={() => setProfileOpen(false)}>Billing</Link>
 
                 <button type="button" onClick={handleSignOut}>
                   Sign out
@@ -205,7 +203,7 @@ export default function AppLayout() {
           </div>
         </header>
 
-        {/* Render the actual page (Dashboard, Inquiries, Billing, …) */}
+        {/* Render the actual page (Dashboard, Inquiries, …) */}
         <Outlet />
 
         <footer className="app-footer">

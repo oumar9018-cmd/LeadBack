@@ -38,7 +38,6 @@ const industries = [
 ]
 
 function App() {
-  const [authBusy, setAuthBusy] = useState(false)
 
   // Apply this page's <title>, meta description, canonical and JSON-LD.
   useSEO(HOME_SEO)
@@ -48,7 +47,7 @@ function App() {
     if (!auth) return
 
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
-      if (!user || authBusy) return
+      if (!user) return
 
       try {
         const db = window.firebase.firestore()
@@ -57,10 +56,8 @@ function App() {
 
         if (account?.role === 'ceo') {
           window.location.href = url('/ceo')
-        } else if (account?.trialRedeemed) {
+        } else {
           window.location.href = url('/app')
-        } else if (account) {
-          window.location.href = url('/trial')
         }
       } catch (error) {
         console.error('Homepage session check failed:', error)
@@ -70,70 +67,6 @@ function App() {
     return unsubscribe
   }, [])
 
-  async function handleHomeAuth() {
-    if (authBusy) return
-
-    const auth = window.firebase?.auth?.()
-    const firebase = window.firebase
-
-    if (!auth || !firebase) {
-      window.location.href = url('/login')
-      return
-    }
-
-    setAuthBusy(true)
-
-    try {
-      await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-
-      const provider = new firebase.auth.GoogleAuthProvider()
-      provider.setCustomParameters({ prompt: 'select_account' })
-
-      const result = await auth.signInWithPopup(provider)
-      const user = result.user
-
-      const db = firebase.firestore()
-      const userRef = db.collection('users').doc(user.uid)
-      const snapshot = await userRef.get()
-
-      if (!snapshot.exists) {
-        await userRef.set({
-          uid: user.uid,
-          email: user.email || '',
-          displayName: user.displayName || '',
-          photoURL: user.photoURL || '',
-          role: 'customer',
-          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-        }, { merge: true })
-
-        window.location.href = url('/trial')
-        return
-      }
-
-      const account = snapshot.data()
-
-      if (account?.role === 'ceo') {
-        window.location.href = url('/ceo')
-      } else if (account?.trialRedeemed) {
-        window.location.href = url('/app')
-      } else {
-        window.location.href = url('/trial')
-      }
-    } catch (error) {
-      console.error('Homepage Google sign-in failed:', error)
-
-      if (
-        error?.code === 'auth/popup-closed-by-user' ||
-        error?.code === 'auth/cancelled-popup-request' ||
-        error?.code === 'auth/popup-blocked'
-      ) {
-        console.log('Google sign-in cancelled or blocked.')
-      }
-    } finally {
-      setAuthBusy(false)
-    }
-  }
   return (
     <div className="site-shell">
       <header className="navbar">
@@ -156,8 +89,8 @@ function App() {
         </nav>
 
         <div className="nav-actions">
-          <button className="login-link" type="button" onClick={handleHomeAuth}>Log in</button>
-          <button className="button button-small" type="button" onClick={handleHomeAuth}>Start free</button>
+          <a className="login-link" href={url('/login')}>Log in</a>
+          <a className="button button-small" href={url('/login')}>Get early access</a>
         </div>
       </header>
 
@@ -180,10 +113,10 @@ function App() {
             </p>
 
             <div className="hero-actions">
-              <button className="button button-primary" type="button" onClick={handleHomeAuth}>
-                Start free 1-month trial
+              <a className="button button-primary" href={url('/login')}>
+                Get early access
                 <span>→</span>
-              </button>
+              </a>
               <a className="button button-secondary" href="#how-it-works">
                 See how it works
               </a>
@@ -191,8 +124,8 @@ function App() {
 
             <div className="trust-row">
               <div className="trust-item">
-                <strong>1 month</strong>
-                <span>free trial</span>
+                <strong>100%</strong>
+                <span>free during early access</span>
               </div>
               <div className="trust-divider" />
               <div className="trust-item">
@@ -382,45 +315,33 @@ function App() {
           </div>
         </section>
 
-        <section className="pricing-section" id="pricing">
+        <section className="pricing-section" id="early-access">
           <div className="pricing-inner">
             <div className="pricing-copy">
-              <span className="section-kicker">Simple pricing</span>
-              <h2>Try it before<br />you commit.</h2>
+              <span className="section-kicker">Early access</span>
+              <h2>Be first in line.</h2>
               <p>
-                Start with a 1-month free trial. Prove that recovered conversations
-                are worth more than the software.
+                We're rebuilding LeadBack from the ground up. Join the waitlist
+                and get early access when we launch.
               </p>
             </div>
 
             <div className="price-card">
               <div className="price-top">
-                <span className="price-label">LeadBack Pro</span>
-                <span className="popular">Starting plan</span>
-              </div>
-
-              <div className="price">
-                <strong>₹499</strong>
-                <span>/ month</span>
+                <span className="price-label">Early Access</span>
+                <span className="popular">Coming soon</span>
               </div>
 
               <p className="price-description">
-                Everything needed to organize and recover missed inquiries.
+                Get notified when LeadBack launches with missed-call recovery,
+                WhatsApp follow-ups, and more.
               </p>
 
-              <ul className="price-list">
-                <li>✓ Customer inquiry tracking</li>
-                <li>✓ Follow-up queue</li>
-                <li>✓ Recovery analytics</li>
-                <li>✓ Revenue recovered tracking</li>
-                <li>✓ 1-month free trial</li>
-              </ul>
+              <a className="button button-dark" href={url('/login')}>
+                Get early access <span>→</span>
+              </a>
 
-              <button className="button button-dark" type="button" onClick={handleHomeAuth}>
-                Start free 1-month trial <span>→</span>
-              </button>
-
-              <small className="price-note">No credit card required for the pilot.</small>
+              <small className="price-note">Free during early access.</small>
             </div>
           </div>
         </section>
@@ -429,9 +350,9 @@ function App() {
           <div>
             <span className="section-kicker">Don't leave money in the inbox.</span>
             <h2>Give every interested customer<br />another chance to say yes.</h2>
-            <button className="button button-primary" type="button" onClick={handleHomeAuth}>
-              Start free 1-month trial <span>→</span>
-            </button>
+            <a className="button button-primary" href={url('/login')}>
+              Get early access <span>→</span>
+            </a>
           </div>
         </section>
       </main>
@@ -466,7 +387,7 @@ function App() {
                 <Link to="/login">Log in</Link>
               </li>
               <li>
-                <Link to="/login">Start free trial</Link>
+                <Link to="/login">Get early access</Link>
               </li>
             </ul>
           </div>

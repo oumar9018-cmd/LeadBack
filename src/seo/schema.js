@@ -60,36 +60,6 @@ function softwareNode(page) {
     description: SITE.description,
     publisher: { '@id': `${SITE_ORIGIN}/#organization` },
     featureList: (page.sections || []).map((section) => section.title),
-    offers: {
-      '@type': 'AggregateOffer',
-      priceCurrency: 'INR',
-      lowPrice: '0',
-      highPrice: '4990',
-      offerCount: '3',
-      offers: [
-        {
-          '@type': 'Offer',
-          name: '1-month free trial',
-          price: '0',
-          priceCurrency: 'INR',
-          url: `${SITE_ORIGIN}/pricing`,
-        },
-        {
-          '@type': 'Offer',
-          name: 'Monthly',
-          price: '499',
-          priceCurrency: 'INR',
-          url: `${SITE_ORIGIN}/pricing`,
-        },
-        {
-          '@type': 'Offer',
-          name: 'Yearly',
-          price: '4990',
-          priceCurrency: 'INR',
-          url: `${SITE_ORIGIN}/pricing`,
-        },
-      ],
-    },
   }
 }
 
@@ -99,7 +69,6 @@ function softwareNode(page) {
  */
 const SEGMENT_LABELS = {
   features: 'Features',
-  pricing: 'Pricing',
   'use-cases': 'Use Cases',
   'missed-inquiries': 'Missed Inquiries',
   'follow-up-management': 'Follow-Up Management',

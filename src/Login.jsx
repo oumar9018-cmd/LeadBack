@@ -97,10 +97,8 @@ export default function Login() {
 
       if (accountData?.role === 'ceo') {
         window.location.href = url('/ceo')
-      } else if (accountData?.trialRedeemed) {
-        window.location.href = url('/app')
       } else {
-        window.location.href = url('/trial')
+        window.location.href = url('/app')
       }
     } catch (error) {
       console.error('Google Sign-In failed:', error)

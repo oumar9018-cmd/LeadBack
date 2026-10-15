@@ -138,116 +138,6 @@ const features = {
 }
 
 /* ------------------------------------------------------------------ */
-/* Pricing                                                             */
-/* ------------------------------------------------------------------ */
-
-const pricing = {
-  type: 'pricing',
-  path: '/pricing',
-  navLabel: 'Pricing',
-  title: 'LeadBack Pricing — Free 1-Month Trial, Then ₹499/Month',
-  description:
-    'Simple LeadBack pricing: a 1-month free trial, then ₹499/month or ₹4,990/year. No setup fees, no per-seat charges, cancel anytime.',
-  keywords:
-    'leadback pricing, lead recovery software price, follow-up software cost India, ₹499 CRM, affordable lead management software, free trial lead software',
-  eyebrow: 'PRICING',
-  heading: 'One plan. One price. No sales call required.',
-  intro:
-    'Recovered revenue should cost a fraction of the revenue it recovers. LeadBack is priced so a single won-back customer a month pays for the year.',
-  plans: [
-    {
-      name: 'Free trial',
-      price: '₹0',
-      period: 'first month',
-      tagline: 'Prove it on your own inquiries.',
-      featured: false,
-      features: [
-        'Full access to every feature',
-        'Unlimited inquiries & follow-ups',
-        'Revenue recovered tracking',
-        'No credit card required',
-      ],
-      cta: 'Start free 1-month trial',
-    },
-    {
-      name: 'Monthly',
-      price: '₹499',
-      period: 'per month',
-      tagline: 'Stay flexible, cancel whenever.',
-      featured: true,
-      badge: 'Most flexible',
-      features: [
-        'Everything in the free trial',
-        'Unlimited team members',
-        'Recovery & revenue analytics',
-        'Email support',
-        'Cancel anytime',
-      ],
-      cta: 'Choose monthly',
-    },
-    {
-      name: 'Yearly',
-      price: '₹4,990',
-      period: 'per year',
-      tagline: 'Two months free versus monthly.',
-      featured: false,
-      badge: 'Save 17%',
-      features: [
-        'Everything in Monthly',
-        '2 months free (₹5,988 → ₹4,990)',
-        'Priority support',
-        'Onboarding checklist for your team',
-      ],
-      cta: 'Choose yearly',
-    },
-  ],
-  sections: [
-    {
-      icon: 'check',
-      title: 'No setup or onboarding fees',
-      text: 'You pay for the software, nothing else. There is no implementation charge, no training package and no mandatory annual contract.',
-    },
-    {
-      icon: 'users',
-      title: 'No per-seat pricing',
-      text: 'Add your whole team at no extra cost. Charging per user would punish exactly the behaviour LeadBack needs: everyone logging inquiries.',
-    },
-    {
-      icon: 'shield',
-      title: 'Cancel anytime',
-      text: 'Monthly plans can be stopped at any point. Your records stay exportable, so leaving never means losing your history.',
-    },
-    {
-      icon: 'dollar',
-      title: 'Priced against recovered revenue',
-      text: 'One recovered customer a month usually covers the subscription several times over. That is the entire pricing philosophy.',
-    },
-  ],
-  faq: [
-    {
-      q: 'How much does LeadBack cost?',
-      a: 'LeadBack starts with a 1-month free trial. After the trial it is ₹499 per month, or ₹4,990 per year if you choose annual billing — which works out about 17% cheaper than paying monthly.',
-    },
-    {
-      q: 'Do I need a credit card to start the free trial?',
-      a: 'No. The 1-month free trial does not require a card. You only enter billing details if you decide to continue after the trial.',
-    },
-    {
-      q: 'Is there a limit on inquiries or contacts?',
-      a: 'No. Every plan includes unlimited inquiries, unlimited follow-ups and unlimited customers. We do not meter the activity we want you to do more of.',
-    },
-    {
-      q: 'What happens when the free trial ends?',
-      a: 'You will be prompted to pick the monthly or yearly plan. If you decide not to continue, your workspace pauses and your data remains exportable.',
-    },
-    {
-      q: 'Do you charge per user?',
-      a: 'No. Pricing is per business, not per seat, so your receptionist, sales team and owner can all use LeadBack at no additional cost.',
-    },
-  ],
-}
-
-/* ------------------------------------------------------------------ */
 /* Use cases hub                                                       */
 /* ------------------------------------------------------------------ */
 
@@ -932,7 +822,6 @@ export const SEO_PAGES = [
   home,
   features,
   useCases,
-  pricing,
   howItWorks,
   missedInquiries,
   followUpManagement,
@@ -955,7 +844,6 @@ export const ROUTED_SEO_PAGES = SEO_PAGES.filter((page) => page.path !== '/')
 export const NAV_LINKS = [
   features,
   useCases,
-  pricing,
   howItWorks,
   industries,
   about,
@@ -967,7 +855,6 @@ export const FOOTER_GROUPS = [
     title: 'Product',
     links: [
       { to: features.path, label: 'Features' },
-      { to: pricing.path, label: 'Pricing' },
       { to: howItWorks.path, label: 'How it works' },
       { to: resources.path, label: 'Resources' },
     ],

@@ -221,17 +221,9 @@ export default function Settings() {
           <section className="settings-card settings-account-card">
             <div>
               <span className="settings-label">ACCOUNT</span>
-              <h2>Account & subscription</h2>
-              <p>Manage your LeadBack account and current license.</p>
+              <h2>Account</h2>
+              <p>Manage your LeadBack account.</p>
             </div>
-
-            <button
-              type="button"
-              className="settings-link-button"
-              onClick={() => navigate('/app/billing')}
-            >
-              Open billing →
-            </button>
           </section>
 
           <div className="settings-save-row">
