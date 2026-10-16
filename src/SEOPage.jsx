@@ -2,7 +2,7 @@ import { createElement, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { NAV_LINKS, FOOTER_GROUPS, getSeoPage } from './seo/pages.js'
 import { useSEO } from './seo/useSEO.js'
-import './SEOPage.css'
+import './SEOPage.gold.css'
 
 /**
  * Feather-style icon paths, kept as data so the manifest can reference an icon
