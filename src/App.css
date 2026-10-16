@@ -981,7 +981,7 @@ a {
 }
 
 .customer-name-button:hover {
-  color: #2563eb;
+  color: #2457ff;
 }
 
 @media (max-width: 620px) {
@@ -1045,7 +1045,7 @@ a {
 
 .queue-upcoming {
   background: #eff6ff;
-  color: #2563eb;
+  color: #2457ff;
 }
 
 
@@ -1119,7 +1119,7 @@ a {
 
 .followup-grid input:focus,
 .followup-grid textarea:focus {
-  border-color: #2563eb;
+  border-color: #2457ff;
   box-shadow: 0 0 0 3px rgba(37, 99, 235, .10);
 }
 
@@ -1215,7 +1215,7 @@ a {
   height: 9px;
   margin-top: 4px;
   border-radius: 50%;
-  background: #2563eb;
+  background: #2457ff;
   box-shadow: 0 0 0 4px #eff6ff;
 }
 
@@ -1277,7 +1277,7 @@ a {
 }
 
 .queue-customer-button:hover {
-  color: #2563eb;
+  color: #2457ff;
 }
 
 
@@ -1302,7 +1302,7 @@ a {
 }
 
 .customer-search:focus {
-  border-color: #2563eb;
+  border-color: #2457ff;
   box-shadow: 0 0 0 3px #eff6ff;
 }
 
@@ -1411,7 +1411,7 @@ a {
 }
 
 .customer-search:focus {
-  border-color: #2563eb;
+  border-color: #2457ff;
   box-shadow: 0 0 0 3px #eff6ff;
 }
 
@@ -1603,7 +1603,7 @@ a {
 }
 
 .customer-main-button:hover strong {
-  color: #2563eb;
+  color: #2457ff;
 }
 
 @media (max-width: 700px) {
@@ -1636,7 +1636,7 @@ a {
 }
 
 .customer-status-filter:focus {
-  border-color: #2563eb;
+  border-color: #2457ff;
   box-shadow: 0 0 0 3px #eff6ff;
 }
 
@@ -1797,7 +1797,7 @@ a {
 
 .status-filter-option.active {
   background: #eff6ff;
-  color: #2563eb;
+  color: #2457ff;
   font-weight: 700;
 }
 
@@ -1937,7 +1937,7 @@ a {
 }
 
 .billing-plan.selected {
-  border-color: #2563eb;
+  border-color: #2457ff;
   box-shadow:
     0 0 0 3px #eff6ff,
     0 12px 30px rgba(23, 32, 51, 0.06);
@@ -1953,7 +1953,7 @@ a {
 }
 
 .plan-top b {
-  color: #2563eb;
+  color: #2457ff;
 }
 
 .billing-plan > strong {
@@ -2016,7 +2016,7 @@ a {
   margin-top: 18px;
   border: 0;
   border-radius: 11px;
-  background: #2563eb;
+  background: #2457ff;
   color: #fff;
   font: inherit;
   font-weight: 700;
@@ -2230,7 +2230,7 @@ a {
 
 .primary-button:focus-visible {
   outline: none;
-  border-color: #2563eb;
+  border-color: #2457ff;
   box-shadow: 0 0 0 3px #eff6ff;
 }
 
@@ -2379,7 +2379,7 @@ a {
 
 .settings-grid input:focus,
 .settings-grid select:focus {
-  border-color: #2563eb;
+  border-color: #2457ff;
   box-shadow: 0 0 0 3px #eff6ff;
 }
 
@@ -2443,7 +2443,7 @@ a {
   padding: 0 19px;
   border: 0;
   border-radius: 10px;
-  background: #2563eb;
+  background: #2457ff;
   color: #fff;
   font: inherit;
   font-size: 13px;
@@ -2577,7 +2577,7 @@ a {
   align-items: center;
   justify-content: center;
   border-radius: 9px;
-  background: #2563eb;
+  background: #2457ff;
   color: #fff;
   font-size: 15px;
   font-weight: 800;
@@ -2687,7 +2687,7 @@ a {
 }
 
 .auth-benefits span {
-  color: #2563eb;
+  color: #2457ff;
   font-size: 13px;
   font-weight: 800;
 }
@@ -2720,7 +2720,7 @@ a {
   padding: 0;
   border: 0;
   background: transparent;
-  color: #2563eb;
+  color: #2457ff;
   font: inherit;
   font-weight: 750;
   cursor: pointer;
@@ -2841,7 +2841,7 @@ a {
 }
 
 .inquiries-tools > input:focus {
-  border-color: #2563eb;
+  border-color: #2457ff;
   box-shadow: 0 0 0 3px #eff6ff;
 }
 
@@ -2907,7 +2907,7 @@ a {
 
 .inquiry-filter-option.active {
   background: #eff6ff;
-  color: #2563eb;
+  color: #2457ff;
   font-weight: 700;
 }
 
@@ -2969,7 +2969,7 @@ a {
 }
 
 .inquiry-page-customer:hover strong {
-  color: #2563eb;
+  color: #2457ff;
 }
 
 .inquiry-page-service {
@@ -3188,7 +3188,7 @@ a {
 }
 
 .followups-tools > input:focus {
-  border-color: #2563eb;
+  border-color: #2457ff;
   box-shadow: 0 0 0 3px #eff6ff;
 }
 
@@ -3254,7 +3254,7 @@ a {
 
 .followup-filter-option.active {
   background: #eff6ff;
-  color: #2563eb;
+  color: #2457ff;
   font-weight: 700;
 }
 
@@ -3315,7 +3315,7 @@ a {
 }
 
 .followup-row:hover .followup-customer strong {
-  color: #2563eb;
+  color: #2457ff;
 }
 
 .followup-right {
@@ -3494,7 +3494,7 @@ a {
 }
 
 .revenue-stat.featured strong {
-  color: #2563eb;
+  color: #2457ff;
 }
 
 .revenue-stat small {
@@ -3607,7 +3607,7 @@ a {
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: #2563eb;
+  background: #2457ff;
 }
 
 .revenue-empty-small {
@@ -3665,7 +3665,7 @@ a {
 }
 
 .revenue-tools > input:focus {
-  border-color: #2563eb;
+  border-color: #2457ff;
   box-shadow: 0 0 0 3px #eff6ff;
 }
 
@@ -3731,7 +3731,7 @@ a {
 
 .revenue-filter-option.active {
   background: #eff6ff;
-  color: #2563eb;
+  color: #2457ff;
   font-weight: 700;
 }
 
@@ -3781,7 +3781,7 @@ a {
 }
 
 .revenue-row:hover .revenue-customer strong {
-  color: #2563eb;
+  color: #2457ff;
 }
 
 .revenue-row-value {
@@ -3937,19 +3937,19 @@ a {
 }
 
 .side-nav a:hover::before {
-  border-color: #2563eb;
+  border-color: #2457ff;
   transform: scale(1.08);
 }
 
 .side-nav a.active {
   background: #edf4ff;
-  color: #2563eb;
+  color: #2457ff;
   font-weight: 700;
 }
 
 .side-nav a.active::before {
-  border-color: #2563eb;
-  background: #2563eb;
+  border-color: #2457ff;
+  background: #2457ff;
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.10);
 }
 
@@ -3972,7 +3972,7 @@ a {
 
 .sidebar-bottom a:hover {
   background: #f4f7fb;
-  color: #2563eb;
+  color: #2457ff;
 }
 
 .sidebar-bottom span {
@@ -4035,12 +4035,12 @@ a {
 
 .side-nav a.active {
   background: #eef4ff;
-  color: #2563eb;
+  color: #2457ff;
 }
 
 .side-nav a.active::before {
-  border-color: #2563eb;
-  background: #2563eb;
+  border-color: #2457ff;
+  background: #2457ff;
 }
 
 .sidebar-bottom a {
@@ -4174,12 +4174,12 @@ a {
 
 .side-nav a.active {
   background: #edf4ff;
-  color: #2563eb;
+  color: #2457ff;
 }
 
 .side-nav a.active::before {
-  border-color: #2563eb;
-  background: #2563eb;
+  border-color: #2457ff;
+  background: #2457ff;
 }
 
 /* Keep sidebar text readable */
@@ -4228,7 +4228,7 @@ a {
 
 .sidebar-bottom a:hover {
   background: #f5f7fa;
-  color: #2563eb;
+  color: #2457ff;
 }
 
 .sidebar-bottom span {
@@ -4704,7 +4704,7 @@ a {
   align-items: center;
   justify-content: center;
   background: #eef4ff;
-  color: #2563eb;
+  color: #2457ff;
   font-weight: 700;
 }
 
@@ -4858,7 +4858,7 @@ a {
 
   .mobile-profile-fallback {
     background: #eef4ff;
-    color: #2563eb;
+    color: #2457ff;
     font-weight: 700;
   }
 
@@ -4973,7 +4973,7 @@ a {
     align-items: center;
     justify-content: center;
     background: #eef4ff;
-    color: #2563eb;
+    color: #2457ff;
     font-weight: 700;
   }
 
@@ -5121,7 +5121,7 @@ a {
   align-items: center;
   justify-content: center;
   background: #eef4ff;
-  color: #2563eb;
+  color: #2457ff;
   font-size: 26px;
   font-weight: 700;
 }

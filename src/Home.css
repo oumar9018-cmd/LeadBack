@@ -1029,3 +1029,208 @@ h1 span {
     gap: 7px;
   }
 }
+
+/* ============ Wynback additions: logo, badges, testimonials, FAQ ============ */
+
+.brand-logo {
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.button svg {
+  flex-shrink: 0;
+}
+
+.voice-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #7c3aed;
+  background: #f3e8ff;
+  padding: 5px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.followup-badge svg,
+.reply-badge svg,
+.voice-badge svg {
+  flex-shrink: 0;
+}
+
+.followup-badge,
+.reply-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.metric-card small svg {
+  vertical-align: -2px;
+  margin-right: 3px;
+}
+
+.industry-arrow {
+  display: inline-flex;
+  color: #2457ff;
+}
+
+.industry-arrow svg {
+  transition: transform 0.2s ease;
+}
+
+.industry-card:hover .industry-arrow svg {
+  transform: translate(2px, -2px);
+}
+
+/* Testimonials */
+.testimonials-section {
+  background: #fafbff;
+}
+
+.testimonial-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+  margin-top: 48px;
+}
+
+.testimonial-card {
+  background: #fff;
+  border: 1px solid #e8edf5;
+  border-radius: 18px;
+  padding: 28px 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.testimonial-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 44px rgba(36, 87, 255, 0.10);
+}
+
+.testimonial-stars {
+  display: flex;
+  gap: 3px;
+}
+
+.testimonial-quote {
+  font-size: 15.5px;
+  line-height: 1.65;
+  color: #2b3445;
+  margin: 0;
+  flex: 1;
+}
+
+.testimonial-author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.testimonial-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2457ff, #6d8dff);
+  color: #fff;
+  font-weight: 800;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.testimonial-author div {
+  display: flex;
+  flex-direction: column;
+}
+
+.testimonial-author strong {
+  font-size: 14.5px;
+  color: #111827;
+}
+
+.testimonial-author span {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* FAQ */
+.faq-section {
+  max-width: 820px;
+  margin: 0 auto;
+}
+
+.faq-list {
+  margin-top: 44px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.faq-item {
+  background: #fff;
+  border: 1px solid #e8edf5;
+  border-radius: 14px;
+  padding: 0 22px;
+  transition: border-color 0.2s ease;
+}
+
+.faq-item[open] {
+  border-color: #2457ff;
+}
+
+.faq-item summary {
+  padding: 20px 0;
+  font-weight: 700;
+  font-size: 16px;
+  color: #111827;
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq-item summary::after {
+  content: '+';
+  font-size: 22px;
+  font-weight: 400;
+  color: #2457ff;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.faq-item[open] summary::after {
+  transform: rotate(45deg);
+}
+
+.faq-item p {
+  margin: 0 0 22px;
+  color: #4b5563;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+@media (max-width: 900px) {
+  .testimonial-grid {
+    grid-template-columns: 1fr;
+  }
+}

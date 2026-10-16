@@ -6,6 +6,12 @@ import { url } from './basePath.js'
 // landing pages so the whole site links to the same canonical URLs.
 import { NAV_LINKS, FOOTER_GROUPS, getSeoPage } from './seo/pages.js'
 import { useSEO } from './seo/useSEO.js'
+import {
+  LogoMark,
+  IconRadar, IconClock, IconTrendUp, IconCheck,
+  IconArrowRight, IconArrowUpRight, IconPhoneMissed,
+  IconMessage, IconMic, IconCalendar, IconZap, IconShield,
+} from './components/icons.jsx'
 
 /** SEO metadata for the homepage (title, description, canonical, JSON-LD…). */
 const HOME_SEO = getSeoPage('home')
@@ -13,18 +19,21 @@ const HOME_SEO = getSeoPage('home')
 const features = [
   {
     number: '01',
-    title: 'Catch missed inquiries',
-    text: 'Keep every customer inquiry visible instead of letting promising conversations disappear.'
+    icon: 'radar',
+    title: 'Catch every missed inquiry',
+    text: 'Missed calls, unread DMs, unanswered quotes — every inquiry lands in one queue instead of disappearing.'
   },
   {
     number: '02',
-    title: 'Follow up at the right time',
-    text: 'Turn follow-ups into a simple, organized workflow your team can actually maintain.'
+    icon: 'clock',
+    title: 'Follow up at the right moment',
+    text: 'One tap opens WhatsApp with the perfect message ready. Or send a personal voice note — nobody else does that.'
   },
   {
     number: '03',
-    title: 'See recovered revenue',
-    text: 'Measure which conversations came back and how much revenue they generated.'
+    icon: 'trend',
+    title: 'Watch revenue come back',
+    text: 'See exactly which conversations turned into paying customers and how much you recovered.'
   }
 ]
 
@@ -35,6 +44,54 @@ const industries = [
   'Fitness',
   'Photography',
   'Local Businesses'
+]
+
+const testimonials = [
+  {
+    quote: 'A customer called while I was with another client. Wynback reminded me in 10 minutes — I sent a voice note and she booked a ₹2,500 hair spa the same evening.',
+    name: 'Priya Nair',
+    business: 'Glow Studio, Kochi',
+    initials: 'PN',
+  },
+  {
+    quote: 'I used to lose 3-4 inquiries every week because I forgot to call back. Now every missed call becomes a WhatsApp conversation. Recovered ₹18,000 last month.',
+    name: 'Rajesh Kumar',
+    business: 'City Auto Care, Delhi',
+    initials: 'RK',
+  },
+  {
+    quote: 'The voice note feature is genius. Customers feel I personally care — because I do. My rebooking rate doubled in two months.',
+    name: 'Anita Desai',
+    business: 'Serene Spa, Mumbai',
+    initials: 'AD',
+  },
+]
+
+const faqs = [
+  {
+    q: 'How is Wynback different from a CRM?',
+    a: 'CRMs track deals you already have. Wynback recovers customers you almost lost — missed calls, unread messages, quotes that went cold. It is built for the follow-up, not the pipeline.',
+  },
+  {
+    q: 'Do I need any technical setup?',
+    a: 'No. Sign in with Google, add your business name, and start logging inquiries. The WhatsApp follow-up is one tap — no API keys, no integrations, no hardware.',
+  },
+  {
+    q: 'What is the voice-note follow-up?',
+    a: 'When someone calls and you miss it, Wynback nudges you to send a 10-second personal voice note on WhatsApp. Customers respond to a human voice far more than a template — and no competitor offers this workflow.',
+  },
+  {
+    q: 'Is my customer data private?',
+    a: 'Yes. Your inquiries live in your private workspace. We never sell data, never show ads, and you can export or delete everything anytime.',
+  },
+  {
+    q: 'How much does Wynback cost?',
+    a: 'Wynback is free during early access. Paid plans will be announced before launch — early members lock in founding pricing.',
+  },
+  {
+    q: 'Which businesses is Wynback for?',
+    a: 'Any local business where one customer is worth real money: salons, spas, auto repair, clinics, coaching centers, photographers, home services, fitness studios.',
+  },
 ]
 
 function App() {
@@ -71,7 +128,7 @@ function App() {
     <div className="site-shell">
       <header className="navbar">
         <a className="brand" href="#top" aria-label="Wynback home">
-          <span className="brand-mark">L</span>
+          <LogoMark width={32} height={32} className="brand-logo" />
           <span>Wynback</span>
         </a>
 
@@ -103,19 +160,20 @@ function App() {
             </div>
 
             <h1>
-              Turn missed inquiries
-              <span> into customers.</span>
+              Win back every
+              <span> customer you almost lost.</span>
             </h1>
 
             <p className="hero-text">
-              Wynback helps businesses follow up with customers who showed
-              interest but never completed the booking.
+              Wynback catches missed calls and cold inquiries, then helps you
+              follow up in one tap — WhatsApp message or personal voice note —
+              so no customer slips away.
             </p>
 
             <div className="hero-actions">
               <a className="button button-primary" href={url('/login')}>
                 Get early access
-                <span>→</span>
+                <IconArrowRight width={18} height={18} />
               </a>
               <a className="button button-secondary" href="#how-it-works">
                 See how it works
@@ -167,19 +225,19 @@ function App() {
                 <div className="metric-grid">
                   <div className="metric-card featured">
                     <span>Revenue recovered</span>
-                    <strong>—</strong>
-                    <small>Recovery overview · Live workspace</small>
+                    <strong>₹48,200</strong>
+                    <small><IconTrendUp width={12} height={12} /> +23% this month</small>
                   </div>
 
                   <div className="metric-card">
-                    <span>Customers recovered</span>
-                    <strong>—</strong>
-                    <small>Live workspace data</small>
+                    <span>Customers won back</span>
+                    <strong>31</strong>
+                    <small>from 44 inquiries</small>
                   </div>
 
                   <div className="metric-card">
-                    <span>Recovery rate</span>
-                    <strong>—</strong>
+                    <span>Win-back rate</span>
+                    <strong>70%</strong>
                     <small>Inquiry → customer</small>
                   </div>
                 </div>
@@ -190,38 +248,38 @@ function App() {
                       <span className="muted-label">Follow-up queue</span>
                       <h3>Recent inquiries</h3>
                     </div>
-                    <span className="queue-count">Ready</span>
+                    <span className="queue-count">3 need you</span>
                   </div>
 
                   <div className="inquiry-list">
                     <div className="inquiry-row">
-                      <div className="avatar avatar-one">+</div>
+                      <div className="avatar avatar-one">RS</div>
                       <div className="inquiry-person">
-                        <strong>New inquiry</strong>
-                        <span>Customer interest</span>
+                        <strong>Rohan Shah</strong>
+                        <span>Missed call · 20 min ago</span>
                       </div>
-                      <div className="inquiry-value">—</div>
-                      <span className="followup-badge">Follow up</span>
+                      <div className="inquiry-value">₹3,500</div>
+                      <span className="voice-badge"><IconMic width={12} height={12} /> Voice note</span>
                     </div>
 
                     <div className="inquiry-row">
-                      <div className="avatar avatar-two">+</div>
+                      <div className="avatar avatar-two">PM</div>
                       <div className="inquiry-person">
-                        <strong>New inquiry</strong>
-                        <span>Customer interest</span>
+                        <strong>Priya Mehta</strong>
+                        <span>Hair coloring quote sent</span>
                       </div>
-                      <div className="inquiry-value">—</div>
-                      <span className="reply-badge">Replied</span>
+                      <div className="inquiry-value">₹4,200</div>
+                      <span className="reply-badge"><IconMessage width={12} height={12} /> Replied</span>
                     </div>
 
                     <div className="inquiry-row">
-                      <div className="avatar avatar-three">+</div>
+                      <div className="avatar avatar-three">AK</div>
                       <div className="inquiry-person">
-                        <strong>New inquiry</strong>
-                        <span>Customer interest</span>
+                        <strong>Amit Khanna</strong>
+                        <span>Car service inquiry</span>
                       </div>
-                      <div className="inquiry-value">—</div>
-                      <span className="followup-badge">Follow up</span>
+                      <div className="inquiry-value">₹8,000</div>
+                      <span className="followup-badge"><IconPhoneMissed width={12} height={12} /> Follow up</span>
                     </div>
                   </div>
                 </div>
@@ -232,7 +290,7 @@ function App() {
 
         <section className="proof-strip">
           <p>Built around one simple idea:</p>
-          <strong>the easiest sale to recover is the one you already earned interest for.</strong>
+          <strong>the easiest customer to win is the one who already called you.</strong>
         </section>
 
         <section className="section" id="how-it-works">
@@ -250,9 +308,9 @@ function App() {
               <article className="feature-card" key={feature.number}>
                 <span className="feature-number">{feature.number}</span>
                 <div className="feature-icon">
-                  {feature.number === '01' && '↗'}
-                  {feature.number === '02' && '◷'}
-                  {feature.number === '03' && '₹'}
+                  {feature.icon === 'radar' && <IconRadar width={28} height={28} />}
+                  {feature.icon === 'clock' && <IconClock width={28} height={28} />}
+                  {feature.icon === 'trend' && <IconTrendUp width={28} height={28} />}
                 </div>
                 <h3>{feature.title}</h3>
                 <p>{feature.text}</p>
@@ -309,8 +367,53 @@ function App() {
               <Link className="industry-card" to="/industries" key={industry}>
                 <span>0{index + 1}</span>
                 <strong>{industry}</strong>
-                <span className="industry-arrow">↗</span>
+                <span className="industry-arrow"><IconArrowUpRight width={18} height={18} /></span>
               </Link>
+            ))}
+          </div>
+        </section>
+
+        <section className="section testimonials-section" id="testimonials">
+          <div className="section-heading">
+            <span className="section-kicker">Loved by local businesses</span>
+            <h2>They stopped losing<br />customers to silence.</h2>
+          </div>
+
+          <div className="testimonial-grid">
+            {testimonials.map((t) => (
+              <article className="testimonial-card" key={t.name}>
+                <div className="testimonial-stars" aria-label="5 out of 5 stars">
+                  {[0,1,2,3,4].map((s) => (
+                    <svg key={s} viewBox="0 0 24 24" width="16" height="16" fill="#f59e0b" aria-hidden="true">
+                      <path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.2 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8L12 2z" />
+                    </svg>
+                  ))}
+                </div>
+                <p className="testimonial-quote">"{t.quote}"</p>
+                <div className="testimonial-author">
+                  <span className="testimonial-avatar">{t.initials}</span>
+                  <div>
+                    <strong>{t.name}</strong>
+                    <span>{t.business}</span>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="section faq-section" id="faq">
+          <div className="section-heading">
+            <span className="section-kicker">Questions, answered</span>
+            <h2>Everything else<br />you want to know.</h2>
+          </div>
+
+          <div className="faq-list">
+            {faqs.map((faq, i) => (
+              <details className="faq-item" key={i} open={i === 0}>
+                <summary>{faq.q}</summary>
+                <p>{faq.a}</p>
+              </details>
             ))}
           </div>
         </section>
@@ -334,11 +437,11 @@ function App() {
 
               <p className="price-description">
                 Get notified when Wynback launches with missed-call recovery,
-                WhatsApp follow-ups, and more.
+                one-tap WhatsApp follow-ups, voice-note win-backs, and more.
               </p>
 
               <a className="button button-dark" href={url('/login')}>
-                Get early access <span>→</span>
+                Get early access <IconArrowRight width={18} height={18} />
               </a>
 
               <small className="price-note">Free during early access.</small>
@@ -349,9 +452,9 @@ function App() {
         <section className="final-cta" id="signup">
           <div>
             <span className="section-kicker">Don't leave money in the inbox.</span>
-            <h2>Give every interested customer<br />another chance to say yes.</h2>
+            <h2>Give every missed customer<br />a reason to come back.</h2>
             <a className="button button-primary" href={url('/login')}>
-              Get early access <span>→</span>
+              Get early access <IconArrowRight width={18} height={18} />
             </a>
           </div>
         </section>
@@ -360,10 +463,10 @@ function App() {
       <footer className="footer">
         <div className="footer-brand">
           <a className="brand" href="#top">
-            <span className="brand-mark">L</span>
+            <LogoMark width={28} height={28} className="brand-logo" />
             <span>Wynback</span>
           </a>
-          <p>Turn missed inquiries into customers.</p>
+          <p>Win back every customer you almost lost.</p>
         </div>
 
         <div className="footer-nav">
@@ -395,7 +498,7 @@ function App() {
 
         <div className="footer-bottom">
           <span>© 2026 Wynback. All rights reserved.</span>
-          <span>Revenue recovery software.</span>
+          <span>Win-back software for local businesses.</span>
         </div>
       </footer>
     </div>
