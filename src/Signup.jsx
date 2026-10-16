@@ -13,12 +13,12 @@ export default function Signup() {
           onClick={() => navigate('/')}
         >
           <span className="auth-logo-mark">L</span>
-          <span>LeadBack</span>
+          <span>Wynback</span>
         </button>
 
         <div className="auth-heading">
           <span className="app-eyebrow">START FREE</span>
-          <h1>Create your LeadBack account</h1>
+          <h1>Create your Wynback account</h1>
           <p>Get early access and recover more missed inquiries.</p>
         </div>
 
@@ -51,12 +51,12 @@ export default function Signup() {
           </div>
           <div>
             <span>✓</span>
-            <p>Full LeadBack workspace</p>
+            <p>Full Wynback workspace</p>
           </div>
         </div>
 
         <p className="auth-terms">
-          By continuing, you agree to LeadBack's terms and privacy policy.
+          By continuing, you agree to Wynback's terms and privacy policy.
         </p>
 
         <div className="auth-switch">

@@ -99,7 +99,7 @@ export default function Settings() {
           <div>
             <span className="app-eyebrow">SETTINGS</span>
             <h1>Business settings</h1>
-            <p>Manage your business details and LeadBack preferences.</p>
+            <p>Manage your business details and Wynback preferences.</p>
           </div>
 
           <button
@@ -117,7 +117,7 @@ export default function Settings() {
               <div>
                 <span className="settings-label">BUSINESS</span>
                 <h2>Business profile</h2>
-                <p>These details identify your LeadBack workspace.</p>
+                <p>These details identify your Wynback workspace.</p>
               </div>
             </div>
 
@@ -222,7 +222,7 @@ export default function Settings() {
             <div>
               <span className="settings-label">ACCOUNT</span>
               <h2>Account</h2>
-              <p>Manage your LeadBack account.</p>
+              <p>Manage your Wynback account.</p>
             </div>
           </section>
 

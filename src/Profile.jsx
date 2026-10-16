@@ -40,7 +40,7 @@ export default function Profile() {
         <div>
           <span className="app-eyebrow">ACCOUNT</span>
           <h1>Profile</h1>
-          <p>Manage your LeadBack account information.</p>
+          <p>Manage your Wynback account information.</p>
         </div>
       </div>
 

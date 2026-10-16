@@ -24,15 +24,15 @@
 const home = {
   type: 'home',
   path: '/',
-  title: 'LeadBack — Turn Missed Inquiries Into Customers',
+  title: 'Wynback — Turn Missed Inquiries Into Customers',
   description:
-    'LeadBack helps growing businesses recover missed customer inquiries, organize follow-ups, and turn more conversations into paying customers. Start free.',
+    'Wynback helps growing businesses recover missed customer inquiries, organize follow-ups, and turn more conversations into paying customers. Start free.',
   keywords:
     'lead recovery software, customer inquiry tracking, follow-up management, missed lead software, revenue recovery, small business CRM',
   eyebrow: 'REVENUE RECOVERY',
   heading: 'Turn missed inquiries into customers.',
   intro:
-    'LeadBack gives growing businesses one simple workspace to capture every customer inquiry, follow up at the right time, and measure the revenue that comes back.',
+    'Wynback gives growing businesses one simple workspace to capture every customer inquiry, follow up at the right time, and measure the revenue that comes back.',
   sections: [
     {
       icon: 'inbox',
@@ -61,15 +61,15 @@ const features = {
   type: 'features',
   path: '/features',
   navLabel: 'Features',
-  title: 'LeadBack Features — Never Lose Another Customer Inquiry',
+  title: 'Wynback Features — Never Lose Another Customer Inquiry',
   description:
-    'Explore LeadBack features: inquiry tracking, follow-up workflows, recovery analytics and revenue reporting built for growing service businesses.',
+    'Explore Wynback features: inquiry tracking, follow-up workflows, recovery analytics and revenue reporting built for growing service businesses.',
   keywords:
     'lead management features, customer inquiry tracking software, follow-up automation, lead recovery analytics, sales follow-up tool, small business CRM features',
   eyebrow: 'FEATURES',
   heading: 'Every feature has one job: getting the customer back.',
   intro:
-    'LeadBack is deliberately narrow. It does the four things that decide whether an interested customer becomes a paying one — and it leaves the rest alone.',
+    'Wynback is deliberately narrow. It does the four things that decide whether an interested customer becomes a paying one — and it leaves the rest alone.',
   stats: [
     { value: '4', label: 'Core workflows' },
     { value: '0', label: 'Spreadsheets required' },
@@ -84,7 +84,7 @@ const features = {
     {
       icon: 'clock',
       title: 'Follow-up queue',
-      text: 'Every open inquiry gets a next action and an owner. Your team opens LeadBack and knows exactly who to contact today.',
+      text: 'Every open inquiry gets a next action and an owner. Your team opens Wynback and knows exactly who to contact today.',
     },
     {
       icon: 'trending',
@@ -119,16 +119,16 @@ const features = {
   ],
   faq: [
     {
-      q: 'Do I need to connect my phone system to LeadBack?',
-      a: 'No. LeadBack is designed for businesses whose inquiries arrive across calls, WhatsApp, Instagram and walk-ins, so you can log an inquiry manually in seconds. Everything is in one place without any telephony integration.',
+      q: 'Do I need to connect my phone system to Wynback?',
+      a: 'No. Wynback is designed for businesses whose inquiries arrive across calls, WhatsApp, Instagram and walk-ins, so you can log an inquiry manually in seconds. Everything is in one place without any telephony integration.',
     },
     {
-      q: 'Can more than one person use LeadBack?',
-      a: 'Yes. LeadBack is built for small teams. Everyone sees the same inquiry list and follow-up queue, so a customer is never dropped because one person was away.',
+      q: 'Can more than one person use Wynback?',
+      a: 'Yes. Wynback is built for small teams. Everyone sees the same inquiry list and follow-up queue, so a customer is never dropped because one person was away.',
     },
     {
-      q: 'How is LeadBack different from a CRM?',
-      a: 'A general CRM tries to run your whole business. LeadBack does one thing: making sure an interested customer who has already contacted you gets a reply and a follow-up. That narrower focus is why teams actually keep using it.',
+      q: 'How is Wynback different from a CRM?',
+      a: 'A general CRM tries to run your whole business. Wynback does one thing: making sure an interested customer who has already contacted you gets a reply and a follow-up. That narrower focus is why teams actually keep using it.',
     },
     {
       q: 'Is my data exported if I cancel?',
@@ -145,15 +145,15 @@ const useCases = {
   type: 'use-cases',
   path: '/use-cases',
   navLabel: 'Use Cases',
-  title: 'LeadBack Use Cases — Recover Missed Inquiries & Lost Leads',
+  title: 'Wynback Use Cases — Recover Missed Inquiries & Lost Leads',
   description:
-    'See how businesses use LeadBack to recover missed calls, unanswered DMs, cold quote requests, no-shows and dormant leads — and turn them into revenue.',
+    'See how businesses use Wynback to recover missed calls, unanswered DMs, cold quote requests, no-shows and dormant leads — and turn them into revenue.',
   keywords:
     'lead recovery use cases, missed call follow up, quote follow up software, dormant lead reactivation, no-show follow up, lead follow up examples',
   eyebrow: 'USE CASES',
   heading: 'Where your revenue is leaking right now.',
   intro:
-    'Most lost revenue is not lost to competitors — it leaks out of ordinary gaps. A call you could not answer, a DM you meant to reply to, a quote you never chased. These are the gaps LeadBack closes.',
+    'Most lost revenue is not lost to competitors — it leaks out of ordinary gaps. A call you could not answer, a DM you meant to reply to, a quote you never chased. These are the gaps Wynback closes.',
   sections: [
     {
       icon: 'phone',
@@ -218,7 +218,7 @@ const useCases = {
     },
     {
       q: 'Do I need different tools for each use case?',
-      a: 'No. Inquiry capture, follow-up management and revenue recovery are three views of the same workspace in LeadBack, so a single workflow covers all of them.',
+      a: 'No. Inquiry capture, follow-up management and revenue recovery are three views of the same workspace in Wynback, so a single workflow covers all of them.',
     },
   ],
 }
@@ -230,7 +230,7 @@ const useCases = {
 const missedInquiries = {
   type: 'missed-inquiries',
   path: '/use-cases/missed-inquiries',
-  title: 'Recover Missed Customer Inquiries | LeadBack',
+  title: 'Recover Missed Customer Inquiries | Wynback',
   description:
     'Stop losing customers who already contacted you. Track every missed call, DM and form enquiry, follow up on time, and see the revenue you recover.',
   keywords:
@@ -238,7 +238,7 @@ const missedInquiries = {
   eyebrow: 'USE CASE · MISSED INQUIRIES',
   heading: 'The customer already contacted you. That is the expensive part.',
   intro:
-    'Acquiring an inquiry costs marketing money, word of mouth and reputation. Losing one costs nothing to prevent. LeadBack makes sure no inquiry disappears just because you were busy when it arrived.',
+    'Acquiring an inquiry costs marketing money, word of mouth and reputation. Losing one costs nothing to prevent. Wynback makes sure no inquiry disappears just because you were busy when it arrived.',
   stats: [
     { value: '100%', label: 'Of inquiries logged' },
     { value: '< 30s', label: 'To record an inquiry' },
@@ -255,7 +255,7 @@ const missedInquiries = {
     },
     {
       title: 'Follow up on time',
-      text: 'Work the follow-up queue daily. LeadBack shows you who is overdue so timing never depends on memory.',
+      text: 'Work the follow-up queue daily. Wynback shows you who is overdue so timing never depends on memory.',
     },
     {
       title: 'Record the outcome',
@@ -287,15 +287,15 @@ const missedInquiries = {
   faq: [
     {
       q: 'How fast should I follow up on a missed inquiry?',
-      a: 'Fast. Intent decays quickly — a person who asked about your service an hour ago is far more likely to book than the same person next week. LeadBack surfaces the newest open inquiries first so your first call of the day is to the warmest person on the list.',
+      a: 'Fast. Intent decays quickly — a person who asked about your service an hour ago is far more likely to book than the same person next week. Wynback surfaces the newest open inquiries first so your first call of the day is to the warmest person on the list.',
     },
     {
       q: 'What if the inquiry came in on WhatsApp or Instagram?',
-      a: 'You log it manually with its source. LeadBack does not need access to your accounts, which keeps setup simple and works across every channel you use, including walk-ins and phone calls.',
+      a: 'You log it manually with its source. Wynback does not need access to your accounts, which keeps setup simple and works across every channel you use, including walk-ins and phone calls.',
     },
     {
       q: 'Can I track inquiries I lost months ago?',
-      a: 'Yes — and it is often worth it. Importing old enquiries into LeadBack gives your team a ready-made list of people who already expressed interest but never got a proper follow-up.',
+      a: 'Yes — and it is often worth it. Importing old enquiries into Wynback gives your team a ready-made list of people who already expressed interest but never got a proper follow-up.',
     },
   ],
 }
@@ -307,15 +307,15 @@ const missedInquiries = {
 const followUpManagement = {
   type: 'follow-up-management',
   path: '/use-cases/follow-up-management',
-  title: 'Follow-Up Management Software for Local Business | LeadBack',
+  title: 'Follow-Up Management Software for Local Business | Wynback',
   description:
-    'Build a follow-up routine your team actually keeps. LeadBack turns scattered reminders into one shared follow-up queue with owners, dates and outcomes.',
+    'Build a follow-up routine your team actually keeps. Wynback turns scattered reminders into one shared follow-up queue with owners, dates and outcomes.',
   keywords:
     'follow up management software, sales follow up process, follow up system for small business, lead follow up tool, follow up reminder app',
   eyebrow: 'USE CASE · FOLLOW-UP MANAGEMENT',
   heading: 'Most deals are not lost. They are just never followed up.',
   intro:
-    'Following up is not hard — it is just easy to postpone. LeadBack removes the two things that break every follow-up habit: not knowing who to contact, and relying on someone remembering to do it.',
+    'Following up is not hard — it is just easy to postpone. Wynback removes the two things that break every follow-up habit: not knowing who to contact, and relying on someone remembering to do it.',
   stats: [
     { value: '1', label: 'Shared follow-up queue' },
     { value: '0', label: 'Sticky notes needed' },
@@ -328,7 +328,7 @@ const followUpManagement = {
     },
     {
       title: 'Give it a date',
-      text: 'An action without a date is a wish. Every follow-up in LeadBack has a due date attached.',
+      text: 'An action without a date is a wish. Every follow-up in Wynback has a due date attached.',
     },
     {
       title: 'Work the queue',
@@ -353,7 +353,7 @@ const followUpManagement = {
     {
       icon: 'refresh',
       title: 'Handles long cycles',
-      text: 'Some customers take months. LeadBack keeps the thread alive across weeks without anyone holding it in their head.',
+      text: 'Some customers take months. Wynback keeps the thread alive across weeks without anyone holding it in their head.',
     },
     {
       icon: 'check',
@@ -371,8 +371,8 @@ const followUpManagement = {
       a: 'Yes. Follow-ups live on the customer record rather than in an individual’s inbox or phone, so cover during holidays and staff changes is automatic.',
     },
     {
-      q: 'Is LeadBack an automation tool?',
-      a: 'LeadBack is deliberately a management tool, not an automation tool. It tells your team exactly who needs a human follow-up and when — the message itself still comes from a person, which is what converts in local service businesses.',
+      q: 'Is Wynback an automation tool?',
+      a: 'Wynback is deliberately a management tool, not an automation tool. It tells your team exactly who needs a human follow-up and when — the message itself still comes from a person, which is what converts in local service businesses.',
     },
   ],
 }
@@ -384,15 +384,15 @@ const followUpManagement = {
 const revenueRecovery = {
   type: 'revenue-recovery',
   path: '/use-cases/revenue-recovery',
-  title: 'Revenue Recovery Software for Old Leads | LeadBack',
+  title: 'Revenue Recovery Software for Old Leads | Wynback',
   description:
-    'Measure the revenue your follow-ups actually recover. LeadBack tracks recovered opportunities, win-back value and the true ROI of following up.',
+    'Measure the revenue your follow-ups actually recover. Wynback tracks recovered opportunities, win-back value and the true ROI of following up.',
   keywords:
     'revenue recovery software, recover lost revenue, win back lost customers, lead recovery ROI, recovered revenue tracking',
   eyebrow: 'USE CASE · REVENUE RECOVERY',
   heading: 'You cannot improve revenue you never measured.',
   intro:
-    'Most teams know how many new leads they got. Almost none know how much money they recovered from the ones they nearly lost. LeadBack makes that number visible — and it is usually the most motivating figure in the business.',
+    'Most teams know how many new leads they got. Almost none know how much money they recovered from the ones they nearly lost. Wynback makes that number visible — and it is usually the most motivating figure in the business.',
   stats: [
     { value: '₹', label: 'Recovered, tracked live' },
     { value: '1', label: 'Number that matters' },
@@ -425,7 +425,7 @@ const revenueRecovery = {
     {
       icon: 'dollar',
       title: 'Compare against cost',
-      text: 'Put recovered revenue next to what LeadBack costs. The ROI conversation stops being theoretical.',
+      text: 'Put recovered revenue next to what Wynback costs. The ROI conversation stops being theoretical.',
     },
     {
       icon: 'layers',
@@ -441,7 +441,7 @@ const revenueRecovery = {
   faq: [
     {
       q: 'What counts as recovered revenue?',
-      a: 'Any revenue from a customer whose inquiry had gone cold, been unanswered or been written off, and who converted after a deliberate follow-up. LeadBack lets you record the value at the moment you win it back.',
+      a: 'Any revenue from a customer whose inquiry had gone cold, been unanswered or been written off, and who converted after a deliberate follow-up. Wynback lets you record the value at the moment you win it back.',
     },
     {
       q: 'How long before I can see a recovery figure?',
@@ -449,7 +449,7 @@ const revenueRecovery = {
     },
     {
       q: 'Do I need accounting data to use this?',
-      a: 'No. You enter the value of the won-back job or booking yourself. LeadBack is a recovery record, not an accounting system, so there is no integration work required.',
+      a: 'No. You enter the value of the won-back job or booking yourself. Wynback is a recovery record, not an accounting system, so there is no integration work required.',
     },
   ],
 }
@@ -462,15 +462,15 @@ const howItWorks = {
   type: 'how-it-works',
   path: '/how-it-works',
   navLabel: 'How it works',
-  title: 'How LeadBack Works — Missed Inquiry to Paying Customer',
+  title: 'How Wynback Works — Missed Inquiry to Paying Customer',
   description:
-    'See how LeadBack works in four steps: capture the inquiry, assign a follow-up, win the customer back, and report the revenue you recovered.',
+    'See how Wynback works in four steps: capture the inquiry, assign a follow-up, win the customer back, and report the revenue you recovered.',
   keywords:
-    'how leadback works, lead recovery process, inquiry follow up workflow, lead management workflow, follow up process steps',
+    'how wynback works, lead recovery process, inquiry follow up workflow, lead management workflow, follow up process steps',
   eyebrow: 'HOW IT WORKS',
   heading: 'A four-step loop, not a software project.',
   intro:
-    'LeadBack turns a messy, everyday problem into a repeatable routine. Once the loop is running, recovering a missed customer stops being luck.',
+    'Wynback turns a messy, everyday problem into a repeatable routine. Once the loop is running, recovering a missed customer stops being luck.',
   steps: [
     {
       title: '1. Capture the inquiry',
@@ -482,7 +482,7 @@ const howItWorks = {
     },
     {
       title: '3. Follow up',
-      text: 'Work the daily follow-up queue. LeadBack shows what is due today and what is already overdue.',
+      text: 'Work the daily follow-up queue. Wynback shows what is due today and what is already overdue.',
     },
     {
       title: '4. Track the outcome',
@@ -498,7 +498,7 @@ const howItWorks = {
     {
       icon: 'users',
       title: 'Adopted by whole teams',
-      text: 'Because the daily action is one short list, LeadBack survives staff changes — the kind of event that usually kills a CRM rollout.',
+      text: 'Because the daily action is one short list, Wynback survives staff changes — the kind of event that usually kills a CRM rollout.',
     },
     {
       icon: 'trending',
@@ -518,7 +518,7 @@ const howItWorks = {
     },
     {
       q: 'Do I have to change how we take bookings?',
-      a: 'No. LeadBack sits alongside whatever you already use. You log the inquiry in LeadBack so it gets followed up; your existing tools keep doing what they do.',
+      a: 'No. Wynback sits alongside whatever you already use. You log the inquiry in Wynback so it gets followed up; your existing tools keep doing what they do.',
     },
     {
       q: 'What does my team have to do every day?',
@@ -535,9 +535,9 @@ const industries = {
   type: 'industries',
   path: '/industries',
   navLabel: 'Industries',
-  title: 'LeadBack for Local Service Businesses & Industries',
+  title: 'Wynback for Local Service Businesses & Industries',
   description:
-    'LeadBack helps auto services, home services, salons, fitness studios, photographers and local businesses recover missed inquiries and book more jobs.',
+    'Wynback helps auto services, home services, salons, fitness studios, photographers and local businesses recover missed inquiries and book more jobs.',
   keywords:
     'lead recovery for local business, service business CRM, salon follow up software, gym lead management, home services lead tracking, auto service CRM',
   eyebrow: 'INDUSTRIES',
@@ -599,16 +599,16 @@ const industries = {
   },
   faq: [
     {
-      q: 'Is LeadBack only for service businesses?',
-      a: 'LeadBack is designed for businesses where a customer inquiry usually needs a human response before it converts — which covers most local service businesses. If your sales cycle is long and multi-stakeholder, a full CRM will fit you better.',
+      q: 'Is Wynback only for service businesses?',
+      a: 'Wynback is designed for businesses where a customer inquiry usually needs a human response before it converts — which covers most local service businesses. If your sales cycle is long and multi-stakeholder, a full CRM will fit you better.',
     },
     {
-      q: 'Can I use LeadBack with a mobile or field team?',
-      a: 'Yes. LeadBack runs in the browser, so detailers, cleaners and technicians can log and work inquiries from a phone while on site.',
+      q: 'Can I use Wynback with a mobile or field team?',
+      a: 'Yes. Wynback runs in the browser, so detailers, cleaners and technicians can log and work inquiries from a phone while on site.',
     },
     {
       q: 'Do you support businesses outside India?',
-      a: 'Yes. LeadBack works anywhere and is priced in INR for convenience. The workflow is language- and currency-agnostic.',
+      a: 'Yes. Wynback works anywhere and is priced in INR for convenience. The workflow is language- and currency-agnostic.',
     },
   ],
 }
@@ -620,7 +620,7 @@ const industries = {
 const carDetailing = {
   type: 'car-detailing',
   path: '/industries/car-detailing',
-  title: 'LeadBack for Car Detailing — Recover More Bookings',
+  title: 'Wynback for Car Detailing — Recover More Bookings',
   description:
     'Car detailing lead management software. Track missed detailing inquiries, follow up on quotes, and turn more enquiries into booked jobs.',
   keywords:
@@ -628,7 +628,7 @@ const carDetailing = {
   eyebrow: 'INDUSTRY · CAR DETAILING',
   heading: 'Most detailing enquiries never get a second message.',
   intro:
-    'Detailing customers message three or four shops and book whoever replies properly first. LeadBack makes sure your studio is the one that follows through — every time.',
+    'Detailing customers message three or four shops and book whoever replies properly first. Wynback makes sure your studio is the one that follows through — every time.',
   stats: [
     { value: '3–4', label: 'Shops each customer messages' },
     { value: '1st', label: 'Proper reply usually wins' },
@@ -669,11 +669,11 @@ const carDetailing = {
   faq: [
     {
       q: 'Is this a detailing booking or scheduling system?',
-      a: 'No — and that is deliberate. LeadBack does not replace your calendar. It makes sure every enquiry reaches your calendar by giving you a reliable follow-up process around the bookings you already take.',
+      a: 'No — and that is deliberate. Wynback does not replace your calendar. It makes sure every enquiry reaches your calendar by giving you a reliable follow-up process around the bookings you already take.',
     },
     {
       q: 'I am a one-person mobile detailing business. Is this useful for me?',
-      a: 'Yes, arguably more than for a large shop. When you are the only person, every missed call is a job you personally lost, and there is no one else to pick up the follow-up. LeadBack is the second pair of hands.',
+      a: 'Yes, arguably more than for a large shop. When you are the only person, every missed call is a job you personally lost, and there is no one else to pick up the follow-up. Wynback is the second pair of hands.',
     },
     {
       q: 'How quickly will I see recovered bookings?',
@@ -694,15 +694,15 @@ const about = {
   type: 'about',
   path: '/about',
   navLabel: 'About',
-  title: 'About LeadBack — Revenue Recovery for Growing Businesses',
+  title: 'About Wynback — Revenue Recovery for Growing Businesses',
   description:
-    'LeadBack builds simple revenue recovery software for local service businesses. Learn why we focus on one job: making sure no customer inquiry is missed.',
+    'Wynback builds simple revenue recovery software for local service businesses. Learn why we focus on one job: making sure no customer inquiry is missed.',
   keywords:
-    'about leadback, leadback company, revenue recovery company, small business software India, leadback story',
+    'about wynback, wynback company, revenue recovery company, small business software India, wynback story',
   eyebrow: 'ABOUT',
   heading: 'We build one thing, and we build it narrowly.',
   intro:
-    'LeadBack exists because of a pattern we kept seeing in small businesses: the marketing worked, the phone rang, and the revenue still leaked — on the follow-up.',
+    'Wynback exists because of a pattern we kept seeing in small businesses: the marketing worked, the phone rang, and the revenue still leaked — on the follow-up.',
   stats: [
     { value: '1', label: 'Problem we solve' },
     { value: '₹499', label: 'Flat monthly price' },
@@ -732,12 +732,12 @@ const about = {
   ],
   faq: [
     {
-      q: 'Is LeadBack a CRM?',
-      a: 'Not really. LeadBack is a revenue recovery tool. A CRM tries to run your whole customer relationship; LeadBack handles the specific stretch where most small businesses lose money — between an inquiry arriving and a follow-up happening.',
+      q: 'Is Wynback a CRM?',
+      a: 'Not really. Wynback is a revenue recovery tool. A CRM tries to run your whole customer relationship; Wynback handles the specific stretch where most small businesses lose money — between an inquiry arriving and a follow-up happening.',
     },
     {
-      q: 'Who is behind LeadBack?',
-      a: 'LeadBack is built by a small team focused on practical software for local service businesses, with pricing designed for businesses that cannot absorb enterprise software costs.',
+      q: 'Who is behind Wynback?',
+      a: 'Wynback is built by a small team focused on practical software for local service businesses, with pricing designed for businesses that cannot absorb enterprise software costs.',
     },
     {
       q: 'How do I get in touch?',
@@ -753,7 +753,7 @@ const about = {
 const resources = {
   type: 'resources',
   path: '/resources',
-  title: 'LeadBack Resources — Inquiry & Follow-Up Guides',
+  title: 'Wynback Resources — Inquiry & Follow-Up Guides',
   description:
     'Practical guides on missed customer inquiries, follow-up workflows, lead response times and measuring recovered revenue for local businesses.',
   keywords:
@@ -797,11 +797,11 @@ const resources = {
   faq: [
     {
       q: 'Are these resources free?',
-      a: 'Yes. Every guide is free to read, and none of them require a LeadBack account.',
+      a: 'Yes. Every guide is free to read, and none of them require a Wynback account.',
     },
     {
-      q: 'Do I need LeadBack to apply these guides?',
-      a: 'No. The workflows work on paper or in a spreadsheet too. LeadBack just removes the manual overhead of keeping them up to date.',
+      q: 'Do I need Wynback to apply these guides?',
+      a: 'No. The workflows work on paper or in a spreadsheet too. Wynback just removes the manual overhead of keeping them up to date.',
     },
     {
       q: 'Which guide should I start with?',
@@ -878,7 +878,7 @@ export const FOOTER_GROUPS = [
   {
     title: 'Company',
     links: [
-      { to: about.path, label: 'About LeadBack' },
+      { to: about.path, label: 'About Wynback' },
       { to: '/', label: 'Home' },
     ],
   },

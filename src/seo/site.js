@@ -8,23 +8,23 @@
  */
 
 /** Canonical origin. Matches public/CNAME, public/robots.txt and sitemap.xml. */
-export const SITE_ORIGIN = 'https://leadback.app'
+export const SITE_ORIGIN = 'https://wynback.app'
 
 export const SITE = {
-  name: 'LeadBack',
+  name: 'Wynback',
   tagline: 'Turn missed inquiries into customers.',
 
   /** Fallback title/description (also the defaults baked into index.html). */
-  title: 'LeadBack — Turn Missed Inquiries Into Customers',
+  title: 'Wynback — Turn Missed Inquiries Into Customers',
   description:
-    'LeadBack helps growing businesses recover missed customer inquiries, organize follow-ups, and turn more conversations into customers.',
+    'Wynback helps growing businesses recover missed customer inquiries, organize follow-ups, and turn more conversations into customers.',
 
   /** Absolute path (from the site root) of the social share image. */
   ogImage: '/og-image.png',
 
   /** Open Graph locale + Twitter handle. */
   locale: 'en_US',
-  twitter: '@leadback',
+  twitter: '@wynback',
 
   /** Structured data shared by every page. */
   sameAs: [],

@@ -1,13 +1,31 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="LeadBack">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Wynback">
   <defs>
-    <linearGradient id="lb" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#3a67ff" />
-      <stop offset="1" stop-color="#1742d0" />
+    <linearGradient id="wb" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2457ff" />
+      <stop offset="1" stop-color="#1a41c8" />
     </linearGradient>
   </defs>
-  <rect width="64" height="64" rx="16" fill="url(#lb)" />
+  <rect width="64" height="64" rx="16" fill="url(#wb)" />
   <path
-    d="M23 17h7v23h13v7H23z"
-    fill="#ffffff"
+    d="M14 43 L22 21 L29 38 L36 21"
+    stroke="#ffffff"
+    stroke-width="5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    fill="none"
+  />
+  <path
+    d="M34 40 L50 24"
+    stroke="#7df9c6"
+    stroke-width="5"
+    stroke-linecap="round"
+  />
+  <path
+    d="M41 24 h9 v9"
+    stroke="#7df9c6"
+    stroke-width="5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    fill="none"
   />
 </svg>

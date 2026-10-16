@@ -148,7 +148,7 @@ export default function Login() {
 
         case 'auth/internal-error':
           setErrorMessage(
-            'Google sign-in encountered a browser authentication error. Please close this tab, reopen LeadBack, and try again.'
+            'Google sign-in encountered a browser authentication error. Please close this tab, reopen Wynback, and try again.'
           )
           break
 
@@ -171,12 +171,12 @@ export default function Login() {
           onClick={() => navigate('/')}
         >
           <span className="auth-logo-mark">L</span>
-          <span>LeadBack</span>
+          <span>Wynback</span>
         </button>
 
         <div className="auth-heading">
           <span className="app-eyebrow">WELCOME BACK</span>
-          <h1>Sign in to LeadBack</h1>
+          <h1>Sign in to Wynback</h1>
           <p>
             Continue to your revenue recovery workspace.
           </p>
@@ -207,7 +207,7 @@ export default function Login() {
         </div>
 
         <p className="auth-terms">
-          By continuing, you agree to LeadBack's terms and privacy policy.
+          By continuing, you agree to Wynback's terms and privacy policy.
         </p>
 
       </div>

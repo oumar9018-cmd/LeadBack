@@ -111,7 +111,7 @@ export default function AppLayout() {
       <aside className="sidebar">
         <div className="sidebar-brand">
           <div className="brand-mark">L</div>
-          <span>LeadBack</span>
+          <span>Wynback</span>
         </div>
 
         <div className="workspace">
@@ -136,7 +136,7 @@ export default function AppLayout() {
       <main className="app-main">
         <header className="app-header app-header-subpage">
           <div>
-            <span className="app-eyebrow">LEADBACK</span>
+            <span className="app-eyebrow">WYNBACK</span>
             <h1>{displayName}</h1>
             <p>Manage your workspace and customer recovery.</p>
           </div>
@@ -207,7 +207,7 @@ export default function AppLayout() {
         <Outlet />
 
         <footer className="app-footer">
-          LeadBack · Revenue recovery workspace
+          Wynback · Revenue recovery workspace
         </footer>
       </main>
     </div>

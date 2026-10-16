@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>LeadBack — Turn Missed Inquiries Into Customers</title>
+    <title>Wynback — Turn Missed Inquiries Into Customers</title>
     <script>
       // GitHub Pages SPA fallback:
       // When a deep link like /app/inquiries is refreshed, GitHub Pages serves
@@ -11,15 +11,15 @@
       // index.html can replace the URL without a history entry.
       // Keep SITE_BASE in sync with `base` in vite.config.js: the directory
       // the site is deployed to. On the GitHub Pages project site that is
-      // '/LeadBack/', not the origin root.
-      var SITE_BASE = '/LeadBack/';
+      // '/Wynback/', not the origin root.
+      var SITE_BASE = '/Wynback/';
 
       (function () {
         var location = window.location;
         // Store the full path (pathname + search + hash) so index.html can
         // restore it after load.
         sessionStorage.setItem(
-          'leadback-redirect',
+          'wynback-redirect',
           location.pathname + location.search + location.hash
         );
         // Replace the URL with the site root so the SPA loads from there.
@@ -29,6 +29,6 @@
     </script>
   </head>
   <body>
-    <p>Redirecting to LeadBack…</p>
+    <p>Redirecting to Wynback…</p>
   </body>
 </html>

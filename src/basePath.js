@@ -3,12 +3,12 @@
  *
  * Derived from Vite's BASE_URL (set by `base` in vite.config.js) so this file
  * and the router basename can never drift apart:
- *   base: '/LeadBack/'  ->  BASE_PATH '/LeadBack', ROUTER_BASENAME '/LeadBack'
+ *   base: '/Wynback/'  ->  BASE_PATH '/Wynback', ROUTER_BASENAME '/Wynback'
  *   base: '/'           ->  BASE_PATH '',           ROUTER_BASENAME '/'
  */
 const trailingSlashStripped = import.meta.env.BASE_URL.replace(/\/+$/, '')
 
-/** '' for a root deploy, '/LeadBack' for the GitHub Pages project site. */
+/** '' for a root deploy, '/Wynback' for the GitHub Pages project site. */
 export const BASE_PATH = trailingSlashStripped
 
 /** Value for <BrowserRouter basename={...}>. */

@@ -70,9 +70,9 @@ function App() {
   return (
     <div className="site-shell">
       <header className="navbar">
-        <a className="brand" href="#top" aria-label="LeadBack home">
+        <a className="brand" href="#top" aria-label="Wynback home">
           <span className="brand-mark">L</span>
-          <span>LeadBack</span>
+          <span>Wynback</span>
         </a>
 
         {/*
@@ -108,7 +108,7 @@ function App() {
             </h1>
 
             <p className="hero-text">
-              LeadBack helps businesses follow up with customers who showed
+              Wynback helps businesses follow up with customers who showed
               interest but never completed the booking.
             </p>
 
@@ -140,7 +140,7 @@ function App() {
             </div>
           </div>
 
-          <div className="hero-visual" aria-label="LeadBack dashboard preview">
+          <div className="hero-visual" aria-label="Wynback dashboard preview">
             <div className="glow glow-one" />
             <div className="glow glow-two" />
 
@@ -151,7 +151,7 @@ function App() {
                   <i />
                   <i />
                 </div>
-                <span>LeadBack / Overview</span>
+                <span>Wynback / Overview</span>
                 <span className="window-status">● Live</span>
               </div>
 
@@ -240,7 +240,7 @@ function App() {
             <span className="section-kicker">How it works</span>
             <h2>Close the gap between<br />interest and action.</h2>
             <p>
-              LeadBack turns forgotten inquiries into an organized recovery
+              Wynback turns forgotten inquiries into an organized recovery
               process—without adding another complicated sales workflow.
             </p>
           </div>
@@ -321,7 +321,7 @@ function App() {
               <span className="section-kicker">Early access</span>
               <h2>Be first in line.</h2>
               <p>
-                We're rebuilding LeadBack from the ground up. Join the waitlist
+                We're rebuilding Wynback from the ground up. Join the waitlist
                 and get early access when we launch.
               </p>
             </div>
@@ -333,7 +333,7 @@ function App() {
               </div>
 
               <p className="price-description">
-                Get notified when LeadBack launches with missed-call recovery,
+                Get notified when Wynback launches with missed-call recovery,
                 WhatsApp follow-ups, and more.
               </p>
 
@@ -361,7 +361,7 @@ function App() {
         <div className="footer-brand">
           <a className="brand" href="#top">
             <span className="brand-mark">L</span>
-            <span>LeadBack</span>
+            <span>Wynback</span>
           </a>
           <p>Turn missed inquiries into customers.</p>
         </div>
@@ -394,7 +394,7 @@ function App() {
         </div>
 
         <div className="footer-bottom">
-          <span>© 2026 LeadBack. All rights reserved.</span>
+          <span>© 2026 Wynback. All rights reserved.</span>
           <span>Revenue recovery software.</span>
         </div>
       </footer>

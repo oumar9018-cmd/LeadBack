@@ -129,9 +129,9 @@ function Icon({ name }) {
 function SeoHeader() {
   return (
     <header className="seo-nav">
-      <Link className="seo-brand" to="/" aria-label="LeadBack home">
+      <Link className="seo-brand" to="/" aria-label="Wynback home">
         <span className="seo-brand-mark">L</span>
-        <span>LeadBack</span>
+        <span>Wynback</span>
       </Link>
 
       <nav className="seo-nav-links" aria-label="Main navigation">
@@ -161,7 +161,7 @@ function SeoFooter() {
         <div className="seo-footer-brand">
           <Link className="seo-brand" to="/">
             <span className="seo-brand-mark">L</span>
-            <span>LeadBack</span>
+            <span>Wynback</span>
           </Link>
           <p>Turn missed inquiries into customers.</p>
         </div>
@@ -183,7 +183,7 @@ function SeoFooter() {
       </div>
 
       <div className="seo-footer-bottom">
-        <span>© {CURRENT_YEAR} LeadBack. All rights reserved.</span>
+        <span>© {CURRENT_YEAR} Wynback. All rights reserved.</span>
         <span>Revenue recovery software.</span>
       </div>
     </footer>
@@ -403,7 +403,7 @@ export default function SEOPage({ type }) {
         <Faq page={page} />
 
         <section className="seo-final-cta">
-          <span className="seo-kicker">LEADBACK</span>
+          <span className="seo-kicker">WYNBACK</span>
           <h2>Turn missed inquiries into customers.</h2>
           <p>
             Get early access and build a clearer follow-up
