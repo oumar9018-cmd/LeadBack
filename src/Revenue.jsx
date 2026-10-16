@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import ForecastWidget from './components/ForecastWidget.jsx'
 
 const statusLabels = {
   recovered: 'Recovered',
@@ -176,6 +177,10 @@ export default function Revenue() {
             <small>Across all inquiries</small>
           </div>
 
+        </section>
+
+        <section className="revenue-forecast-wrap">
+          <ForecastWidget inquiries={items} />
         </section>
 
         <section className="revenue-overview">

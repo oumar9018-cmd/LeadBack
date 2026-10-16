@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import WinbackScoreBadge from './components/WinbackScore.jsx'
+import { rankByWinback } from './utils/winbackScore.js'
 
 const statusLabels = {
   new: 'New',
@@ -59,6 +61,7 @@ export default function Inquiries() {
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [showMenu, setShowMenu] = useState(false)
+  const [sortByScore, setSortByScore] = useState(false)
 
   const options = [
     ['all', 'All statuses'],
@@ -87,6 +90,10 @@ export default function Inquiries() {
 
     return matchesSearch && matchesStatus
   })
+
+  const displayed = sortByScore
+    ? rankByWinback(filtered).map(r => r.inquiry)
+    : filtered
 
   return (
     <div className="inquiries-page">
@@ -168,11 +175,21 @@ export default function Inquiries() {
             <span>Customer</span>
             <span>Service</span>
             <span>Value</span>
+            <span>
+              <button
+                type="button"
+                className={sortByScore ? 'score-sort active' : 'score-sort'}
+                onClick={() => setSortByScore(v => !v)}
+                title="Sort by win-back score"
+              >
+                Win-back {sortByScore ? '↓' : '↕'}
+              </button>
+            </span>
             <span>Status</span>
           </div>
 
           <div className="inquiry-list">
-            {filtered.map(item => (
+            {displayed.map(item => (
               <div className="inquiry-page-row" key={item.id}>
 
                 <button
@@ -194,6 +211,8 @@ export default function Inquiries() {
                   {money(item.value)}
                 </strong>
 
+                <WinbackScoreBadge inquiry={item} />
+
                 <span className={`status status-${item.status}`}>
                   {statusLabels[item.status]}
                 </span>
@@ -201,7 +220,7 @@ export default function Inquiries() {
               </div>
             ))}
 
-            {filtered.length === 0 && (
+            {displayed.length === 0 && (
               <div className="inquiries-empty">
                 No inquiries found.
               </div>

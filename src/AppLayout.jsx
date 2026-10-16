@@ -123,6 +123,7 @@ export default function AppLayout() {
           <NavLink to="/app" end onClick={closeSidebar}>Overview</NavLink>
           <NavLink to="/app/inquiries" onClick={closeSidebar}>Inquiries</NavLink>
           <NavLink to="/app/followups" onClick={closeSidebar}>Follow-ups</NavLink>
+          <NavLink to="/app/blitz" onClick={closeSidebar}>Blitz Mode</NavLink>
           <NavLink to="/app/revenue" onClick={closeSidebar}>Revenue</NavLink>
           <NavLink to="/app/settings" onClick={closeSidebar}>Settings</NavLink>
           <NavLink to="/app/profile" onClick={closeSidebar}>Profile</NavLink>

@@ -4,6 +4,7 @@ import {
   Routes,
   Route,
   Navigate,
+  useNavigate,
   useSearchParams,
   useLocation,
 } from 'react-router-dom'
@@ -25,6 +26,10 @@ import { ROUTER_BASENAME } from './basePath.js'
 import { ROUTED_SEO_PAGES } from './seo/pages.js'
 import WhatsAppActions from './components/WhatsAppActions.jsx'
 import DripSequences from './components/DripSequences.jsx'
+import SmartComposer from './components/SmartComposer.jsx'
+import ForecastWidget from './components/ForecastWidget.jsx'
+import VoiceInput from './components/VoiceInput.jsx'
+import BlitzMode from './components/BlitzMode.jsx'
 import BookingPage from './BookingPage.jsx'
 import './App.css'
 
@@ -57,11 +62,17 @@ function money(value, currency = 'INR') {
 /* this component renders only its content.                            */
 /* ------------------------------------------------------------------ */
 function Dashboard() {
+  const navigate = useNavigate()
   const [authUser, setAuthUser] = useState(
     () => window.firebase?.auth?.().currentUser || null
   )
   const [profileOpen, setProfileOpen] = useState(false)
   const [businessName, setBusinessName] = useState('')
+  const businessSlug = businessName
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
   const [profileName, setProfileName] = useState('')
   const [currency, setCurrency] = useState('INR')
 
@@ -421,6 +432,22 @@ function Dashboard() {
         </div>
       </section>
 
+      <section className="dashboard-insights">
+        <ForecastWidget inquiries={items} />
+        <div className="blitz-promo">
+          <span className="app-eyebrow">BLITZ MODE</span>
+          <h3>Win back customers in one session</h3>
+          <p>Pick your lost leads, power through personalized messages.</p>
+          <button
+            type="button"
+            className="primary-action"
+            onClick={() => navigate('/app/blitz')}
+          >
+            Start a blitz
+          </button>
+        </div>
+      </section>
+
       <section className="dashboard-panel">
         <div className="panel-header">
           <div>
@@ -630,6 +657,22 @@ function Dashboard() {
             </div>
 
             <form onSubmit={handleAddInquiry}>
+              <div className="voice-form-row">
+                <span>Don't want to type?</span>
+                <VoiceInput
+                  onResult={({ name, service, value, note }) => {
+                    setForm(f => ({
+                      ...f,
+                      name: name || f.name,
+                      service: service || f.service,
+                      value: value || f.value,
+                    }))
+                    if (note) {
+                      setFollowupForm(ff => ({ ...ff, note: ff.note ? ff.note + ' ' + note : note }))
+                    }
+                  }}
+                />
+              </div>
               <div className="form-grid">
                 <label>
                   Customer name
@@ -805,6 +848,15 @@ function Dashboard() {
               businessName={businessName}
               onAction={(type, templateId) => {
                 logActivity(selectedInquiry.id, type === 'voice-note' ? 'Voice note opened' : `WhatsApp sent (${templateId})`)
+              }}
+            />
+
+            <SmartComposer
+              inquiry={selectedInquiry}
+              businessName={businessName}
+              businessSlug={businessSlug}
+              onAction={(type, tone) => {
+                logActivity(selectedInquiry.id, `Smart message sent (${tone})`)
               }}
             />
 
@@ -1083,6 +1135,7 @@ function App() {
           <Route path="/app/inquiries" element={<Inquiries />} />
           <Route path="/app/followups" element={<Followups />} />
           <Route path="/app/revenue" element={<Revenue />} />
+          <Route path="/app/blitz" element={<BlitzMode />} />
           <Route path="/app/customers" element={<Customers />} />
           <Route path="/app/settings" element={<Settings />} />
           <Route path="/app/profile" element={<Profile />} />
