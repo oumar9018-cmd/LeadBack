@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { LogoMark, IconCalendar, IconPhone, IconCheck } from '../components/icons.jsx'
+import { LogoMark, IconCalendar, IconPhone, IconCheck } from './components/icons.jsx'
 import './BookingPage.css'
 
 /**

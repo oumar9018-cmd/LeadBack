@@ -1,0 +1,225 @@
+/* Wynback WhatsApp actions — one-tap outreach */
+
+.wa-actions {
+  border-top: 1px solid #edf0f4;
+  padding-top: 24px;
+  margin-top: 8px;
+}
+
+.wa-heading h3 {
+  margin: 6px 0 4px;
+  font-size: 17px;
+  color: #111827;
+}
+
+.wa-heading p {
+  margin: 0 0 16px;
+  font-size: 13.5px;
+  color: #6b7280;
+}
+
+.wa-no-phone {
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+.wa-templates {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.wa-template {
+  padding: 8px 14px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 999px;
+  background: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  color: #4b5563;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.wa-template:hover {
+  border-color: #2457ff;
+}
+
+.wa-template.active {
+  border-color: #2457ff;
+  background: #eef2ff;
+  color: #2457ff;
+}
+
+.wa-preview {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+}
+
+.wa-preview-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #16a34a;
+}
+
+.wa-preview p {
+  margin: 6px 0 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #14532d;
+}
+
+.wa-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.wa-send {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  background: #22c55e;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.wa-send:hover {
+  background: #16a34a;
+}
+
+.wa-voice {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 18px;
+  border: 1.5px solid #7c3aed;
+  border-radius: 12px;
+  background: #faf5ff;
+  color: #7c3aed;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.wa-voice:hover {
+  background: #f3e8ff;
+}
+
+.wa-tip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  font-size: 13px;
+  color: #7c3aed;
+}
+
+.wa-tip svg {
+  flex-shrink: 0;
+}
+
+/* Missed-call nudge card */
+.missed-nudge {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: linear-gradient(135deg, #fef3c7, #fef9e7);
+  border: 1px solid #fcd34d;
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+}
+
+.missed-nudge-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #f59e0b;
+  color: #fff;
+  flex-shrink: 0;
+  animation: nudge-pulse 2s ease-in-out infinite;
+}
+
+@keyframes nudge-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(245, 158, 11, 0); }
+}
+
+.missed-nudge-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.missed-nudge-text strong {
+  font-size: 14px;
+  color: #92400e;
+}
+
+.missed-nudge-text span {
+  font-size: 13px;
+  color: #b45309;
+}
+
+.missed-nudge-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.missed-nudge-voice {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #7c3aed;
+  color: #fff;
+  font-size: 13.5px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.missed-nudge-voice:hover {
+  background: #6d28d9;
+}
+
+.missed-nudge-dismiss {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #b45309;
+  cursor: pointer;
+  padding: 4px 8px;
+  line-height: 1;
+}
+
+@media (max-width: 560px) {
+  .wa-buttons {
+    flex-direction: column;
+  }
+  .missed-nudge {
+    flex-wrap: wrap;
+  }
+}

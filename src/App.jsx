@@ -23,6 +23,8 @@ import { ROUTER_BASENAME } from './basePath.js'
 // Adding a page to SEO_PAGES registers its route, nav link, sitemap entry and
 // prerendered HTML automatically.
 import { ROUTED_SEO_PAGES } from './seo/pages.js'
+import WhatsAppActions from './components/WhatsAppActions.jsx'
+import BookingPage from './BookingPage.jsx'
 import './App.css'
 
 const statusLabels = {
@@ -252,6 +254,28 @@ function Dashboard() {
   function updateStatus(id, status) {
     setItems(current =>
       current.map(item => (item.id === id ? { ...item, status } : item))
+    )
+  }
+
+  function logActivity(id, label) {
+    const entry = {
+      id: Date.now(),
+      type: label,
+      date: new Date().toISOString().slice(0, 10),
+      time: new Date().toTimeString().slice(0, 5),
+      note: '',
+    }
+    setItems(current =>
+      current.map(item =>
+        item.id === id
+          ? { ...item, followupHistory: [...(item.followupHistory || []), entry] }
+          : item
+      )
+    )
+    setSelectedInquiry(current =>
+      current && current.id === id
+        ? { ...current, followupHistory: [...(current.followupHistory || []), entry] }
+        : current
     )
   }
 
@@ -775,6 +799,14 @@ function Dashboard() {
               </div>
             </div>
 
+            <WhatsAppActions
+              inquiry={selectedInquiry}
+              businessName={businessName}
+              onAction={(type, templateId) => {
+                logActivity(selectedInquiry.id, type === 'voice-note' ? 'Voice note opened' : `WhatsApp sent (${templateId})`)
+              }}
+            />
+
             {selectedInquiry.followupHistory?.length > 0 && (
               <div className="followup-history">
                 <div className="followup-history-header">
@@ -1015,6 +1047,9 @@ function App() {
             element={<SEOPage type={page.type} />}
           />
         ))}
+
+        {/* Public booking page — no login required */}
+        <Route path="/b/:slug" element={<BookingPage />} />
 
         {/* Auth pages */}
         <Route path="/login" element={<Login />} />
