@@ -127,8 +127,8 @@ export default function Revenue() {
 
       return (
         !query ||
-        item.name.toLowerCase().includes(query) ||
-        item.service.toLowerCase().includes(query)
+        (item.name || '').toLowerCase().includes(query) ||
+        (item.service || '').toLowerCase().includes(query)
       )
     })
 

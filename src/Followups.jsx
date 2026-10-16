@@ -113,9 +113,9 @@ export default function Followups() {
 
     const matchesSearch =
       !query ||
-      item.name.toLowerCase().includes(query) ||
-      item.phone.toLowerCase().includes(query) ||
-      item.service.toLowerCase().includes(query)
+      (item.name || '').toLowerCase().includes(query) ||
+      (item.phone || '').toLowerCase().includes(query) ||
+      (item.service || '').toLowerCase().includes(query)
 
     const matchesFilter =
       filter === 'all' || item.followupState === filter

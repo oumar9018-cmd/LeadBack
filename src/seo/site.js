@@ -7,8 +7,8 @@
  * prerendered static HTML and the client-rendered meta can never drift apart.
  */
 
-/** Canonical origin. Matches public/CNAME, public/robots.txt and sitemap.xml. */
-export const SITE_ORIGIN = 'https://wynback.app'
+/** Canonical origin — MUST match the real deployment URL or Google ignores every canonical. */
+export const SITE_ORIGIN = 'https://oumar9018-cmd.github.io/LeadBack'
 
 export const SITE = {
   name: 'Wynback',

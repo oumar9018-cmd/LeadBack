@@ -1,0 +1,701 @@
+/* ==========================================================================
+   Wynback Login — "Molten Gold on Obsidian"
+   Deep obsidian #0C0A09 · molten gold #E8B44A → #FF6B35 · cream #FAF7F2
+   Display: Fraunces · Body: Inter
+   All classes are prefixed wynl- so they never collide with App.css.
+   ========================================================================== */
+
+.wynl {
+  --wynl-obsidian: #0c0a09;
+  --wynl-obsidian-2: #141110;
+  --wynl-cream: #faf7f2;
+  --wynl-cream-dim: rgba(250, 247, 242, 0.66);
+  --wynl-cream-faint: rgba(250, 247, 242, 0.42);
+  --wynl-gold: #e8b44a;
+  --wynl-gold-deep: #c98f2b;
+  --wynl-ember: #ff6b35;
+  --wynl-gold-grad: linear-gradient(120deg, #f6d98a 0%, #e8b44a 42%, #ff6b35 100%);
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: grid;
+  grid-template-columns: minmax(0, 1.06fr) minmax(0, 1fr);
+  background: var(--wynl-obsidian);
+  color: var(--wynl-cream);
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+
+.wynl button {
+  font-family: inherit;
+}
+
+.wynl button:focus-visible {
+  outline: 2px solid var(--wynl-gold);
+  outline-offset: 3px;
+}
+
+/* ---------------- Left hero panel ---------------- */
+
+.wynl-hero {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  padding: 60px 56px;
+  background:
+    radial-gradient(90% 55% at 12% 0%, rgba(255, 107, 53, 0.14), transparent 60%),
+    radial-gradient(80% 60% at 100% 100%, rgba(232, 180, 74, 0.13), transparent 60%),
+    radial-gradient(60% 45% at 80% 12%, rgba(232, 180, 74, 0.08), transparent 65%),
+    linear-gradient(170deg, #100c08 0%, #0c0a09 55%, #0a0908 100%);
+}
+
+.wynl-hero::after {
+  /* fine grain grid, masked */
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(232, 180, 74, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(232, 180, 74, 0.05) 1px, transparent 1px);
+  background-size: 52px 52px;
+  -webkit-mask-image: radial-gradient(85% 75% at 50% 38%, #000 25%, transparent 100%);
+  mask-image: radial-gradient(85% 75% at 50% 38%, #000 25%, transparent 100%);
+  pointer-events: none;
+}
+
+.wynl-particles {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.wynl-shimmer {
+  position: absolute;
+  inset: -40%;
+  background: linear-gradient(
+    105deg,
+    transparent 42%,
+    rgba(232, 180, 74, 0.07) 48%,
+    rgba(246, 217, 138, 0.12) 50%,
+    rgba(232, 180, 74, 0.07) 52%,
+    transparent 58%
+  );
+  animation: wynl-shimmer-sweep 9s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes wynl-shimmer-sweep {
+  0%, 100% { transform: translateX(-18%) rotate(0.001deg); }
+  50% { transform: translateX(18%) rotate(0.001deg); }
+}
+
+.wynl-hero-inner {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 560px;
+}
+
+/* Logo */
+.wynl-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 13px;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  color: var(--wynl-cream);
+  margin-bottom: 46px;
+  animation: wynl-rise 0.9s cubic-bezier(0.2, 0.9, 0.25, 1) both;
+}
+
+.wynl-brand-mark {
+  position: relative;
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #1d150a, #120e07);
+  box-shadow:
+    0 0 0 1px rgba(232, 180, 74, 0.45),
+    0 0 26px rgba(232, 180, 74, 0.35),
+    0 10px 28px rgba(0, 0, 0, 0.55);
+  overflow: hidden;
+}
+
+.wynl-brand-mark::after {
+  /* shimmer sweep across the mark — the "wow" glint */
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 30%, rgba(255, 240, 200, 0.55) 50%, transparent 70%);
+  transform: translateX(-120%);
+  animation: wynl-mark-glint 4.2s ease-in-out infinite;
+}
+
+@keyframes wynl-mark-glint {
+  0%, 55% { transform: translateX(-120%); }
+  85%, 100% { transform: translateX(120%); }
+}
+
+.wynl-brand-mark svg {
+  width: 30px;
+  height: 30px;
+}
+
+.wynl-brand-name {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 600;
+  font-size: 26px;
+  letter-spacing: 0.2px;
+}
+
+/* Hero copy */
+.wynl-kicker {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 3.2px;
+  color: var(--wynl-gold);
+  border: 1px solid rgba(232, 180, 74, 0.35);
+  background: rgba(232, 180, 74, 0.08);
+  padding: 8px 14px;
+  border-radius: 999px;
+  margin-bottom: 24px;
+  animation: wynl-rise 0.9s 0.1s cubic-bezier(0.2, 0.9, 0.25, 1) both;
+  box-shadow: 0 0 22px rgba(232, 180, 74, 0.12);
+}
+
+.wynl-hero h1 {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 560;
+  font-size: clamp(40px, 4.4vw, 60px);
+  line-height: 1.06;
+  letter-spacing: -0.5px;
+  margin: 0 0 20px;
+  color: var(--wynl-cream);
+  animation: wynl-rise 0.9s 0.2s cubic-bezier(0.2, 0.9, 0.25, 1) both;
+}
+
+.wynl-hero h1 .wynl-gold-text {
+  background: var(--wynl-gold-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-style: italic;
+  font-weight: 640;
+}
+
+.wynl-hero-copy {
+  font-size: 16.5px;
+  line-height: 1.65;
+  color: var(--wynl-cream-dim);
+  margin: 0 0 44px;
+  max-width: 440px;
+  animation: wynl-rise 0.9s 0.3s cubic-bezier(0.2, 0.9, 0.25, 1) both;
+}
+
+@keyframes wynl-rise {
+  from { opacity: 0; transform: translateY(26px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Floating capability cards */
+.wynl-cards {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 430px;
+  margin-bottom: 44px;
+}
+
+.wynl-card-float {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 15px 18px;
+  border-radius: 18px;
+  background: linear-gradient(150deg, rgba(28, 21, 12, 0.92), rgba(16, 12, 8, 0.9));
+  border: 1px solid rgba(232, 180, 74, 0.22);
+  box-shadow:
+    0 18px 44px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(250, 247, 242, 0.06);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  animation:
+    wynl-rise 0.9s cubic-bezier(0.2, 0.9, 0.25, 1) both,
+    wynl-float 7s ease-in-out infinite;
+}
+
+.wynl-card-float:nth-child(1) { animation-delay: 0.42s, 1.6s; margin-left: 0; }
+.wynl-card-float:nth-child(2) { animation-delay: 0.54s, 2.8s; margin-left: 44px; }
+.wynl-card-float:nth-child(3) { animation-delay: 0.66s, 2.2s; margin-left: 12px; }
+
+@keyframes wynl-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-9px); }
+}
+
+.wynl-card-icon {
+  flex: 0 0 42px;
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, rgba(232, 180, 74, 0.22), rgba(255, 107, 53, 0.14));
+  border: 1px solid rgba(232, 180, 74, 0.4);
+  color: var(--wynl-gold);
+}
+
+.wynl-card-icon svg {
+  width: 21px;
+  height: 21px;
+}
+
+.wynl-card-body {
+  min-width: 0;
+  flex: 1;
+}
+
+.wynl-card-title {
+  display: block;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--wynl-cream);
+  letter-spacing: 0.1px;
+}
+
+.wynl-card-sub {
+  display: block;
+  font-size: 12.8px;
+  color: var(--wynl-cream-faint);
+  margin-top: 3px;
+}
+
+.wynl-card-flash {
+  flex: 0 0 auto;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.6px;
+  color: var(--wynl-gold);
+  background: rgba(232, 180, 74, 0.1);
+  border: 1px solid rgba(232, 180, 74, 0.35);
+  padding: 6px 10px;
+  border-radius: 999px;
+  animation: wynl-flash-pulse 2.6s ease-in-out infinite;
+}
+
+@keyframes wynl-flash-pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 rgba(232, 180, 74, 0); }
+  50% { opacity: 0.82; box-shadow: 0 0 18px rgba(232, 180, 74, 0.35); }
+}
+
+/* Win-back score ring */
+.wynl-ring {
+  position: relative;
+  flex: 0 0 54px;
+  width: 54px;
+  height: 54px;
+}
+
+.wynl-ring svg {
+  width: 54px;
+  height: 54px;
+  transform: rotate(-90deg);
+}
+
+.wynl-ring-track {
+  stroke: rgba(250, 247, 242, 0.12);
+}
+
+.wynl-ring-fill {
+  stroke: url(#wynlRingGrad);
+  stroke-linecap: round;
+  stroke-dasharray: 151;
+  stroke-dashoffset: 151;
+  animation: wynl-ring-draw 1.6s 1s cubic-bezier(0.3, 0.8, 0.3, 1) forwards;
+}
+
+@keyframes wynl-ring-draw {
+  to { stroke-dashoffset: 19.6; } /* 87% of 151 */
+}
+
+.wynl-ring-label {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--wynl-gold);
+}
+
+/* Hero foot ticks */
+.wynl-ticks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 26px;
+  animation: wynl-rise 0.9s 0.78s cubic-bezier(0.2, 0.9, 0.25, 1) both;
+}
+
+.wynl-tick {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--wynl-cream-dim);
+}
+
+.wynl-tick svg {
+  width: 17px;
+  height: 17px;
+  color: var(--wynl-gold);
+}
+
+/* ---------------- Right sign-in panel ---------------- */
+
+.wynl-main {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 56px 40px;
+  background:
+    radial-gradient(70% 40% at 50% 0%, rgba(232, 180, 74, 0.06), transparent 70%),
+    var(--wynl-obsidian-2);
+  border-left: 1px solid rgba(232, 180, 74, 0.1);
+}
+
+.wynl-signin {
+  width: 100%;
+  max-width: 400px;
+  animation: wynl-rise 1s 0.35s cubic-bezier(0.2, 0.9, 0.25, 1) both;
+}
+
+.wynl-eyebrow {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 3.4px;
+  color: var(--wynl-gold);
+  margin-bottom: 16px;
+}
+
+.wynl-signin h1 {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 580;
+  font-size: clamp(30px, 2.6vw, 38px);
+  letter-spacing: -0.4px;
+  line-height: 1.12;
+  margin: 0 0 12px;
+  color: var(--wynl-cream);
+}
+
+.wynl-sub {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--wynl-cream-faint);
+  margin: 0 0 32px;
+}
+
+/* Google button — the hero of the right panel */
+.wynl-google {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 13px;
+  width: 100%;
+  padding: 16px 20px;
+  border-radius: 15px;
+  border: 0;
+  cursor: pointer;
+  background: var(--wynl-cream);
+  color: #191410;
+  font-size: 15.5px;
+  font-weight: 650;
+  letter-spacing: 0.1px;
+  transition: transform 0.22s cubic-bezier(0.2, 0.9, 0.3, 1.4), box-shadow 0.25s ease, filter 0.2s ease;
+  box-shadow:
+    0 2px 10px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(250, 247, 242, 0.06);
+}
+
+.wynl-google::before {
+  /* molten gold edge revealed on hover */
+  content: '';
+  position: absolute;
+  inset: -1.5px;
+  border-radius: 16.5px;
+  padding: 1.5px;
+  background: var(--wynl-gold-grad);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+
+.wynl-google:hover:not(:disabled),
+.wynl-google:focus-visible:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow:
+    0 14px 38px rgba(232, 180, 74, 0.38),
+    0 4px 14px rgba(0, 0, 0, 0.4);
+}
+
+.wynl-google:hover:not(:disabled)::before,
+.wynl-google:focus-visible:not(:disabled)::before {
+  opacity: 1;
+}
+
+.wynl-google:active:not(:disabled) {
+  transform: translateY(0) scale(0.99);
+}
+
+.wynl-google:disabled {
+  cursor: wait;
+  filter: saturate(0.85);
+}
+
+.wynl-google-g {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 22px;
+}
+
+.wynl-spinner {
+  width: 21px;
+  height: 21px;
+  flex: 0 0 21px;
+  color: var(--wynl-gold-deep);
+  animation: wynl-spin 0.9s linear infinite;
+}
+
+@keyframes wynl-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Error — slides in gracefully */
+.wynl-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  margin-top: 18px;
+  padding: 14px 16px;
+  border-radius: 13px;
+  background: rgba(255, 107, 53, 0.09);
+  border: 1px solid rgba(255, 107, 53, 0.42);
+  box-shadow: 0 8px 26px rgba(255, 107, 53, 0.14);
+  font-size: 13.8px;
+  line-height: 1.55;
+  color: #ffd9c4;
+  animation: wynl-error-in 0.42s cubic-bezier(0.2, 0.9, 0.28, 1.25) both;
+}
+
+@keyframes wynl-error-in {
+  from { opacity: 0; transform: translateY(-12px) scale(0.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.wynl-error-icon {
+  flex: 0 0 19px;
+  width: 19px;
+  height: 19px;
+  margin-top: 1px;
+  color: var(--wynl-ember);
+}
+
+/* Divider */
+.wynl-divider {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 30px 0 22px;
+  color: var(--wynl-cream-faint);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 2.4px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.wynl-divider::before,
+.wynl-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(232, 180, 74, 0.35));
+}
+
+.wynl-divider::after {
+  background: linear-gradient(90deg, rgba(232, 180, 74, 0.35), transparent);
+}
+
+.wynl-terms {
+  font-size: 12.8px;
+  line-height: 1.7;
+  color: var(--wynl-cream-faint);
+  margin: 0;
+  text-align: center;
+}
+
+.wynl-terms a {
+  color: var(--wynl-gold);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(232, 180, 74, 0.4);
+}
+
+.wynl-terms a:hover {
+  border-bottom-color: var(--wynl-gold);
+}
+
+/* Feature mini-list under the card */
+.wynl-mini-list {
+  display: flex;
+  justify-content: center;
+  gap: 22px;
+  margin-top: 30px;
+  list-style: none;
+  padding: 0;
+}
+
+.wynl-mini-list li {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--wynl-cream-faint);
+}
+
+.wynl-mini-list svg {
+  width: 14px;
+  height: 14px;
+  color: var(--wynl-gold);
+}
+
+.wynl-footnote {
+  margin: 34px 0 0;
+  font-size: 12.5px;
+  color: var(--wynl-cream-faint);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  animation: wynl-rise 1s 0.5s cubic-bezier(0.2, 0.9, 0.25, 1) both;
+}
+
+.wynl-footnote svg {
+  width: 14px;
+  height: 14px;
+  color: var(--wynl-gold);
+}
+
+/* ---------------- Responsive ---------------- */
+
+@media (max-width: 980px) {
+  .wynl {
+    grid-template-columns: 1fr;
+  }
+
+  /* Compact top banner */
+  .wynl-hero {
+    padding: 26px 22px 24px;
+    align-items: flex-start;
+  }
+
+  .wynl-hero::after {
+    opacity: 0.5;
+  }
+
+  .wynl-brand {
+    margin-bottom: 18px;
+  }
+
+  .wynl-brand-mark {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+  }
+
+  .wynl-brand-mark svg {
+    width: 25px;
+    height: 25px;
+  }
+
+  .wynl-brand-name {
+    font-size: 21px;
+  }
+
+  .wynl-kicker {
+    font-size: 10px;
+    letter-spacing: 2.6px;
+    padding: 7px 12px;
+    margin-bottom: 16px;
+  }
+
+  .wynl-hero h1 {
+    font-size: 30px;
+    margin-bottom: 0;
+  }
+
+  /* Banner keeps only the headline — hide the rest */
+  .wynl-hero-copy,
+  .wynl-cards,
+  .wynl-ticks {
+    display: none;
+  }
+
+  .wynl-main {
+    border-left: 0;
+    border-top: 1px solid rgba(232, 180, 74, 0.1);
+    padding: 34px 22px 48px;
+    justify-content: flex-start;
+  }
+
+  .wynl-signin {
+    max-width: 440px;
+  }
+
+  .wynl-mini-list {
+    flex-wrap: wrap;
+    gap: 12px 18px;
+  }
+}
+
+@media (max-width: 420px) {
+  .wynl-hero h1 {
+    font-size: 26px;
+  }
+
+  .wynl-google {
+    font-size: 14.5px;
+    padding: 15px 16px;
+  }
+}
+
+/* ---------------- Reduced motion ---------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .wynl *,
+  .wynl *::before,
+  .wynl *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .wynl-ring-fill {
+    stroke-dashoffset: 19.6;
+  }
+}

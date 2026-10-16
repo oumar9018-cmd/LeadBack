@@ -81,9 +81,9 @@ export default function Inquiries() {
 
     const matchesSearch =
       !query ||
-      item.name.toLowerCase().includes(query) ||
-      item.phone.toLowerCase().includes(query) ||
-      item.service.toLowerCase().includes(query)
+      (item.name || '').toLowerCase().includes(query) ||
+      (item.phone || '').toLowerCase().includes(query) ||
+      (item.service || '').toLowerCase().includes(query)
 
     const matchesStatus =
       statusFilter === 'all' || item.status === statusFilter

@@ -231,18 +231,18 @@ function App() {
           <div className="hero-copy">
             <div className="eyebrow">
               <span className="status-dot" />
-              Revenue recovery for growing businesses
+              The revenue recovery platform
             </div>
 
             <h1>
-              Win back every
-              <span className="grad-text"> customer you almost lost.</span>
+              Every customer you lost is
+              <span className="grad-text"> money left on the table.</span>
             </h1>
 
             <p className="hero-text">
-              Wynback catches missed calls and cold inquiries, then helps you
-              follow up in <strong>one tap</strong> — WhatsApp message or personal
-              voice note — so no customer ever slips away.
+              Wynback catches every missed call and cold inquiry, then helps you
+              win them back in <strong>one tap</strong> — a WhatsApp message or
+              a personal voice note. Nothing slips away. Ever.
             </p>
 
             <div className="hero-actions">
@@ -388,18 +388,18 @@ function App() {
         </div>
 
         <Reveal className="proof-strip">
-          <p>Built around one simple idea:</p>
-          <strong>the easiest customer to win is the one who already called you.</strong>
+          <p>The most expensive customer is the one you already had.</p>
+          <strong>Winning back beats chasing new — every single time.</strong>
         </Reveal>
 
         <section className="section" id="how-it-works">
           <Reveal>
           <div className="section-heading">
             <span className="section-kicker">How it works</span>
-            <h2>Close the gap between<br />interest and action.</h2>
+            <h2>Turn silence<br />into revenue.</h2>
             <p>
-              Wynback turns forgotten inquiries into an organized recovery
-              process—without adding another complicated sales workflow.
+              Three steps. Ten seconds each. Wynback turns every forgotten
+              inquiry into a second chance — without the CRM headache.
             </p>
           </div>
           </Reveal>

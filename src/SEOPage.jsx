@@ -1,4 +1,4 @@
-import { createElement } from 'react'
+import { createElement, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { NAV_LINKS, FOOTER_GROUPS, getSeoPage } from './seo/pages.js'
 import { useSEO } from './seo/useSEO.js'
@@ -52,6 +52,9 @@ const ICONS = {
   message: [
     ['path', { d: 'M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8v.5z' }],
   ],
+  heart: [
+    ['path', { d: 'M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z' }],
+  ],
   file: [
     ['path', { d: 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z' }],
     ['path', { d: 'M14 2v6h6' }],
@@ -100,12 +103,84 @@ const ICONS = {
 /** Computed once at module load so the prerendered HTML and the client render agree. */
 const CURRENT_YEAR = new Date().getFullYear()
 
-function Icon({ name }) {
+/* ------------------------------------------------------------------ */
+/* Industry identity — each vertical gets its own accent paired with   */
+/* the molten-gold brand, plus a hero watermark icon.                 */
+/* ------------------------------------------------------------------ */
+
+const INDUSTRY_ACCENTS = {
+  salons: { accent: '#F2A3AC', glow: 'rgba(242,163,172,0.14)' }, // rose gold
+  'auto-repair': { accent: '#E8A33D', glow: 'rgba(232,163,61,0.14)' }, // steel + amber
+  clinics: { accent: '#4ED6C3', glow: 'rgba(78,214,195,0.13)' }, // teal + gold
+  coaches: { accent: '#9B8CFF', glow: 'rgba(155,140,255,0.15)' }, // indigo + gold
+  'real-estate': { accent: '#4ADE9E', glow: 'rgba(74,222,158,0.13)' }, // emerald + gold
+  freelancers: { accent: '#FF8A66', glow: 'rgba(255,138,102,0.14)' }, // coral + gold
+  'car-detailing': { accent: '#FF7A45', glow: 'rgba(255,122,69,0.15)' }, // molten orange + gold
+}
+
+const DEFAULT_ACCENT = { accent: '#E8B44A', glow: 'rgba(232,180,74,0.14)' }
+
+const INDUSTRY_TYPES = new Set(Object.keys(INDUSTRY_ACCENTS))
+
+const INDUSTRY_ICONS = {
+  salons: 'sparkles',
+  'auto-repair': 'briefcase',
+  clinics: 'shield',
+  coaches: 'target',
+  'real-estate': 'layers',
+  freelancers: 'zap',
+  'car-detailing': 'refresh',
+}
+
+/**
+ * Illustrative pull-quotes, one per industry page. These are fictional
+ * examples written to show the workflow's value — every card is labeled
+ * as illustrative so it is never mistaken for a real customer.
+ */
+const INDUSTRY_QUOTES = {
+  salons: {
+    quote:
+      'The 6 PM “do you have anything tomorrow?” messages used to die in my DMs. Now every single one gets a reply — and half of them book.',
+    who: 'Salon owner · two chairs',
+  },
+  'auto-repair': {
+    quote:
+      'I quoted a clutch job on Monday, followed up on Thursday, and the car was on my ramp on Friday. That one job paid for the year.',
+    who: 'Independent garage owner',
+  },
+  clinics: {
+    quote:
+      'Our no-shows fell because someone finally calls every missed caller back the same day. Patients tell us they feel remembered.',
+    who: 'Dental clinic · front desk',
+  },
+  coaches: {
+    quote:
+      'A discovery-call enquiry from three months ago became my highest-paying client. I just kept the thread warm until she was ready.',
+    who: 'Business coach · solo practice',
+  },
+  'real-estate': {
+    quote:
+      'The valuation I did in March listed with me in September — because I was the only agent who stayed in touch.',
+    who: 'Estate agent · small agency',
+  },
+  freelancers: {
+    quote:
+      'The proposal I had almost given up on closed after one follow-up. Ten minutes of work, a month of revenue.',
+    who: 'Freelance designer',
+  },
+  'car-detailing': {
+    quote:
+      'Ceramic coating quotes are big tickets. Chasing every single one properly doubled my close rate in a season.',
+    who: 'Detailing studio owner',
+  },
+}
+
+function Icon({ name, className }) {
   const shapes = ICONS[name] || ICONS.sparkles
 
   return (
     <svg
-      className="seo-icon"
+      className={className || 'seo-icon'}
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -122,6 +197,35 @@ function Icon({ name }) {
   )
 }
 
+/**
+ * Scroll-reveal: elements with .reveal fade/rise into view once.
+ * Runs only in the browser (effects never execute during the
+ * build-time static render), so the prerendered markup stays identical.
+ */
+function useReveal() {
+  useEffect(() => {
+    const els = Array.from(document.querySelectorAll('.seo-shell .reveal'))
+    if (els.length === 0) return undefined
+    if (!('IntersectionObserver' in window)) {
+      els.forEach((el) => el.classList.add('is-visible'))
+      return undefined
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible')
+            io.unobserve(entry.target)
+          }
+        })
+      },
+      { threshold: 0.1, rootMargin: '0px 0px -6% 0px' }
+    )
+    els.forEach((el) => io.observe(el))
+    return () => io.disconnect()
+  }, [])
+}
+
 /* ------------------------------------------------------------------ */
 /* Shared marketing header / footer used by every SEO landing page      */
 /* ------------------------------------------------------------------ */
@@ -130,7 +234,7 @@ function SeoHeader() {
   return (
     <header className="seo-nav">
       <Link className="seo-brand" to="/" aria-label="Wynback home">
-        <span className="seo-brand-mark">L</span>
+        <span className="seo-brand-mark">W</span>
         <span>Wynback</span>
       </Link>
 
@@ -160,7 +264,7 @@ function SeoFooter() {
       <div className="seo-footer-top">
         <div className="seo-footer-brand">
           <Link className="seo-brand" to="/">
-            <span className="seo-brand-mark">L</span>
+            <span className="seo-brand-mark">W</span>
             <span>Wynback</span>
           </Link>
           <p>Turn missed inquiries into customers.</p>
@@ -194,14 +298,33 @@ function SeoFooter() {
 /* Page sections                                                       */
 /* ------------------------------------------------------------------ */
 
-function Hero({ page }) {
-  return (
-    <section className="seo-hero">
-      <span className="seo-eyebrow">{page.eyebrow}</span>
-      <h1>{page.heading}</h1>
-      <p className="seo-hero-intro">{page.intro}</p>
+function Hero({ page, industry }) {
+  const isManifesto = page.type === 'manifesto'
+  const watermarkIcon = industry ? INDUSTRY_ICONS[page.type] : null
 
-      <div className="seo-hero-actions">
+  return (
+    <section className={`seo-hero${isManifesto ? ' seo-hero-manifesto' : ''}`}>
+      {watermarkIcon && (
+        <span className="seo-hero-watermark" aria-hidden="true">
+          <Icon name={watermarkIcon} className="seo-hero-watermark-icon" />
+        </span>
+      )}
+      <div className="seo-hero-glow" aria-hidden="true" />
+
+      <span className="seo-eyebrow hero-anim" style={{ '--d': '60ms' }}>
+        {page.eyebrow}
+      </span>
+      <h1 className="hero-anim" style={{ '--d': '160ms' }}>
+        {page.heading}
+      </h1>
+      <p
+        className={`seo-hero-intro${isManifesto ? ' seo-hero-intro-quote' : ''} hero-anim`}
+        style={{ '--d': '260ms' }}
+      >
+        {page.intro}
+      </p>
+
+      <div className="seo-hero-actions hero-anim" style={{ '--d': '360ms' }}>
         <Link className="seo-button seo-button-primary" to="/login">
           Get early access <span aria-hidden="true">→</span>
         </Link>
@@ -211,7 +334,7 @@ function Hero({ page }) {
       </div>
 
       {Array.isArray(page.stats) && page.stats.length > 0 && (
-        <dl className="seo-stats">
+        <dl className="seo-stats hero-anim" style={{ '--d': '460ms' }}>
           {page.stats.map((stat) => (
             <div className="seo-stat" key={stat.label}>
               <dt>{stat.value}</dt>
@@ -229,14 +352,18 @@ function Steps({ page }) {
 
   return (
     <section className="seo-block">
-      <div className="seo-block-heading">
+      <div className="seo-block-heading reveal">
         <span className="seo-kicker">THE WORKFLOW</span>
         <h2>Four steps, repeated daily.</h2>
       </div>
 
       <ol className="seo-steps">
         {page.steps.map((step, index) => (
-          <li className="seo-step" key={step.title}>
+          <li
+            className="seo-step reveal"
+            key={step.title}
+            style={{ '--d': `${index * 90}ms` }}
+          >
             <span className="seo-step-index">{String(index + 1).padStart(2, '0')}</span>
             <h3>{step.title}</h3>
             <p>{step.text}</p>
@@ -252,14 +379,18 @@ function Cards({ page }) {
 
   return (
     <section className="seo-block">
-      <div className="seo-block-heading">
+      <div className="seo-block-heading reveal">
         <span className="seo-kicker">WHAT YOU GET</span>
         <h2>Everything focused on the same outcome.</h2>
       </div>
 
       <div className="seo-card-grid">
-        {page.sections.map((section) => (
-          <article className="seo-card" key={section.title}>
+        {page.sections.map((section, index) => (
+          <article
+            className="seo-card reveal"
+            key={section.title}
+            style={{ '--d': `${(index % 3) * 90}ms` }}
+          >
             <span className="seo-card-icon">
               <Icon name={section.icon} />
             </span>
@@ -272,21 +403,80 @@ function Cards({ page }) {
   )
 }
 
+/**
+ * Manifesto chapters: the belief statements rendered as a cinematic
+ * editorial sequence — giant ghost numerals, oversized serif statements,
+ * long dramatic pauses between chapters.
+ */
+function Chapters({ page }) {
+  if (page.type !== 'manifesto') return null
+  if (!Array.isArray(page.sections) || page.sections.length === 0) return null
+
+  return (
+    <section className="manifesto-chapters" aria-label="The beliefs">
+      {page.sections.map((section, index) => (
+        <article className="manifesto-chapter reveal" key={section.title}>
+          <span className="manifesto-numeral" aria-hidden="true">
+            {String(index + 1).padStart(2, '0')}
+          </span>
+          <div className="manifesto-chapter-body">
+            <h2>{section.title}</h2>
+            <p>{section.text}</p>
+          </div>
+        </article>
+      ))}
+
+      <blockquote className="manifesto-pullquote reveal">
+        <p>
+          “The customer already contacted you. Everything after that is just
+          refusing to let silence win.”
+        </p>
+        <cite>— The Wynback creed</cite>
+      </blockquote>
+    </section>
+  )
+}
+
+/**
+ * Industry pull-quote — a fictional, illustrative example so each vertical
+ * page has a human voice. Always labeled as illustrative.
+ */
+function IndustryQuote({ page }) {
+  const quote = INDUSTRY_QUOTES[page.type]
+  if (!quote) return null
+
+  return (
+    <section className="seo-block seo-block-quote">
+      <figure className="seo-quote reveal">
+        <span className="seo-quote-mark" aria-hidden="true">“</span>
+        <blockquote>
+          <p>{quote.quote}</p>
+        </blockquote>
+        <figcaption>
+          <span className="seo-quote-who">{quote.who}</span>
+          <span className="seo-quote-label">Illustrative example — not a real customer</span>
+        </figcaption>
+      </figure>
+    </section>
+  )
+}
+
 function Plans({ page }) {
   if (!Array.isArray(page.plans) || page.plans.length === 0) return null
 
   return (
     <section className="seo-block seo-block-soft">
-      <div className="seo-block-heading">
+      <div className="seo-block-heading reveal">
         <span className="seo-kicker">PLANS</span>
         <h2>Start free. Stay only if it pays for itself.</h2>
       </div>
 
       <div className="seo-plan-grid">
-        {page.plans.map((plan) => (
+        {page.plans.map((plan, index) => (
           <article
-            className={`seo-plan ${plan.featured ? 'seo-plan-featured' : ''}`}
+            className={`seo-plan reveal${plan.featured ? ' seo-plan-featured' : ''}`}
             key={plan.name}
+            style={{ '--d': `${index * 90}ms` }}
           >
             {plan.badge && <span className="seo-plan-badge">{plan.badge}</span>}
             <h3>{plan.name}</h3>
@@ -333,15 +523,20 @@ function Showcase({ page }) {
 
   return (
     <section className="seo-block">
-      <div className="seo-block-heading">
+      <div className="seo-block-heading reveal">
         <span className="seo-kicker">GO DEEPER</span>
         <h2>{page.showcase.title}</h2>
         <p className="seo-block-sub">{page.showcase.text}</p>
       </div>
 
       <div className="seo-showcase-grid">
-        {page.showcase.items.map((item) => (
-          <Link className="seo-showcase-card" to={item.to} key={item.to}>
+        {page.showcase.items.map((item, index) => (
+          <Link
+            className="seo-showcase-card reveal"
+            to={item.to}
+            key={item.to}
+            style={{ '--d': `${(index % 3) * 90}ms` }}
+          >
             <h3>{item.title}</h3>
             <p>{item.text}</p>
             <span aria-hidden="true">→</span>
@@ -357,14 +552,18 @@ function Faq({ page }) {
 
   return (
     <section className="seo-block seo-block-soft">
-      <div className="seo-block-heading">
+      <div className="seo-block-heading reveal">
         <span className="seo-kicker">FAQ</span>
         <h2>Questions people ask before starting.</h2>
       </div>
 
       <div className="seo-faq">
-        {page.faq.map((entry) => (
-          <details className="seo-faq-item" key={entry.q}>
+        {page.faq.map((entry, index) => (
+          <details
+            className="seo-faq-item reveal"
+            key={entry.q}
+            style={{ '--d': `${Math.min(index, 4) * 60}ms` }}
+          >
             <summary>
               <span>{entry.q}</span>
               <span className="seo-faq-marker" aria-hidden="true">
@@ -379,6 +578,24 @@ function Faq({ page }) {
   )
 }
 
+function FinalCta() {
+  return (
+    <section className="seo-final-cta">
+      <div className="seo-final-cta-panel reveal">
+        <span className="seo-kicker">WYNBACK</span>
+        <h2>Turn missed inquiries into customers.</h2>
+        <p>
+          Get early access and build a clearer follow-up
+          workflow for your business. Free during early access.
+        </p>
+        <Link className="seo-button seo-button-primary" to="/login">
+          Get early access <span aria-hidden="true">→</span>
+        </Link>
+      </div>
+    </section>
+  )
+}
+
 /* ------------------------------------------------------------------ */
 /* Page                                                                */
 /* ------------------------------------------------------------------ */
@@ -387,32 +604,41 @@ export default function SEOPage({ type }) {
   const page = getSeoPage(type)
 
   useSEO(page)
+  useReveal()
 
   if (!page) return null
 
+  const isIndustry = INDUSTRY_TYPES.has(type)
+  const isManifesto = type === 'manifesto'
+  const accent = INDUSTRY_ACCENTS[type] || DEFAULT_ACCENT
+
   return (
-    <div className="seo-shell">
+    <div
+      className={`seo-shell${isIndustry ? ' seo-industry' : ''}${isManifesto ? ' seo-manifesto' : ''}`}
+      style={{ '--accent': accent.accent, '--accent-glow': accent.glow }}
+    >
       <SeoHeader />
 
       <main>
-        <Hero page={page} />
-        <Steps page={page} />
-        <Plans page={page} />
-        <Cards page={page} />
-        <Showcase page={page} />
-        <Faq page={page} />
+        <Hero page={page} industry={isIndustry} />
 
-        <section className="seo-final-cta">
-          <span className="seo-kicker">WYNBACK</span>
-          <h2>Turn missed inquiries into customers.</h2>
-          <p>
-            Get early access and build a clearer follow-up
-            workflow for your business. Free during early access.
-          </p>
-          <Link className="seo-button seo-button-primary" to="/login">
-            Get early access <span aria-hidden="true">→</span>
-          </Link>
-        </section>
+        {isManifesto ? (
+          <>
+            <Chapters page={page} />
+            <Faq page={page} />
+          </>
+        ) : (
+          <>
+            <Steps page={page} />
+            <Cards page={page} />
+            {isIndustry && <IndustryQuote page={page} />}
+            <Plans page={page} />
+            <Showcase page={page} />
+            <Faq page={page} />
+          </>
+        )}
+
+        <FinalCta />
       </main>
 
       <SeoFooter />
