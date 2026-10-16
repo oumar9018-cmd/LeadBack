@@ -132,11 +132,23 @@ export function IconShield(props) {
 /**
  * Wynback logo mark — a "W" whose final stroke rises into an
  * upward arrow: the visual metaphor of winning a customer back.
+ * Animated gradient sweep gives it a living, premium feel.
  */
 export function LogoMark(props) {
+  const gid = `wbg-${Math.random().toString(36).slice(2, 8)}`
   return (
     <svg viewBox="0 0 40 40" fill="none" aria-hidden="true" {...props}>
-      <rect width="40" height="40" rx="11" fill="#2457ff" />
+      <defs>
+        <linearGradient id={gid} x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#7c3aed">
+            <animate attributeName="stop-color" values="#7c3aed;#d946ef;#7c3aed" dur="4s" repeatCount="indefinite" />
+          </stop>
+          <stop offset="100%" stopColor="#d946ef">
+            <animate attributeName="stop-color" values="#d946ef;#7c3aed;#d946ef" dur="4s" repeatCount="indefinite" />
+          </stop>
+        </linearGradient>
+      </defs>
+      <rect width="40" height="40" rx="11" fill={`url(#${gid})`} />
       <path
         d="M9 27 L14 13 L19 24 L24 13"
         stroke="#fff"
@@ -145,26 +157,22 @@ export function LogoMark(props) {
         strokeLinejoin="round"
       />
       <path
-        d="M24 13 L31 13 M31 13 L31 20"
-        stroke="#fff"
-        strokeWidth={3.4}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        opacity="0"
-      />
-      <path
         d="M22 25 L31 16"
-        stroke="#7df9c6"
+        stroke="#a7f3d0"
         strokeWidth={3.4}
         strokeLinecap="round"
-      />
+      >
+        <animate attributeName="opacity" values="1;0.55;1" dur="2.4s" repeatCount="indefinite" />
+      </path>
       <path
         d="M25.5 16 h5.5 v5.5"
-        stroke="#7df9c6"
+        stroke="#a7f3d0"
         strokeWidth={3.4}
         strokeLinecap="round"
         strokeLinejoin="round"
-      />
+      >
+        <animate attributeName="opacity" values="1;0.55;1" dur="2.4s" repeatCount="indefinite" />
+      </path>
     </svg>
   )
 }

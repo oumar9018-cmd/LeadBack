@@ -387,12 +387,13 @@ function App() {
           </div>
         </div>
 
-        <section className="proof-strip">
+        <Reveal className="proof-strip">
           <p>Built around one simple idea:</p>
           <strong>the easiest customer to win is the one who already called you.</strong>
-        </section>
+        </Reveal>
 
         <section className="section" id="how-it-works">
+          <Reveal>
           <div className="section-heading">
             <span className="section-kicker">How it works</span>
             <h2>Close the gap between<br />interest and action.</h2>
@@ -401,10 +402,12 @@ function App() {
               process—without adding another complicated sales workflow.
             </p>
           </div>
+          </Reveal>
 
           <div className="feature-grid" id="features">
-            {features.map((feature) => (
-              <article className="feature-card" key={feature.number}>
+            {features.map((feature, i) => (
+              <Reveal key={feature.number} delay={i * 0.12}>
+              <article className="feature-card">
                 <span className="feature-number">{feature.number}</span>
                 <div className="feature-icon">
                   {feature.icon === 'radar' && <IconRadar width={28} height={28} />}
@@ -414,10 +417,12 @@ function App() {
                 <h3>{feature.title}</h3>
                 <p>{feature.text}</p>
               </article>
+              </Reveal>
             ))}
           </div>
         </section>
 
+        <Reveal>
         <section className="recovery-section">
           <div className="recovery-copy">
             <span className="section-kicker">The recovery loop</span>
@@ -454,33 +459,41 @@ function App() {
             </div>
           </div>
         </section>
+        </Reveal>
 
         <section className="section industries-section" id="industries">
+          <Reveal>
           <div className="section-heading compact">
             <span className="section-kicker">Made for businesses where leads matter</span>
             <h2>Start where one customer<br />is worth something.</h2>
           </div>
+          </Reveal>
 
           <div className="industry-grid">
             {industries.map((industry, index) => (
-              <Link className="industry-card" to="/industries" key={industry}>
+              <Reveal key={industry} delay={(index % 3) * 0.1}>
+              <Link className="industry-card" to="/industries">
                 <span>0{index + 1}</span>
                 <strong>{industry}</strong>
                 <span className="industry-arrow"><IconArrowUpRight width={18} height={18} /></span>
               </Link>
+              </Reveal>
             ))}
           </div>
         </section>
 
         <section className="section testimonials-section" id="testimonials">
+          <Reveal>
           <div className="section-heading">
             <span className="section-kicker">Loved by local businesses</span>
             <h2>They stopped losing<br />customers to silence.</h2>
           </div>
+          </Reveal>
 
           <div className="testimonial-grid">
-            {testimonials.map((t) => (
-              <article className="testimonial-card" key={t.name}>
+            {testimonials.map((t, i) => (
+              <Reveal key={t.name} delay={i * 0.12}>
+              <article className="testimonial-card">
                 <div className="testimonial-stars" aria-label="5 out of 5 stars">
                   {[0,1,2,3,4].map((s) => (
                     <svg key={s} viewBox="0 0 24 24" width="16" height="16" fill="#f59e0b" aria-hidden="true">
@@ -497,26 +510,32 @@ function App() {
                   </div>
                 </div>
               </article>
+              </Reveal>
             ))}
           </div>
         </section>
 
         <section className="section faq-section" id="faq">
+          <Reveal>
           <div className="section-heading">
             <span className="section-kicker">Questions, answered</span>
             <h2>Everything else<br />you want to know.</h2>
           </div>
+          </Reveal>
 
           <div className="faq-list">
             {faqs.map((faq, i) => (
-              <details className="faq-item" key={i} open={i === 0}>
+              <Reveal key={i} delay={Math.min(i * 0.06, 0.3)}>
+              <details className="faq-item" open={i === 0}>
                 <summary>{faq.q}</summary>
                 <p>{faq.a}</p>
               </details>
+              </Reveal>
             ))}
           </div>
         </section>
 
+        <Reveal>
         <section className="pricing-section" id="early-access">
           <div className="pricing-inner">
             <div className="pricing-copy">
@@ -547,7 +566,9 @@ function App() {
             </div>
           </div>
         </section>
+        </Reveal>
 
+        <Reveal>
         <section className="final-cta" id="signup">
           <div>
             <span className="section-kicker">Don't leave money in the inbox.</span>
@@ -557,9 +578,12 @@ function App() {
             </a>
           </div>
         </section>
+        </Reveal>
       </main>
 
       <footer className="footer">
+        <div className="footer-inner">
+        <div className="footer-top">
         <div className="footer-brand">
           <a className="brand" href="#top">
             <LogoMark width={28} height={28} className="brand-logo" />
@@ -595,9 +619,12 @@ function App() {
           </div>
         </div>
 
+        </div>
+
         <div className="footer-bottom">
           <span>© 2026 Wynback. All rights reserved.</span>
           <span>Win-back software for local businesses.</span>
+        </div>
         </div>
       </footer>
     </div>
