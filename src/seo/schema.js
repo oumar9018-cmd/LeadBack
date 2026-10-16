@@ -66,51 +66,7 @@ function softwareNode(page) {
       priceCurrency: 'USD',
       description: 'Free to start',
     },
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: '4.9',
-      ratingCount: '127',
-      bestRating: '5',
-      worstRating: '1',
-    },
   }
-}
-
-/** Review nodes — social proof for rich results. */
-function reviewNodes() {
-  const reviews = [
-    {
-      author: 'Priya Sharma',
-      role: 'Salon owner, Mumbai',
-      rating: 5,
-      text: 'We were losing walk-in enquiries every day because we could not answer the phone mid-appointment. Wynback gave us a simple queue and our rebookings went up within a month.',
-    },
-    {
-      author: 'Marcus Chen',
-      role: 'Auto detailing studio, Austin',
-      rating: 5,
-      text: 'Customers message four shops and book whoever follows up. Wynback makes sure that is us. The recovered-revenue number alone sold my team on it.',
-    },
-    {
-      author: 'Dr. Amara Okafor',
-      role: 'Physiotherapy clinic, London',
-      rating: 5,
-      text: 'No-show rebooking used to depend on whoever remembered. Now it is a routine. Our diary is fuller and nobody had to learn a complicated system.',
-    },
-  ]
-  return reviews.map((review, index) => ({
-    '@type': 'Review',
-    '@id': `${SITE_ORIGIN}/#review-${index + 1}`,
-    itemReviewed: { '@id': `${SITE_ORIGIN}/#software` },
-    author: { '@type': 'Person', name: review.author, jobTitle: review.role },
-    reviewRating: {
-      '@type': 'Rating',
-      ratingValue: String(review.rating),
-      bestRating: '5',
-      worstRating: '1',
-    },
-    reviewBody: review.text,
-  }))
 }
 
 /**
@@ -201,7 +157,6 @@ export function buildSchema(page) {
   const graph = [
     ...siteNodes(),
     softwareNode(page),
-    ...reviewNodes(),
     webPageNode(page),
     breadcrumbNode(page),
   ]

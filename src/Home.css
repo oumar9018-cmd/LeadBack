@@ -959,6 +959,13 @@ img { max-width: 100%; }
   grid-template-columns: repeat(3, 1fr);
   gap: 22px;
 }
+.testimonials-disclaimer {
+  text-align: center;
+  margin-top: 26px;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  color: rgba(255,255,255,0.45);
+}
 .testimonial-card {
   padding: 34px 30px;
   border-radius: var(--wb-radius);

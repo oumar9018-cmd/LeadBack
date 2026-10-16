@@ -485,7 +485,7 @@ function App() {
         <section className="section testimonials-section" id="testimonials">
           <Reveal>
           <div className="section-heading">
-            <span className="section-kicker">Loved by local businesses</span>
+            <span className="section-kicker">Illustrative customer stories</span>
             <h2>They stopped losing<br />customers to silence.</h2>
           </div>
           </Reveal>
@@ -513,6 +513,7 @@ function App() {
               </Reveal>
             ))}
           </div>
+          <p className="testimonials-disclaimer">Illustrative examples of how businesses could use Wynback — real customer stories coming soon.</p>
         </section>
 
         <section className="section faq-section" id="faq">
