@@ -1,0 +1,50 @@
+.wb-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px 4px 4px;
+  border-radius: 999px;
+  background: #f6f8fd;
+  border: 1px solid #e8ecf5;
+  cursor: default;
+  white-space: nowrap;
+}
+
+.wb-badge svg {
+  display: block;
+}
+
+.wb-hot { color: #e5484d; }
+.wb-warm { color: #f5a524; }
+.wb-cold { color: #8a93ad; }
+
+.wb-hot { background: #fff1f1; border-color: #ffd9d9; }
+.wb-warm { background: #fffaeb; border-color: #f5e6b8; }
+.wb-cold { background: #f6f8fd; border-color: #e8ecf5; }
+
+.wb-score-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.wb-score-text strong {
+  font-size: 15px;
+  color: #1c2333;
+}
+
+.wb-score-text small {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #8a93ad;
+  font-weight: 700;
+}
+
+.wb-reasons {
+  display: none;
+}
+
+@media (max-width: 620px) {
+  .wb-badge svg { width: 28px; height: 28px; }
+}

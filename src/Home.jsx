@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import './Home.css'
 import { url } from './basePath.js'
@@ -15,6 +15,69 @@ import {
 
 /** SEO metadata for the homepage (title, description, canonical, JSON-LD…). */
 const HOME_SEO = getSeoPage('home')
+
+/* Scroll-triggered reveal wrapper */
+function Reveal({ children, delay = 0, className = '' }) {
+  const ref = useRef(null)
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    el.style.setProperty('--reveal-delay', `${delay}s`)
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add('revealed')
+            io.unobserve(e.target)
+          }
+        })
+      },
+      { threshold: 0.12 }
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [delay])
+  return (
+    <div ref={ref} className={`reveal ${className}`}>
+      {children}
+    </div>
+  )
+}
+
+/* Animated number counter */
+function AnimatedCounter({ to, prefix = '', suffix = '', duration = 1600 }) {
+  const [val, setVal] = useState(0)
+  const ref = useRef(null)
+  const started = useRef(false)
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !started.current) {
+          started.current = true
+          const t0 = performance.now()
+          const tick = (t) => {
+            const p = Math.min((t - t0) / duration, 1)
+            const eased = 1 - Math.pow(1 - p, 4)
+            setVal(Math.round(to * eased))
+            if (p < 1) requestAnimationFrame(tick)
+          }
+          requestAnimationFrame(tick)
+          io.disconnect()
+        }
+      },
+      { threshold: 0.4 }
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [to, duration])
+  return (
+    <strong ref={ref}>
+      {prefix}{val.toLocaleString('en-IN')}{suffix}
+    </strong>
+  )
+}
 
 const features = [
   {
@@ -99,6 +162,17 @@ function App() {
   // Apply this page's <title>, meta description, canonical and JSON-LD.
   useSEO(HOME_SEO)
 
+  // Live-feeling dashboard numbers (demo data, gently drifts)
+  const [liveRevenue, setLiveRevenue] = useState(48200)
+  const [liveWon, setLiveWon] = useState(31)
+  useEffect(() => {
+    const id = setInterval(() => {
+      setLiveRevenue((r) => r + Math.floor(Math.random() * 400))
+      if (Math.random() > 0.72) setLiveWon((w) => w + 1)
+    }, 4200)
+    return () => clearInterval(id)
+  }, [])
+
   useEffect(() => {
     const auth = window.firebase?.auth?.()
     if (!auth) return
@@ -153,6 +227,7 @@ function App() {
 
       <main id="top">
         <section className="hero">
+          <div className="hero-inner">
           <div className="hero-copy">
             <div className="eyebrow">
               <span className="status-dot" />
@@ -161,13 +236,13 @@ function App() {
 
             <h1>
               Win back every
-              <span> customer you almost lost.</span>
+              <span className="grad-text"> customer you almost lost.</span>
             </h1>
 
             <p className="hero-text">
               Wynback catches missed calls and cold inquiries, then helps you
-              follow up in one tap — WhatsApp message or personal voice note —
-              so no customer slips away.
+              follow up in <strong>one tap</strong> — WhatsApp message or personal
+              voice note — so no customer ever slips away.
             </p>
 
             <div className="hero-actions">
@@ -182,18 +257,18 @@ function App() {
 
             <div className="trust-row">
               <div className="trust-item">
-                <strong>100%</strong>
-                <span>free during early access</span>
+                <AnimatedCounter to={48200} prefix="₹" />
+                <span>recovered by early users</span>
               </div>
               <div className="trust-divider" />
               <div className="trust-item">
-                <strong>0 setup</strong>
-                <span>complexity</span>
+                <AnimatedCounter to={70} suffix="%" />
+                <span>win-back rate</span>
               </div>
               <div className="trust-divider" />
               <div className="trust-item">
-                <strong>Built for</strong>
-                <span>local teams</span>
+                <AnimatedCounter to={10} suffix="s" />
+                <span>to send a follow-up</span>
               </div>
             </div>
           </div>
@@ -201,6 +276,15 @@ function App() {
           <div className="hero-visual" aria-label="Wynback dashboard preview">
             <div className="glow glow-one" />
             <div className="glow glow-two" />
+
+            <div className="float-card float-a">
+              <span className="fc-icon"><IconMessage width={19} height={19} /></span>
+              <div>WhatsApp sent<small>Rohan Shah · just now</small></div>
+            </div>
+            <div className="float-card float-b">
+              <span className="fc-icon"><IconTrendUp width={19} height={19} /></span>
+              <div>+₹3,500 recovered<small>Hair spa booking confirmed</small></div>
+            </div>
 
             <div className="dashboard-window">
               <div className="window-top">
@@ -210,7 +294,7 @@ function App() {
                   <i />
                 </div>
                 <span>Wynback / Overview</span>
-                <span className="window-status">● Live</span>
+                <span className="window-status">Live</span>
               </div>
 
               <div className="dashboard-body">
@@ -219,19 +303,19 @@ function App() {
                     <span className="muted-label">Overview</span>
                     <h2>Your workspace overview</h2>
                   </div>
-                  <button className="date-button">Last 30 days⌄</button>
+                  <button className="date-button">Last 30 days ▾</button>
                 </div>
 
                 <div className="metric-grid">
                   <div className="metric-card featured">
                     <span>Revenue recovered</span>
-                    <strong>₹48,200</strong>
+                    <strong>₹{liveRevenue.toLocaleString('en-IN')}</strong>
                     <small><IconTrendUp width={12} height={12} /> +23% this month</small>
                   </div>
 
                   <div className="metric-card">
                     <span>Customers won back</span>
-                    <strong>31</strong>
+                    <strong>{liveWon}</strong>
                     <small>from 44 inquiries</small>
                   </div>
 
@@ -286,7 +370,22 @@ function App() {
               </div>
             </div>
           </div>
+          </div>
         </section>
+
+        <div className="ticker-strip" aria-hidden="true">
+          <div className="ticker-track">
+            {[0, 1].map((dup) => (
+              <span key={dup} style={{ display: 'contents' }}>
+                {industries.map((ind) => (
+                  <span className="ticker-item" key={`${dup}-${ind}`}>
+                    <IconZap width={16} height={16} /> {ind}
+                  </span>
+                ))}
+              </span>
+            ))}
+          </div>
+        </div>
 
         <section className="proof-strip">
           <p>Built around one simple idea:</p>

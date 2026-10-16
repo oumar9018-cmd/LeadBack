@@ -73,7 +73,7 @@ const features = {
   stats: [
     { value: '4', label: 'Core workflows' },
     { value: '0', label: 'Spreadsheets required' },
-    { value: '₹499', label: 'Per month, all-in' },
+    { value: 'Free', label: 'To start' },
   ],
   sections: [
     {
@@ -394,7 +394,7 @@ const revenueRecovery = {
   intro:
     'Most teams know how many new leads they got. Almost none know how much money they recovered from the ones they nearly lost. Wynback makes that number visible — and it is usually the most motivating figure in the business.',
   stats: [
-    { value: '₹', label: 'Recovered, tracked live' },
+    { value: '$', label: 'Recovered, tracked live' },
     { value: '1', label: 'Number that matters' },
     { value: '30 days', label: 'To your first benchmark' },
   ],
@@ -425,7 +425,7 @@ const revenueRecovery = {
     {
       icon: 'dollar',
       title: 'Compare against cost',
-      text: 'Put recovered revenue next to what Wynback costs. The ROI conversation stops being theoretical.',
+      text: 'Put recovered revenue next to the ten minutes a day it takes. The ROI conversation stops being theoretical.',
     },
     {
       icon: 'layers',
@@ -581,19 +581,39 @@ const industries = {
     text: 'Detailed guides for the industries where missed inquiries cost the most.',
     items: [
       {
+        to: '/industries/salons',
+        title: 'Salons & spas',
+        text: 'Win back missed calls, rebook no-shows, and bring lapsed clients back.',
+      },
+      {
+        to: '/industries/auto-repair',
+        title: 'Auto repair',
+        text: 'Recover missed service calls and chase every quote to a decision.',
+      },
+      {
+        to: '/industries/clinics',
+        title: 'Clinics',
+        text: 'Reduce no-shows and reactivate lapsed patients with a simple routine.',
+      },
+      {
+        to: '/industries/coaches',
+        title: 'Coaches',
+        text: 'Turn discovery-call enquiries into signed clients.',
+      },
+      {
+        to: '/industries/real-estate',
+        title: 'Real estate',
+        text: 'Never lose a buyer or seller to silence again.',
+      },
+      {
+        to: '/industries/freelancers',
+        title: 'Freelancers',
+        text: 'Win back every project enquiry without CRM overhead.',
+      },
+      {
         to: '/industries/car-detailing',
         title: 'Car detailing',
         text: 'How detailing studios and mobile detailers recover missed booking enquiries.',
-      },
-      {
-        to: '/use-cases/missed-inquiries',
-        title: 'Missed inquiries',
-        text: 'The cross-industry workflow for capturing and recovering every enquiry.',
-      },
-      {
-        to: '/use-cases/revenue-recovery',
-        title: 'Revenue recovery',
-        text: 'Measure what following up is actually worth in your industry.',
       },
     ],
   },
@@ -608,7 +628,7 @@ const industries = {
     },
     {
       q: 'Do you support businesses outside India?',
-      a: 'Yes. Wynback works anywhere and is priced in INR for convenience. The workflow is language- and currency-agnostic.',
+      a: 'Yes. Wynback works anywhere in the world. The workflow is language- and currency-agnostic — set it to whatever your business uses.',
     },
   ],
 }
@@ -632,7 +652,7 @@ const carDetailing = {
   stats: [
     { value: '3–4', label: 'Shops each customer messages' },
     { value: '1st', label: 'Proper reply usually wins' },
-    { value: '₹499', label: 'Per month, all-in' },
+    { value: 'Free', label: 'To start' },
   ],
   sections: [
     {
@@ -705,7 +725,7 @@ const about = {
     'Wynback exists because of a pattern we kept seeing in small businesses: the marketing worked, the phone rang, and the revenue still leaked — on the follow-up.',
   stats: [
     { value: '1', label: 'Problem we solve' },
-    { value: '₹499', label: 'Flat monthly price' },
+    { value: 'Free', label: 'To start' },
     { value: '0', label: 'Per-seat charges' },
   ],
   sections: [
@@ -717,7 +737,7 @@ const about = {
     {
       icon: 'target',
       title: 'What we decided to build',
-      text: 'Not another CRM. A narrow tool that does the four steps between an arriving inquiry and a paying customer, and does them well enough that teams keep using them.',
+      text: 'Not another CRM. A narrow tool that does the four steps between an arriving inquiry and a paying customer, and does them well enough that teams keep using them.'
     },
     {
       icon: 'users',
@@ -727,7 +747,7 @@ const about = {
     {
       icon: 'shield',
       title: 'How we price',
-      text: 'One flat price per business, no per-seat charges, no setup fees and a 1-month free trial, because the product should pay for itself before you pay for it.',
+      text: 'No per-seat charges, no setup fees, no feature gates — because the product should prove itself before it asks anything of you.',
     },
   ],
   faq: [
@@ -811,6 +831,500 @@ const resources = {
 }
 
 /* ------------------------------------------------------------------ */
+/* GLOBAL VERTICAL PAGES — worldwide positioning                       */
+/* ------------------------------------------------------------------ */
+
+/* ------------------------- Salons & Spas ------------------------- */
+const salons = {
+  type: 'salons',
+  path: '/industries/salons',
+  title: 'Wynback for Salons — Win Back Missed Appointments',
+  description:
+    'Salon client follow-up software. Recover missed calls, rebook no-shows, and bring lapsed clients back — without chasing them manually.',
+  keywords:
+    'salon follow up software, salon client retention, missed appointment recovery, rebook no-show clients, salon CRM, beauty salon lead follow up',
+  eyebrow: 'INDUSTRY · SALONS & SPAS',
+  heading: 'Your chair is empty because nobody followed up.',
+  intro:
+    'Salon clients message three or four places and book whoever replies first. Wynback makes sure your salon is the one that follows through — on every missed call, every unanswered DM, every client who never rebooked.',
+  stats: [
+    { value: '3–4', label: 'Salons each client messages' },
+    { value: '1st', label: 'Good reply usually wins' },
+    { value: '0', label: 'Clients lost to silence' },
+  ],
+  sections: [
+    {
+      icon: 'phone',
+      title: 'Missed calls during appointments',
+      text: 'You cannot answer the phone with foils in a client’s hair. Log the call and return it with the client’s history already in front of you.',
+    },
+    {
+      icon: 'message',
+      title: 'DMs that scroll away',
+      text: 'Instagram is where salon bookings are won. Capture the enquiry before it disappears under tomorrow’s posts.',
+    },
+    {
+      icon: 'calendar',
+      title: 'No-shows worth rebooking',
+      text: 'A client who missed an appointment is the warmest lead you have. Rebook them instead of writing the slot off.',
+    },
+    {
+      icon: 'refresh',
+      title: 'Lapsed clients',
+      text: 'A colour or cut is due every few weeks. Work your past-client list and fill quiet days without spending on ads.',
+    },
+    {
+      icon: 'dollar',
+      title: 'Know what a rebooking is worth',
+      text: 'Record the value of every recovered appointment and see exactly how much revenue your follow-ups brought back this month.',
+    },
+    {
+      icon: 'users',
+      title: 'Works for solo stylists too',
+      text: 'Log enquiries between clients from your phone. No desk, no laptop, no end-of-day admin.',
+    },
+  ],
+  faq: [
+    {
+      q: 'Is Wynback a salon booking system?',
+      a: 'No — deliberately not. Wynback does not replace your calendar or booking app. It makes sure every enquiry reaches your calendar by giving you a reliable follow-up process around the bookings you already take.',
+    },
+    {
+      q: 'I am a solo stylist. Is this useful for me?',
+      a: 'Yes — arguably more than for a large salon. When you are the only person, every missed call is an appointment you personally lost. Wynback is the second pair of hands that follows up while you are with a client.',
+    },
+    {
+      q: 'How do I win back clients who stopped coming?',
+      a: 'Import your lapsed-client list into Wynback and work it like new enquiries: a personal message, a reason to return, a clear next step. Most salons are surprised how many "lost" clients just needed one nudge.',
+    },
+    {
+      q: 'Do I need to connect my Instagram or phone?',
+      a: 'No integrations required. You log enquiries manually with their source, which keeps setup instant and works for walk-ins and referrals too.',
+    },
+  ],
+}
+
+/* ------------------------- Auto Repair ------------------------- */
+const autoRepair = {
+  type: 'auto-repair',
+  path: '/industries/auto-repair',
+  title: 'Wynback for Auto Repair — Recover Missed Service Jobs',
+  description:
+    'Auto repair shop follow-up software. Track missed calls, chase unsent quotes, and turn more enquiries into booked service jobs.',
+  keywords:
+    'auto repair shop CRM, garage lead follow up, missed call auto shop, quote follow up mechanic, auto service customer retention',
+  eyebrow: 'INDUSTRY · AUTO REPAIR',
+  heading: 'The job went to whoever called back first.',
+  intro:
+    'Drivers with a strange noise or a warning light call two or three shops and book whoever responds properly. Wynback makes sure your shop is the one that follows up — every time.',
+  stats: [
+    { value: '2–3', label: 'Shops each driver calls' },
+    { value: '1st', label: 'Proper callback usually wins' },
+    { value: '0', label: 'Quotes left unchased' },
+  ],
+  sections: [
+    {
+      icon: 'phone',
+      title: 'Missed calls under the car',
+      text: 'You cannot answer the phone mid-job. Log the number and call back with the vehicle details already on screen.',
+    },
+    {
+      icon: 'file',
+      title: 'Quotes that never got chased',
+      text: 'A brake-job or service quote sitting unanswered is not a lost job — it is an un-followed-up job. Track every quote to a decision.',
+    },
+    {
+      icon: 'calendar',
+      title: 'Service reminders',
+      text: 'Oil changes, MOTs and seasonal checks are due on schedule. Reach out first and fill the diary before the quiet weeks.',
+    },
+    {
+      icon: 'refresh',
+      title: 'One-time customers',
+      text: 'The driver who came in once for an emergency is a repeat customer waiting for a reason. Give them one.',
+    },
+    {
+      icon: 'dollar',
+      title: 'Know what a job is worth',
+      text: 'Record the value of each recovered booking and see the revenue your follow-ups generated this month.',
+    },
+    {
+      icon: 'users',
+      title: 'Built for the workshop',
+      text: 'Log enquiries from a phone between jobs. No office, no paperwork pile, no end-of-day backlog.',
+    },
+  ],
+  faq: [
+    {
+      q: 'Is Wynback a garage management system?',
+      a: 'No. Wynback does not do job cards, invoicing or parts. It handles the gap most garage software ignores: making sure every enquiry gets a follow-up until it becomes a booking.',
+    },
+    {
+      q: 'How do I handle price shoppers?',
+      a: 'Log the quote with its value and follow up once with a reason to choose you — availability, warranty, a courtesy check. Price shoppers who get a proper follow-up convert far more often than ones who hear nothing.',
+    },
+    {
+      q: 'Can I track fleet or repeat customers?',
+      a: 'Yes. Customer history keeps every interaction on record, so repeat work and fleet contacts are always one search away.',
+    },
+    {
+      q: 'Do I need any integrations?',
+      a: 'No. Manual logging keeps setup instant and works for every channel — phone, WhatsApp, walk-ins and referrals.',
+    },
+  ],
+}
+
+/* ------------------------- Clinics ------------------------- */
+const clinics = {
+  type: 'clinics',
+  path: '/industries/clinics',
+  title: 'Wynback for Clinics — Reduce No-Shows, Win Back Patients',
+  description:
+    'Clinic patient follow-up software. Recover missed appointment enquiries, rebook no-shows, and bring lapsed patients back with a simple workflow.',
+  keywords:
+    'clinic patient follow up, reduce patient no-shows, missed appointment recovery, patient reactivation software, dental clinic CRM, physiotherapy follow up',
+  eyebrow: 'INDUSTRY · CLINICS',
+  heading: 'Empty slots are patients who never got a follow-up.',
+  intro:
+    'Patients who enquire and hear nothing book elsewhere. Patients who miss an appointment and hear nothing stay missed. Wynback gives clinics a simple, respectful follow-up routine that keeps the diary full.',
+  stats: [
+    { value: '1', label: 'Shared follow-up queue' },
+    { value: '0', label: 'Enquiries lost to voicemail' },
+    { value: 'Daily', label: 'Routine, not a project' },
+  ],
+  sections: [
+    {
+      icon: 'phone',
+      title: 'Missed calls at reception',
+      text: 'Reception cannot always pick up. Log the caller and return the call with their enquiry details ready.',
+    },
+    {
+      icon: 'calendar',
+      title: 'No-show rebooking',
+      text: 'A missed appointment is the warmest lead a clinic has. Rebook with one respectful message instead of writing the slot off.',
+    },
+    {
+      icon: 'refresh',
+      title: 'Lapsed patients',
+      text: 'Check-ups, reviews and treatment plans have natural recall dates. Reach out first and patients come back.',
+    },
+    {
+      icon: 'file',
+      title: 'Treatment plans left undecided',
+      text: 'Patients who heard a treatment plan and went quiet usually need one clear follow-up, not pressure. Track every plan to a decision.',
+    },
+    {
+      icon: 'bell',
+      title: 'Respectful, not pushy',
+      text: 'Clinic follow-ups need the right tone. Wynback keeps the human in the loop — reminders prompt your team, people send the message.',
+    },
+    {
+      icon: 'shield',
+      title: 'Your records stay yours',
+      text: 'Enquiry and follow-up records are exportable at any time. No lock-in, no data hostage situations.',
+    },
+  ],
+  faq: [
+    {
+      q: 'Is Wynback a practice management system?',
+      a: 'No. Wynback does not handle clinical records, billing or scheduling. It covers the communication gap: making sure every patient enquiry and missed appointment gets a proper follow-up.',
+    },
+    {
+      q: 'How do we follow up without sounding pushy?',
+      a: 'The follow-up queue prompts the contact; your team writes the message in your clinic’s voice. One respectful check-in converts far better than silence, and patients consistently prefer being remembered.',
+    },
+    {
+      q: 'Can we track treatment-plan acceptance?',
+      a: 'Yes. Log the plan as an enquiry with its value, follow up once or twice, and record the outcome. Over time you will see exactly where plans stall.',
+    },
+    {
+      q: 'Does it work for multi-practitioner clinics?',
+      a: 'Yes. The shared queue means any team member can see what is due and pick it up, so cover during leave is automatic.',
+    },
+  ],
+}
+
+/* ------------------------- Coaches ------------------------- */
+const coaches = {
+  type: 'coaches',
+  path: '/industries/coaches',
+  title: 'Wynback for Coaches — Turn Enquiries Into Clients',
+  description:
+    'Coaching business follow-up software. Track discovery-call enquiries, follow up on proposals, and win back prospects who went quiet.',
+  keywords:
+    'coach lead follow up, coaching client acquisition, discovery call follow up, fitness coach CRM, business coach lead tracking',
+  eyebrow: 'INDUSTRY · COACHES',
+  heading: 'They were interested. Then life happened.',
+  intro:
+    'Coaching prospects enquire in a burst of motivation and go quiet when the week gets busy. Wynback keeps every conversation warm until they are ready — so the client comes to you, not to the coach who followed up.',
+  stats: [
+    { value: '3–5', label: 'Touches to get a yes' },
+    { value: '0', label: 'Prospects forgotten' },
+    { value: '1', label: 'Queue to work daily' },
+  ],
+  sections: [
+    {
+      icon: 'message',
+      title: 'DMs and form enquiries',
+      text: 'Prospects arrive from Instagram, your website and referrals at all hours. Capture every one before motivation fades.',
+    },
+    {
+      icon: 'calendar',
+      title: 'Discovery calls that never booked',
+      text: 'Someone asked about working together and never picked a time. One follow-up with a booking link closes that gap.',
+    },
+    {
+      icon: 'file',
+      title: 'Proposals gone quiet',
+      text: 'A proposal sitting unanswered is not a no. Track it, follow up with a reason, and get the clear answer.',
+    },
+    {
+      icon: 'refresh',
+      title: 'Past clients and past leads',
+      text: 'Old enquiries and finished programmes are your warmest pipeline. Work the list instead of only chasing new followers.',
+    },
+    {
+      icon: 'trending',
+      title: 'See what converts',
+      text: 'Learn which sources and follow-up rhythms actually produce clients, and double down on what works.',
+    },
+    {
+      icon: 'zap',
+      title: 'Fits a solo practice',
+      text: 'No team, no problem. Ten minutes a day on the follow-up queue replaces the spreadsheet you never open.',
+    },
+  ],
+  faq: [
+    {
+      q: 'I already have a CRM. Why Wynback?',
+      a: 'Most coaches do not need a CRM — they need a follow-up habit. Wynback is narrower and simpler: one queue of people to contact, worked daily. If your CRM is where leads go to be forgotten, Wynback is the fix.',
+    },
+    {
+      q: 'How often should I follow up with a prospect?',
+      a: 'Until you get a clear yes or no — usually three to five touches across two to three weeks. Each follow-up should add value or make the next step easier, never just "checking in".',
+    },
+    {
+      q: 'Can I use it for corporate or group programmes?',
+      a: 'Yes. Longer cycles with multiple stakeholders are exactly where a shared follow-up record pays off — nobody has to remember where the conversation stands.',
+    },
+    {
+      q: 'Does it handle payments or contracts?',
+      a: 'No. Wynback covers enquiry to signed client. Your existing tools keep handling payments, contracts and delivery.',
+    },
+  ],
+}
+
+/* ------------------------- Real Estate ------------------------- */
+const realEstate = {
+  type: 'real-estate',
+  path: '/industries/real-estate',
+  title: 'Wynback for Real Estate Agents — Never Lose a Buyer Again',
+  description:
+    'Real estate lead follow-up software. Track every viewing enquiry, chase cold listings, and win back buyers and sellers who went quiet.',
+  keywords:
+    'real estate lead follow up, estate agent CRM alternative, property enquiry tracking, win back property buyers, seller follow up software',
+  eyebrow: 'INDUSTRY · REAL ESTATE',
+  heading: 'Speed to lead wins listings. Follow-up wins deals.',
+  intro:
+    'Buyers enquire on five listings and view with whoever responds first. Sellers choose the agent who stays in touch. Wynback makes sure no enquiry, viewing or valuation ever goes quiet on your watch.',
+  stats: [
+    { value: '5 min', label: 'Response window that matters' },
+    { value: '3–5', label: 'Touches to stay top of mind' },
+    { value: '0', label: 'Enquiries lost to inbox' },
+  ],
+  sections: [
+    {
+      icon: 'phone',
+      title: 'Portal enquiries in one place',
+      text: 'Rightmove, Zillow, website forms and board calls all land in one list — no more reconstructing conversations across four apps.',
+    },
+    {
+      icon: 'calendar',
+      title: 'Viewings that never booked',
+      text: 'Someone asked about a viewing and went quiet. One follow-up with two time options brings them back.',
+    },
+    {
+      icon: 'file',
+      title: 'Valuations gone cold',
+      text: 'A valuation from three months ago is a listing waiting for a reason. Work the old valuation list systematically.',
+    },
+    {
+      icon: 'refresh',
+      title: 'Buyers who paused',
+      text: 'Paused buyers come back when circumstances change. Stay the agent they remember with light, useful check-ins.',
+    },
+    {
+      icon: 'trending',
+      title: 'Know your pipeline',
+      text: 'See every live enquiry, what is overdue and what converted — without the enterprise CRM nobody on the team opens.',
+    },
+    {
+      icon: 'users',
+      title: 'Works for small teams',
+      text: 'One shared queue means cover is automatic when someone is on a viewing. Nothing depends on one person’s memory.',
+    },
+  ],
+  faq: [
+    {
+      q: 'Is Wynback a replacement for my estate agency CRM?',
+      a: 'For many small agencies, yes — because the CRM is where leads go to die. Wynback does the one thing that actually wins deals: making sure every enquiry gets followed up. If you love your CRM, Wynback can sit alongside it for the follow-up layer.',
+    },
+    {
+      q: 'How fast should I respond to a portal enquiry?',
+      a: 'Within minutes if possible. But the bigger leak is not the first response — it is the second, third and fourth follow-up that never happens. Wynback fixes that part.',
+    },
+    {
+      q: 'Can I track both buyers and sellers?',
+      a: 'Yes. Every enquiry carries its type, source and value, so buyers, sellers, landlords and tenants live in one workflow.',
+    },
+    {
+      q: 'Does it do automated drip emails?',
+      a: 'Wynback is deliberately human-first: it tells your team who to contact and when, and the message comes from a person. In property, the personal touch is what converts.',
+    },
+  ],
+}
+
+/* ------------------------- Freelancers ------------------------- */
+const freelancers = {
+  type: 'freelancers',
+  path: '/industries/freelancers',
+  title: 'Wynback for Freelancers — Win Back Every Project Enquiry',
+  description:
+    'Freelancer lead follow-up software. Track project enquiries, chase unsent proposals, and turn more conversations into paying clients.',
+  keywords:
+    'freelancer lead follow up, freelance client acquisition, proposal follow up freelancer, win back freelance clients, freelancer CRM',
+  eyebrow: 'INDUSTRY · FREELANCERS',
+  heading: 'The project went to whoever followed up.',
+  intro:
+    'Clients enquire with three freelancers and hire whoever stays engaged. Between delivering work, enquiries go quiet and projects slip away. Wynback is the follow-up system for people who do everything themselves.',
+  stats: [
+    { value: '10 min', label: 'A day on the queue' },
+    { value: '3–5', label: 'Touches to close' },
+    { value: '0', label: 'Enquiries forgotten' },
+  ],
+  sections: [
+    {
+      icon: 'inbox',
+      title: 'Every enquiry in one place',
+      text: 'Email, DMs, referrals and marketplace messages land in one list instead of living across six inboxes.',
+    },
+    {
+      icon: 'file',
+      title: 'Proposals that went quiet',
+      text: 'A proposal sitting unanswered for a week is not a rejection. Track it, nudge once with a reason, and get the answer.',
+    },
+    {
+      icon: 'refresh',
+      title: 'Past clients, future work',
+      text: 'Finished projects are your cheapest pipeline. A light check-in every few months keeps you first in mind for the next brief.',
+    },
+    {
+      icon: 'dollar',
+      title: 'Know your recovered revenue',
+      text: 'See exactly how much work your follow-ups brought back. It is usually the highest-ROI ten minutes of your day.',
+    },
+    {
+      icon: 'zap',
+      title: 'No CRM overhead',
+      text: 'You do not need pipelines, stages and automation rules. You need a list of people to message today. That is Wynback.',
+    },
+    {
+      icon: 'shield',
+      title: 'Your data, portable',
+      text: 'Export everything any time. Your client history is yours, whatever tools you use next.',
+    },
+  ],
+  faq: [
+    {
+      q: 'I am a solo freelancer. Is this overkill?',
+      a: 'It is the opposite of overkill — it replaces the mental load of remembering who to follow up with. Ten minutes a day on one queue, and no more "I meant to reply to them" guilt.',
+    },
+    {
+      q: 'How do I follow up without being annoying?',
+      a: 'Add something useful each time: a relevant example, a clearer timeline, a smaller first step. Wynback prompts the contact; you bring the value. Three to five touches across two weeks is normal, not pushy.',
+    },
+    {
+      q: 'Can I track different service lines?',
+      a: 'Yes. Tag enquiries by service so you can see which work actually converts and where to focus your limited outreach time.',
+    },
+    {
+      q: 'Does it integrate with my invoicing tool?',
+      a: 'No integrations needed. Wynback covers enquiry to won project; your existing tools keep handling the rest.',
+    },
+  ],
+}
+
+/* ------------------------------------------------------------------ */
+/* Manifesto — the "why" page                                          */
+/* ------------------------------------------------------------------ */
+
+const manifesto = {
+  type: 'manifesto',
+  path: '/manifesto',
+  navLabel: 'Manifesto',
+  title: 'The Wynback Manifesto — Why We Exist',
+  description:
+    'Wynback exists for one reason: the easiest customer to win is the one who already contacted you. Read why follow-up is the most underrated growth lever in business.',
+  keywords:
+    'customer win back philosophy, follow up importance, small business growth, why follow up matters, revenue recovery mindset',
+  eyebrow: 'MANIFESTO',
+  heading: 'The easiest sale you will ever make is the one you already earned.',
+  intro:
+    'Every business in the world loses customers the same way. Not to competitors. Not to price. To silence — the gap between "we will get back to you" and actually getting back. This is what we think about that.',
+  sections: [
+    {
+      icon: 'search',
+      title: 'You already paid for this customer',
+      text: 'The ad, the signboard, the referral, the reputation — all of it was spent the moment they contacted you. Losing them now means paying twice for the same person. Nobody would do that on purpose, yet almost every business does it by accident, every day.',
+    },
+    {
+      icon: 'heart',
+      title: 'Following up is respect, not pressure',
+      text: 'A customer who contacted you wants an answer. Giving them one — even days later — is not pushy. It is the bare minimum of respect. Silence is the only message that truly insults them, because it says they were not worth thirty seconds.',
+    },
+    {
+      icon: 'trending',
+      title: 'New customers are expensive. Old interest is free',
+      text: 'Every growth playbook says "get more leads". Almost none say "stop dropping the ones you have". Recovering a missed inquiry costs nothing and converts at rates cold outreach will never touch. It is the cheapest growth in business, hiding in plain sight.',
+    },
+    {
+      icon: 'users',
+      title: 'Systems beat memory, every time',
+      text: 'Nobody forgets to follow up because they do not care. They forget because they are busy, and memory is a terrible filing system. The businesses that win are not the ones with the best intentions — they are the ones with a list, worked daily.',
+    },
+    {
+      icon: 'zap',
+      title: 'Small beats big here',
+      text: 'A two-person shop can out-follow-up any corporation, because the owner can send a personal message in ten seconds. Big companies need committees and automation. You need a queue and ten minutes. That is your unfair advantage — use it.',
+    },
+    {
+      icon: 'target',
+      title: 'We build for the follow-up',
+      text: 'Wynback does not try to run your business. It does one thing: make sure no customer who reached out ever disappears into silence. Everything we build serves that single moment — the second chance.',
+    },
+  ],
+  stats: [
+    { value: '1', label: 'Belief: no inquiry left behind' },
+    { value: '10 min', label: 'A day is all it takes' },
+    { value: '∞', label: 'Second chances' },
+  ],
+  faq: [
+    {
+      q: 'Is this really a whole product, or just a to-do list?',
+      a: 'It is a workflow built around a belief: that follow-up is a discipline, not a reminder. The queue, the history, the recovery numbers — they exist to make the discipline easy enough that a busy team actually keeps it up for years, not weeks.',
+    },
+    {
+      q: 'Why not just use a CRM?',
+      a: 'CRMs are built for companies with sales teams, pipelines and forecasts. Most businesses need something smaller and harder to abandon: one list of people who deserve a reply, worked every day. Narrow tools get used. Broad tools get admired and ignored.',
+    },
+    {
+      q: 'Who is Wynback for, really?',
+      a: 'Any business where one customer is worth a phone call — salons, garages, clinics, coaches, agents, freelancers, studios, trades. If a missed call costs you real money, Wynback is for you, wherever in the world you are.',
+    },
+  ],
+}
+
+/* ------------------------------------------------------------------ */
 /* Exports                                                             */
 /* ------------------------------------------------------------------ */
 
@@ -828,7 +1342,14 @@ export const SEO_PAGES = [
   revenueRecovery,
   industries,
   carDetailing,
+  salons,
+  autoRepair,
+  clinics,
+  coaches,
+  realEstate,
+  freelancers,
   about,
+  manifesto,
   resources,
 ]
 
@@ -846,6 +1367,7 @@ export const NAV_LINKS = [
   useCases,
   howItWorks,
   industries,
+  manifesto,
   about,
 ].map((page) => ({ to: page.path, label: page.navLabel }))
 
@@ -872,6 +1394,12 @@ export const FOOTER_GROUPS = [
     title: 'Industries',
     links: [
       { to: industries.path, label: 'All industries' },
+      { to: salons.path, label: 'Salons & spas' },
+      { to: autoRepair.path, label: 'Auto repair' },
+      { to: clinics.path, label: 'Clinics' },
+      { to: coaches.path, label: 'Coaches' },
+      { to: realEstate.path, label: 'Real estate' },
+      { to: freelancers.path, label: 'Freelancers' },
       { to: carDetailing.path, label: 'Car detailing' },
     ],
   },
@@ -879,6 +1407,7 @@ export const FOOTER_GROUPS = [
     title: 'Company',
     links: [
       { to: about.path, label: 'About Wynback' },
+      { to: manifesto.path, label: 'Manifesto' },
       { to: '/', label: 'Home' },
     ],
   },
