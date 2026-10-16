@@ -24,15 +24,15 @@
 const home = {
   type: 'home',
   path: '/',
-  title: 'Wynback — Turn Missed Inquiries Into Customers',
+  title: 'Wynback — Win Back Every Customer You Almost Lost',
   description:
-    'Wynback helps growing businesses recover missed customer inquiries, organize follow-ups, and turn more conversations into paying customers. Start free.',
+    'Wynback helps local businesses win back missed calls and cold inquiries with one-tap WhatsApp follow-ups, personal voice notes, and drip sequences. Start free.',
   keywords:
-    'lead recovery software, customer inquiry tracking, follow-up management, missed lead software, revenue recovery, small business CRM',
-  eyebrow: 'REVENUE RECOVERY',
-  heading: 'Turn missed inquiries into customers.',
+    'win back customers, missed call follow up, WhatsApp follow up tool, customer recovery software, voice note follow up, lead recovery, small business CRM',
+  eyebrow: 'CUSTOMER WIN-BACK',
+  heading: 'Win back every customer you almost lost.',
   intro:
-    'Wynback gives growing businesses one simple workspace to capture every customer inquiry, follow up at the right time, and measure the revenue that comes back.',
+    'Wynback gives local businesses one simple workspace to catch every missed inquiry, follow up in one tap on WhatsApp — or with a personal voice note — and measure the revenue that comes back.',
   sections: [
     {
       icon: 'inbox',
@@ -61,11 +61,11 @@ const features = {
   type: 'features',
   path: '/features',
   navLabel: 'Features',
-  title: 'Wynback Features — Never Lose Another Customer Inquiry',
+  title: 'Wynback Features — One-Tap WhatsApp Follow-ups & Voice Notes',
   description:
-    'Explore Wynback features: inquiry tracking, follow-up workflows, recovery analytics and revenue reporting built for growing service businesses.',
+    'Explore Wynback features: one-tap WhatsApp follow-ups, personal voice-note win-backs, drip sequences, public booking links, and recovery analytics.',
   keywords:
-    'lead management features, customer inquiry tracking software, follow-up automation, lead recovery analytics, sales follow-up tool, small business CRM features',
+    'WhatsApp follow up tool, voice note follow up, missed call recovery, drip sequence software, booking link generator, customer win back features',
   eyebrow: 'FEATURES',
   heading: 'Every feature has one job: getting the customer back.',
   intro:

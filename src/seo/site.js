@@ -12,12 +12,12 @@ export const SITE_ORIGIN = 'https://wynback.app'
 
 export const SITE = {
   name: 'Wynback',
-  tagline: 'Turn missed inquiries into customers.',
+  tagline: 'Win back every customer you almost lost.',
 
   /** Fallback title/description (also the defaults baked into index.html). */
-  title: 'Wynback — Turn Missed Inquiries Into Customers',
+  title: 'Wynback — Win Back Every Customer You Almost Lost',
   description:
-    'Wynback helps growing businesses recover missed customer inquiries, organize follow-ups, and turn more conversations into customers.',
+    'Wynback helps local businesses win back missed calls and cold inquiries with one-tap WhatsApp follow-ups, personal voice notes, and drip sequences.',
 
   /** Absolute path (from the site root) of the social share image. */
   ogImage: '/og-image.png',
