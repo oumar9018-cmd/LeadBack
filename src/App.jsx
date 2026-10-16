@@ -31,6 +31,23 @@ import ForecastWidget from './components/ForecastWidget.jsx'
 import VoiceInput from './components/VoiceInput.jsx'
 import BlitzMode from './components/BlitzMode.jsx'
 import BookingPage from './BookingPage.jsx'
+import OfferPage from './OfferPage.jsx'
+import Offers from './Offers.jsx'
+import WinbackScoreBadge from './components/WinbackScore.jsx'
+import { GraveyardCounter } from './components/GraveyardCounter.jsx'
+import LossReasonModal, { LOSS_REASON_LABELS } from './components/LossReasonModal.jsx'
+import LossIntelligence from './components/LossIntelligence.jsx'
+import StreakWidget from './components/StreakWidget.jsx'
+import OfferBuilder from './components/OfferBuilder.jsx'
+import {
+  IconPlus,
+  IconX,
+  IconChevronDown,
+  IconTrendUp,
+  IconClock,
+  IconMessage,
+  IconZap,
+} from './components/icons.jsx'
 import './App.css'
 
 const statusLabels = {
@@ -54,6 +71,114 @@ function money(value, currency = 'INR') {
     currency,
     maximumFractionDigits: 0,
   }).format(value)
+}
+
+/* ------------------------------------------------------------------ */
+/* Premium motion helpers — visual only, no logic changes.             */
+/* ------------------------------------------------------------------ */
+
+/** Count-up animation for hero numbers. Returns the eased value. */
+function useCountUp(target, duration = 1100) {
+  const [value, setValue] = useState(0)
+
+  useEffect(() => {
+    const end = Number(target) || 0
+    if (end <= 0) {
+      setValue(0)
+      return undefined
+    }
+
+    let raf = 0
+    const start = performance.now()
+
+    const tick = now => {
+      const progress = Math.min(1, (now - start) / duration)
+      const eased = 1 - Math.pow(1 - progress, 3)
+      setValue(Math.round(end * eased))
+      if (progress < 1) raf = requestAnimationFrame(tick)
+    }
+
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [target, duration])
+
+  return value
+}
+
+/**
+ * Frosted modal shell with buttery open/close animation.
+ * Purely visual: delays unmount by the close animation, calls onClose
+ * on backdrop click exactly like the previous inline markup did.
+ */
+function Modal({ open, onClose, wide = false, children }) {
+  const [rendered, setRendered] = useState(false)
+  const [closing, setClosing] = useState(false)
+
+  useEffect(() => {
+    if (open) {
+      setRendered(true)
+      setClosing(false)
+      return undefined
+    }
+    if (!rendered) return undefined
+    setClosing(true)
+    const timer = setTimeout(() => {
+      setRendered(false)
+      setClosing(false)
+    }, 260)
+    return () => clearTimeout(timer)
+  }, [open, rendered])
+
+  if (!rendered) return null
+
+  return (
+    <div
+      className={`modal-backdrop${closing ? ' is-closing' : ''}`}
+      onMouseDown={event => {
+        if (event.target === event.currentTarget) onClose()
+      }}
+    >
+      <div
+        className={`inquiry-modal${wide ? ' detail-modal' : ''}${closing ? ' is-closing' : ''}`}
+      >
+        {children}
+      </div>
+    </div>
+  )
+}
+
+/** Gold radar-sweep illustration for empty states. Pure SVG, no emojis. */
+function EmptyArt({ compact = false }) {
+  return (
+    <svg
+      viewBox="0 0 160 120"
+      className={`empty-art${compact ? ' empty-art-compact' : ''}`}
+      aria-hidden="true"
+    >
+      <defs>
+        <linearGradient id="ea-gold" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#E8B44A" />
+          <stop offset="1" stopColor="#FF6B35" />
+        </linearGradient>
+        <radialGradient id="ea-glow" cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0" stopColor="#E8B44A" stopOpacity="0.28" />
+          <stop offset="1" stopColor="#E8B44A" stopOpacity="0" />
+        </radialGradient>
+      </defs>
+      <ellipse cx="80" cy="106" rx="54" ry="8" fill="rgba(232,180,74,0.07)" />
+      <circle cx="80" cy="60" r="44" fill="url(#ea-glow)" />
+      <circle cx="80" cy="60" r="34" fill="none" stroke="url(#ea-gold)" strokeWidth="2.5" opacity="0.9" />
+      <circle cx="80" cy="60" r="24" fill="none" stroke="#E8B44A" strokeWidth="1.5" strokeDasharray="4 6" opacity="0.45" />
+      <circle cx="80" cy="60" r="14" fill="none" stroke="#E8B44A" strokeWidth="1" strokeDasharray="2 4" opacity="0.3" />
+      <path d="M80 60 L104 36" stroke="url(#ea-gold)" strokeWidth="2.5" strokeLinecap="round">
+        <animateTransform attributeName="transform" type="rotate" from="0 80 60" to="360 80 60" dur="6s" repeatCount="indefinite" />
+      </path>
+      <circle cx="80" cy="60" r="4.5" fill="url(#ea-gold)" />
+      <circle cx="104" cy="36" r="3" fill="#FF6B35" opacity="0.9">
+        <animate attributeName="opacity" values="0.9;0.3;0.9" dur="2s" repeatCount="indefinite" />
+      </circle>
+    </svg>
+  )
 }
 
 /* ------------------------------------------------------------------ */
@@ -214,6 +339,8 @@ function Dashboard() {
   const [search, setSearch] = useState('')
   const [showAddInquiry, setShowAddInquiry] = useState(false)
   const [selectedInquiry, setSelectedInquiry] = useState(null)
+  const [lossTarget, setLossTarget] = useState(null)
+  const [offerTarget, setOfferTarget] = useState(null)
 
   const [searchParams] = useSearchParams()
 
@@ -252,6 +379,16 @@ function Dashboard() {
     0
   )
 
+  const recoveryRate = items.length
+    ? Math.round((recovered.length / items.length) * 100)
+    : 0
+
+  // Animated hero numbers (visual only)
+  const animatedRevenue = useCountUp(recoveredRevenue)
+  const animatedPending = useCountUp(pending.length)
+  const animatedReplied = useCountUp(replied.length)
+  const animatedRate = useCountUp(recoveryRate)
+
   const filteredItems = items.filter(item => {
     const matchesFilter = filter === 'all' || item.status === filter
     const query = search.toLowerCase()
@@ -267,6 +404,45 @@ function Dashboard() {
     setItems(current =>
       current.map(item => (item.id === id ? { ...item, status } : item))
     )
+  }
+
+  function todayKey() {
+    return new Date().toISOString().slice(0, 10)
+  }
+
+  /** Mark recovered — stamps recoveredAt so streaks/forecasts count real wins. */
+  function markRecovered(id) {
+    const recoveredAt = todayKey()
+    setItems(current =>
+      current.map(item =>
+        item.id === id ? { ...item, status: 'recovered', recoveredAt } : item
+      )
+    )
+    setSelectedInquiry(current =>
+      current && current.id === id
+        ? { ...current, status: 'recovered', recoveredAt }
+        : current
+    )
+    logActivity(id, 'Marked recovered')
+  }
+
+  /** Mark lost — stamps lostAt + lossReason for loss intelligence. */
+  function markLost(id, reason, note) {
+    const lostAt = todayKey()
+    setItems(current =>
+      current.map(item =>
+        item.id === id
+          ? { ...item, status: 'lost', lostAt, lossReason: reason, lossNote: note || '' }
+          : item
+      )
+    )
+    setSelectedInquiry(current =>
+      current && current.id === id
+        ? { ...current, status: 'lost', lostAt, lossReason: reason, lossNote: note || '' }
+        : current
+    )
+    logActivity(id, `Marked lost (${LOSS_REASON_LABELS[reason] || reason})`)
+    setLossTarget(null)
   }
 
   function logActivity(id, label) {
@@ -392,44 +568,65 @@ function Dashboard() {
         </div>
 
         <div className="header-actions">
-          <button className="date-button" type="button">Last 30 days⌄</button>
+          <button className="date-button" type="button">
+            Last 30 days <IconChevronDown width={12} height={12} />
+          </button>
 
           <button
             className="primary-action"
             type="button"
             onClick={() => setShowAddInquiry(true)}
           >
-            + Add inquiry
+            <IconPlus width={13} height={13} /> Add inquiry
           </button>
         </div>
       </div>
 
+      <GraveyardCounter items={items} currency={currency} />
+
       <section className="stats-grid">
-        <div className="stat-card">
+        <div className="stat-card stat-hero">
+          <div className="stat-icon stat-icon-gold">
+            <IconTrendUp width={18} height={18} />
+          </div>
           <span>Recovered revenue</span>
-          <strong>{money(recoveredRevenue, currency)}</strong>
+          <strong className="stat-number gold-number">
+            {money(animatedRevenue, currency)}
+          </strong>
           <small>Revenue from recovered inquiries</small>
         </div>
 
         <div className="stat-card">
+          <div className="stat-icon">
+            <IconClock width={18} height={18} />
+          </div>
           <span>Pending follow-ups</span>
-          <strong>{pending.length}</strong>
+          <strong className="stat-number">{animatedPending}</strong>
           <small>Customers waiting for follow-up</small>
         </div>
 
         <div className="stat-card">
+          <div className="stat-icon">
+            <IconMessage width={18} height={18} />
+          </div>
           <span>Replies</span>
-          <strong>{replied.length}</strong>
+          <strong className="stat-number">{animatedReplied}</strong>
           <small>Customers who replied</small>
         </div>
 
         <div className="stat-card">
+          <div className="stat-icon">
+            <IconZap width={18} height={18} />
+          </div>
           <span>Recovery rate</span>
-          <strong>
-            {items.length ? Math.round((recovered.length / items.length) * 100) : 0}%
-          </strong>
+          <strong className="stat-number">{animatedRate}%</strong>
           <small>Inquiries converted to revenue</small>
         </div>
+      </section>
+
+      <section className="dashboard-insights">
+        <StreakWidget items={items} currency={currency} />
+        <LossIntelligence items={items} currency={currency} />
       </section>
 
       <section className="dashboard-insights">
@@ -505,6 +702,10 @@ function Dashboard() {
                 {money(Number(item.value) || 0, currency)}
               </div>
 
+              <div className="inquiry-score">
+                <WinbackScoreBadge inquiry={item} />
+              </div>
+
               <div>
                 <span className={`status status-${item.status}`}>
                   {statusLabels[item.status]}
@@ -524,7 +725,7 @@ function Dashboard() {
                 {item.status === 'replied' && (
                   <button
                     type="button"
-                    onClick={() => updateStatus(item.id, 'recovered')}
+                    onClick={() => markRecovered(item.id)}
                   >
                     Mark recovered
                   </button>
@@ -542,18 +743,41 @@ function Dashboard() {
                 {item.status === 'recovered' && (
                   <span className="completed">Completed</span>
                 )}
+
+                {['new', 'followup', 'replied'].includes(item.status) && (
+                  <button
+                    type="button"
+                    className="row-lost"
+                    onClick={() => setLossTarget(item)}
+                  >
+                    Lost
+                  </button>
+                )}
               </div>
             </div>
           ))}
 
-          {inquiriesLoading && <div className="empty-state">Loading inquiries…</div>}
+          {inquiriesLoading && (
+            <div className="empty-state">
+              <div className="empty-pulse" aria-hidden="true" />
+              <strong>Loading inquiries…</strong>
+            </div>
+          )}
 
           {!inquiriesLoading && inquiriesError && (
-            <div className="empty-state">{inquiriesError}</div>
+            <div className="empty-state">
+              <EmptyArt />
+              <strong>Couldn't load inquiries</strong>
+              <p>{inquiriesError}</p>
+            </div>
           )}
 
           {!inquiriesLoading && !inquiriesError && filteredItems.length === 0 && (
-            <div className="empty-state">No inquiries found.</div>
+            <div className="empty-state">
+              <EmptyArt />
+              <strong>No inquiries found.</strong>
+              <p>New inquiries will appear here the moment a customer reaches out.</p>
+            </div>
           )}
         </div>
       </section>
@@ -600,6 +824,13 @@ function Dashboard() {
               </div>
             )
           })}
+          {pending.length === 0 && (
+            <div className="empty-state empty-compact">
+              <EmptyArt compact />
+              <strong>All caught up.</strong>
+              <p>No pending follow-ups right now.</p>
+            </div>
+          )}
         </div>
 
         <div className="dashboard-panel compact-panel">
@@ -631,14 +862,7 @@ function Dashboard() {
         </div>
       </section>
 
-      {showAddInquiry && (
-        <div
-          className="modal-backdrop"
-          onMouseDown={event => {
-            if (event.target === event.currentTarget) setShowAddInquiry(false)
-          }}
-        >
-          <div className="inquiry-modal">
+      <Modal open={showAddInquiry} onClose={() => setShowAddInquiry(false)}>
             <div className="modal-header">
               <div>
                 <span className="app-eyebrow">NEW CUSTOMER</span>
@@ -652,7 +876,7 @@ function Dashboard() {
                 onClick={() => setShowAddInquiry(false)}
                 aria-label="Close"
               >
-                ×
+                <IconX width={15} height={15} />
               </button>
             </div>
 
@@ -744,18 +968,13 @@ function Dashboard() {
                 </button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
+      </Modal>
 
-      {selectedInquiry && (
-        <div
-          className="modal-backdrop"
-          onMouseDown={event => {
-            if (event.target === event.currentTarget) setSelectedInquiry(null)
-          }}
-        >
-          <div className="inquiry-modal detail-modal">
+      <Modal
+        open={selectedInquiry !== null}
+        onClose={() => setSelectedInquiry(null)}
+        wide
+      >
             <div className="modal-header">
               <div>
                 <span className="app-eyebrow">INQUIRY DETAILS</span>
@@ -769,7 +988,7 @@ function Dashboard() {
                 onClick={() => setSelectedInquiry(null)}
                 aria-label="Close"
               >
-                ×
+                <IconX width={15} height={15} />
               </button>
             </div>
 
@@ -797,6 +1016,14 @@ function Dashboard() {
                 <span>Added</span>
                 <strong>{selectedInquiry.date}</strong>
               </div>
+
+              {selectedInquiry.status === 'lost' && selectedInquiry.lossReason && (
+                <div className="detail-card detail-card-loss">
+                  <span>Lost reason</span>
+                  <strong>{LOSS_REASON_LABELS[selectedInquiry.lossReason] || selectedInquiry.lossReason}</strong>
+                  {selectedInquiry.lossNote && <small>{selectedInquiry.lossNote}</small>}
+                </div>
+              )}
             </div>
 
             <div className="followup-section">
@@ -945,12 +1172,29 @@ function Dashboard() {
                 <button
                   type="button"
                   className="save-button"
-                  onClick={() => {
-                    updateStatus(selectedInquiry.id, 'recovered')
-                    setSelectedInquiry({ ...selectedInquiry, status: 'recovered' })
-                  }}
+                  onClick={() => markRecovered(selectedInquiry.id)}
                 >
                   Mark recovered
+                </button>
+              )}
+
+              {['new', 'followup', 'replied'].includes(selectedInquiry.status) && (
+                <button
+                  type="button"
+                  className="offer-action-button"
+                  onClick={() => setOfferTarget(selectedInquiry)}
+                >
+                  Send second-chance offer
+                </button>
+              )}
+
+              {['new', 'followup', 'replied'].includes(selectedInquiry.status) && (
+                <button
+                  type="button"
+                  className="danger-outline-button"
+                  onClick={() => setLossTarget(selectedInquiry)}
+                >
+                  Mark lost
                 </button>
               )}
 
@@ -962,8 +1206,23 @@ function Dashboard() {
                 Close
               </button>
             </div>
-          </div>
-        </div>
+      </Modal>
+
+      {lossTarget && (
+        <LossReasonModal
+          inquiry={lossTarget}
+          onCancel={() => setLossTarget(null)}
+          onConfirm={(reason, note) => markLost(lossTarget.id, reason, note)}
+        />
+      )}
+
+      {offerTarget && (
+        <OfferBuilder
+          inquiry={offerTarget}
+          businessName={businessName}
+          onClose={() => setOfferTarget(null)}
+          onCreated={() => logActivity(offerTarget.id, 'Second-chance offer created')}
+        />
       )}
     </>
   )
@@ -1112,6 +1371,9 @@ function App() {
         {/* Public booking page — no login required */}
         <Route path="/b/:slug" element={<BookingPage />} />
 
+        {/* Public second-chance offer page — no login required */}
+        <Route path="/o/:code" element={<OfferPage />} />
+
         {/* Auth pages */}
         <Route path="/login" element={<Login />} />
         <Route
@@ -1136,6 +1398,7 @@ function App() {
           <Route path="/app/followups" element={<Followups />} />
           <Route path="/app/revenue" element={<Revenue />} />
           <Route path="/app/blitz" element={<BlitzMode />} />
+          <Route path="/app/offers" element={<Offers />} />
           <Route path="/app/customers" element={<Customers />} />
           <Route path="/app/settings" element={<Settings />} />
           <Route path="/app/profile" element={<Profile />} />
