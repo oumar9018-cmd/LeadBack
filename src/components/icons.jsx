@@ -49,6 +49,26 @@ export function IconCheck(props) {
   return base(props, <path d="M4 12.5 l5 5 L20 6.5" />)
 }
 
+export function IconPlus(props) {
+  return base(props, <>
+    <path d="M12 5 v14" />
+    <path d="M5 12 h14" />
+  </>)
+}
+
+export function IconX(props) {
+  return base(props, <>
+    <path d="M6 6 l12 12" />
+    <path d="M18 6 L6 18" />
+  </>)
+}
+
+export function IconChevronDown(props) {
+  return base(props, <>
+    <path d="M6 9 l6 6 6-6" />
+  </>)
+}
+
 export function IconArrowRight(props) {
   return base(props, <>
     <path d="M4 12 h15" />
@@ -140,11 +160,11 @@ export function LogoMark(props) {
     <svg viewBox="0 0 40 40" fill="none" aria-hidden="true" {...props}>
       <defs>
         <linearGradient id={gid} x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#7c3aed">
-            <animate attributeName="stop-color" values="#7c3aed;#d946ef;#7c3aed" dur="4s" repeatCount="indefinite" />
+          <stop offset="0%" stopColor="#e8b44a">
+            <animate attributeName="stop-color" values="#e8b44a;#ff6b35;#e8b44a" dur="4s" repeatCount="indefinite" />
           </stop>
-          <stop offset="100%" stopColor="#d946ef">
-            <animate attributeName="stop-color" values="#d946ef;#7c3aed;#d946ef" dur="4s" repeatCount="indefinite" />
+          <stop offset="100%" stopColor="#ff6b35">
+            <animate attributeName="stop-color" values="#ff6b35;#e8b44a;#ff6b35" dur="4s" repeatCount="indefinite" />
           </stop>
         </linearGradient>
       </defs>
@@ -158,7 +178,7 @@ export function LogoMark(props) {
       />
       <path
         d="M22 25 L31 16"
-        stroke="#a7f3d0"
+        stroke="#1a1206"
         strokeWidth={3.4}
         strokeLinecap="round"
       >
@@ -166,7 +186,7 @@ export function LogoMark(props) {
       </path>
       <path
         d="M25.5 16 h5.5 v5.5"
-        stroke="#a7f3d0"
+        stroke="#1a1206"
         strokeWidth={3.4}
         strokeLinecap="round"
         strokeLinejoin="round"
