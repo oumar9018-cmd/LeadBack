@@ -1,0 +1,221 @@
+/* ------------------------------------------------------------------ */
+/* Owner's second-chance offers page (/app/offers)                     */
+/* ------------------------------------------------------------------ */
+
+.offers-page {
+  padding: 8px 0 40px;
+}
+
+.offers-inner {
+  max-width: 980px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.offers-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.offers-header h1 {
+  margin: 6px 0 4px;
+  font-size: clamp(26px, 4vw, 34px);
+  letter-spacing: -0.02em;
+}
+
+.offers-header p {
+  margin: 0;
+  color: #64748b;
+  font-size: 14.5px;
+  max-width: 560px;
+}
+
+.offers-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.offers-stat {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.offers-stat span {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #94a3b8;
+}
+
+.offers-stat strong {
+  font-size: 26px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.offers-stat small {
+  font-size: 12.5px;
+  color: #64748b;
+}
+
+.offers-empty {
+  text-align: center;
+  background: #fff;
+  border: 1px dashed #cbd5e1;
+  border-radius: 18px;
+  padding: 48px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.offers-empty-icon {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 20px;
+  background: #f5f3ff;
+  color: #7c3aed;
+  margin-bottom: 6px;
+}
+
+.offers-empty h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.offers-empty p {
+  margin: 0 0 10px;
+  max-width: 460px;
+  color: #64748b;
+  font-size: 14.5px;
+  line-height: 1.6;
+}
+
+.offers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.offer-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 14px 16px;
+  transition: box-shadow 0.15s ease;
+}
+
+.offer-row:hover {
+  box-shadow: 0 6px 18px -8px rgba(15, 23, 42, 0.12);
+}
+
+.offer-row-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.offer-row-customer {
+  font-size: 15px;
+}
+
+.offer-row-discount {
+  font-size: 13.5px;
+  color: #6d28d9;
+  font-weight: 600;
+}
+
+.offer-row-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12.5px;
+  color: #94a3b8;
+}
+
+.offer-status {
+  flex: none;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  border-radius: 999px;
+}
+
+.offer-status-sent { background: #eff6ff; color: #1d4ed8; }
+.offer-status-viewed { background: #fffbeb; color: #b45309; }
+.offer-status-redeemed { background: #f0fdf4; color: #15803d; }
+.offer-status-expired { background: #f1f5f9; color: #64748b; }
+
+.offer-row-actions {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.offer-row-actions button,
+.offer-row-actions a {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 9px;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.offer-row-actions button:hover,
+.offer-row-actions a:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.offer-recovered-btn {
+  width: auto !important;
+  padding: 8px 14px !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  color: #fff !important;
+  background: linear-gradient(180deg, #22c55e, #16a34a) !important;
+  border-radius: 9px !important;
+}
+
+@media (max-width: 680px) {
+  .offers-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .offer-row {
+    flex-wrap: wrap;
+  }
+
+  .offer-row-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}

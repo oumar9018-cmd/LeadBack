@@ -1,0 +1,149 @@
+/* ------------------------------------------------------------------ */
+/* Loss Intelligence — why deals die + counter-play recommendations      */
+/* ------------------------------------------------------------------ */
+
+.loss-intel {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 4px 20px -8px rgba(15, 23, 42, 0.08);
+}
+
+.loss-intel-head h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 6px 0 4px;
+  font-size: 19px;
+  letter-spacing: -0.01em;
+}
+
+.loss-intel-head p {
+  margin: 0;
+  font-size: 13.5px;
+  color: #64748b;
+}
+
+.loss-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.loss-bar-row {
+  display: grid;
+  grid-template-columns: 28px 92px 1fr 30px;
+  align-items: center;
+  gap: 10px;
+}
+
+.loss-bar-icon {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.loss-bar-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.loss-bar-track {
+  height: 10px;
+  border-radius: 999px;
+  background: #f1f5f9;
+  overflow: hidden;
+}
+
+.loss-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #f59e0b, #ef4444);
+  transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.loss-bar-count {
+  font-size: 14px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.loss-trend {
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 13.5px;
+  font-weight: 700;
+}
+
+.loss-trend.trend-up {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+.loss-trend.trend-down {
+  background: #f0fdf4;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+.loss-play {
+  border-top: 1px dashed #e2e8f0;
+  padding-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.loss-play-kicker {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #6d28d9;
+}
+
+.loss-play strong {
+  font-size: 15.5px;
+}
+
+.loss-play p {
+  margin: 0;
+  font-size: 13.5px;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+.loss-play-cta {
+  margin-top: 8px;
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(180deg, #7c3aed, #6d28d9);
+  cursor: pointer;
+  transition: transform 0.12s ease;
+}
+
+.loss-play-cta:hover {
+  transform: translateY(-1px);
+}

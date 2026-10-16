@@ -154,6 +154,82 @@ export function IconShield(props) {
  * upward arrow: the visual metaphor of winning a customer back.
  * Animated gradient sweep gives it a living, premium feel.
  */
+export function IconFlame(props) {
+  return base(props, <>
+    <path d="M12 22 c4.5 0 7.5-3 7.5-7.2 0-3.1-1.9-5.3-3.4-7.1C14.6 6 13.5 4.6 13.5 2 c-3.5 2-5 4.6-5.6 7-1-.6-1.8-1.6-2.2-3.2C4.4 7.4 4.5 9.4 4.5 11 4.5 16 7.5 22 12 22 z" />
+    <path d="M12 22 c-2 0-3.5-1.4-3.5-3.2 0-1.4.9-2.4 1.7-3.3.8-.9 1.8-1.9 1.8-3.5 1.6 1 2.5 2.3 2.5 4 0 3-1 6-2.5 6 z" opacity="0.55" />
+  </>)
+}
+
+export function IconGift(props) {
+  return base(props, <>
+    <rect x="4" y="9" width="16" height="12" rx="1.5" />
+    <path d="M12 9 v12 M4 13 h16" />
+    <path d="M12 9 C12 9 7 9 5.5 7.5 4.3 6.3 4.8 4.5 6.3 4.3 8 4 10 6.5 12 9 z" />
+    <path d="M12 9 C12 9 17 9 18.5 7.5 19.7 6.3 19.2 4.5 17.7 4.3 16 4 14 6.5 12 9 z" />
+  </>)
+}
+
+export function IconTimer(props) {
+  return base(props, <>
+    <circle cx="12" cy="13.5" r="7.5" />
+    <path d="M12 10 v3.5 l2.5 1.8" />
+    <path d="M9.5 2.5 h5 M12 2.5 V6" />
+  </>)
+}
+
+export function IconChartBar(props) {
+  return base(props, <>
+    <path d="M4 20 h16" />
+    <path d="M7 20 v-6 M12 20 V8 M17 20 v-9" />
+  </>)
+}
+
+export function IconTag(props) {
+  return base(props, <>
+    <path d="M3.5 12 V4.5 A1 1 0 0 1 4.5 3.5 H12 L20.5 12 a1.4 1.4 0 0 1 0 2 L14 20.5 a1.4 1.4 0 0 1-2 0 L3.5 12 z" />
+    <circle cx="8.5" cy="8.5" r="1.4" />
+  </>)
+}
+
+export function IconAlert(props) {
+  return base(props, <>
+    <path d="M12 3 L22 20 H2 L12 3 z" />
+    <path d="M12 10 v4.5" />
+    <circle cx="12" cy="17.2" r="0.4" fill="currentColor" />
+  </>)
+}
+
+export function IconTrendingDown(props) {
+  return base(props, <>
+    <path d="M3 7 l6 6 4-4 8 8" />
+    <path d="M17 14 h4 v4" />
+  </>)
+}
+
+export function IconCopy(props) {
+  return base(props, <>
+    <rect x="9" y="9" width="11" height="11" rx="2" />
+    <path d="M5 15 V5 a2 2 0 0 1 2-2 h10" />
+  </>)
+}
+
+export function IconTrash(props) {
+  return base(props, <>
+    <path d="M4 7 h16" />
+    <path d="M9 7 V4.5 A1 1 0 0 1 10 3.5 h4 a1 1 0 0 1 1 1 V7" />
+    <path d="M6.5 7 l1 13 a1 1 0 0 0 1 1 h7 a1 1 0 0 0 1-1 l1-13" />
+    <path d="M10 11 v6 M14 11 v6" />
+  </>)
+}
+
+export function IconSend(props) {
+  return base(props, <>
+    <path d="M21 3 L10.5 13.5" />
+    <path d="M21 3 l-7 18-3.5-7.5 L3 10 l18-7 z" />
+  </>)
+}
+
 export function LogoMark(props) {
   const gid = `wbg-${Math.random().toString(36).slice(2, 8)}`
   return (

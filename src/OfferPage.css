@@ -1,0 +1,207 @@
+/* ------------------------------------------------------------------ */
+/* Public second-chance offer page (/o/:code) — no login required       */
+/* ------------------------------------------------------------------ */
+
+.offer-shell {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 24px 16px;
+  background:
+    radial-gradient(90% 60% at 50% 0%, rgba(124, 58, 237, 0.16) 0%, transparent 60%),
+    radial-gradient(70% 50% at 50% 100%, rgba(249, 115, 22, 0.12) 0%, transparent 60%),
+    #0f0a24;
+  font-family: inherit;
+}
+
+.offer-card {
+  width: min(440px, 100%);
+  background: #fff;
+  border-radius: 24px;
+  padding: 36px 30px 28px;
+  text-align: center;
+  box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.55);
+  animation: offer-card-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes offer-card-in {
+  from { opacity: 0; transform: translateY(14px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.offer-card h1 {
+  margin: 10px 0 8px;
+  font-size: 28px;
+  letter-spacing: -0.02em;
+}
+
+.offer-eyebrow {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #7c3aed;
+  background: #f5f3ff;
+  border: 1px solid #ddd6fe;
+  padding: 6px 12px;
+  border-radius: 999px;
+  margin-bottom: 14px;
+}
+
+.offer-gift {
+  display: grid;
+  place-items: center;
+  width: 88px;
+  height: 88px;
+  margin: 6px auto 4px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #f5f3ff, #ede9fe);
+  color: #7c3aed;
+  animation: gift-bounce 2.6s ease-in-out infinite;
+}
+
+@keyframes gift-bounce {
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  50% { transform: translateY(-7px) rotate(3deg); }
+}
+
+.offer-from {
+  margin: 0;
+  font-size: 15px;
+  color: #64748b;
+}
+
+.offer-discount {
+  margin: 14px 0 6px;
+  padding: 18px 16px;
+  border-radius: 16px;
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: #6d28d9;
+  background: linear-gradient(135deg, #faf5ff, #f5f3ff);
+  border: 2px dashed #c4b5fd;
+}
+
+.offer-note {
+  font-style: italic;
+  color: #475569;
+  font-size: 14.5px;
+  margin: 8px 0 0;
+}
+
+.offer-countdown {
+  margin: 22px 0;
+  padding: 16px;
+  border-radius: 16px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+}
+
+.offer-countdown-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #c2410c;
+}
+
+.offer-countdown-digits {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.offer-digit {
+  display: flex;
+  flex-direction: column;
+  min-width: 62px;
+  padding: 8px 6px;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid #fed7aa;
+}
+
+.offer-digit strong {
+  font-size: 26px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: #9a3412;
+  line-height: 1;
+}
+
+.offer-digit small {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #c2410c;
+  margin-top: 3px;
+}
+
+.offer-claim {
+  width: 100%;
+  padding: 16px;
+  border: none;
+  border-radius: 14px;
+  font-size: 17px;
+  font-weight: 800;
+  color: #fff;
+  background: linear-gradient(180deg, #7c3aed, #6d28d9);
+  cursor: pointer;
+  box-shadow: 0 12px 28px -8px rgba(109, 40, 217, 0.65);
+  transition: transform 0.12s ease;
+}
+
+.offer-claim:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.offer-claim:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.offer-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 22px;
+  font-size: 12.5px;
+  color: #94a3b8;
+}
+
+.offer-muted {
+  color: #64748b;
+  font-size: 14.5px;
+  line-height: 1.6;
+}
+
+.offer-check {
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 76px;
+  margin: 0 auto 6px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+  color: #15803d;
+}
+
+.offer-claimed h1 {
+  color: #15803d;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .offer-card,
+  .offer-gift {
+    animation: none;
+  }
+}

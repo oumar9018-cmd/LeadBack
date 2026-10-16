@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { NavLink, Link, Outlet } from 'react-router-dom'
 import { url } from './basePath.js'
+import { GraveyardPill } from './components/GraveyardCounter.jsx'
 
 /**
  * AppShell — shared sidebar + top-bar layout used by all authenticated /app/* pages.
@@ -124,6 +125,7 @@ export default function AppLayout() {
           <NavLink to="/app/inquiries" onClick={closeSidebar}>Inquiries</NavLink>
           <NavLink to="/app/followups" onClick={closeSidebar}>Follow-ups</NavLink>
           <NavLink to="/app/blitz" onClick={closeSidebar}>Blitz Mode</NavLink>
+          <NavLink to="/app/offers" onClick={closeSidebar}>Offers</NavLink>
           <NavLink to="/app/revenue" onClick={closeSidebar}>Revenue</NavLink>
           <NavLink to="/app/settings" onClick={closeSidebar}>Settings</NavLink>
           <NavLink to="/app/profile" onClick={closeSidebar}>Profile</NavLink>
@@ -143,6 +145,7 @@ export default function AppLayout() {
           </div>
 
           <div className="header-actions">
+            <GraveyardPill />
             <button
               type="button"
               className="profile-button"

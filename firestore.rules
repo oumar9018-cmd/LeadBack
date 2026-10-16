@@ -65,6 +65,26 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Second-chance offers: public page (/o/{code}) needs unauthenticated
+    // reads; view/claim tracking allows narrow public updates.
+    match /offers/{offerId} {
+      // Anyone with the link can view the offer.
+      allow get: if true;
+      // Owners can list their own offers.
+      allow list: if signedIn() && request.auth.uid == resource.data.ownerUid;
+      // Owners create offers stamped with their uid.
+      allow create: if signedIn() &&
+        request.resource.data.ownerUid == request.auth.uid;
+      // Owners have full control over their offers.
+      allow update: if signedIn() && request.auth.uid == resource.data.ownerUid;
+      // Public can only move sent -> viewed -> redeemed and bump counters.
+      allow update: if request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['status', 'viewedAt', 'views', 'redeemedAt']) &&
+        resource.data.status in ['sent', 'viewed'] &&
+        request.resource.data.status in ['viewed', 'redeemed'];
+      allow delete: if signedIn() && request.auth.uid == resource.data.ownerUid;
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }

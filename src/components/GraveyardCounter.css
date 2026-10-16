@@ -1,0 +1,180 @@
+/* ------------------------------------------------------------------ */
+/* Graveyard Counter — urgent "money rotting" banner + header pill      */
+/* ------------------------------------------------------------------ */
+
+.graveyard-banner {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 20px 24px;
+  margin-bottom: 22px;
+  border-radius: 18px;
+  color: #fff;
+  background:
+    radial-gradient(120% 160% at 0% 0%, rgba(249, 115, 22, 0.35) 0%, transparent 55%),
+    radial-gradient(120% 160% at 100% 100%, rgba(220, 38, 38, 0.4) 0%, transparent 55%),
+    linear-gradient(135deg, #431407 0%, #7c2d12 45%, #450a0a 100%);
+  border: 1px solid rgba(249, 115, 22, 0.45);
+  box-shadow:
+    0 12px 40px -12px rgba(220, 38, 38, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  animation: graveyard-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes graveyard-in {
+  from { opacity: 0; transform: translateY(-10px) scale(0.99); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.graveyard-pulse {
+  position: absolute;
+  inset: -2px;
+  border-radius: 20px;
+  border: 2px solid rgba(249, 115, 22, 0.65);
+  animation: graveyard-pulse 2.4s ease-out infinite;
+  pointer-events: none;
+}
+
+@keyframes graveyard-pulse {
+  0% { opacity: 0.8; transform: scale(1); }
+  70% { opacity: 0; transform: scale(1.03); }
+  100% { opacity: 0; transform: scale(1.03); }
+}
+
+.graveyard-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #fdba74;
+  animation: graveyard-shake 3.2s ease-in-out infinite;
+}
+
+@keyframes graveyard-shake {
+  0%, 88%, 100% { transform: rotate(0deg); }
+  90% { transform: rotate(-8deg); }
+  92% { transform: rotate(8deg); }
+  94% { transform: rotate(-5deg); }
+  96% { transform: rotate(5deg); }
+}
+
+.graveyard-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.graveyard-kicker {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #fdba74;
+}
+
+.graveyard-amount {
+  font-size: clamp(30px, 4vw, 44px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.35);
+}
+
+.graveyard-detail {
+  font-size: 13px;
+  color: rgba(255, 237, 213, 0.85);
+}
+
+.graveyard-cta {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 22px;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 800;
+  color: #431407;
+  background: linear-gradient(180deg, #fdba74, #fb923c);
+  cursor: pointer;
+  box-shadow: 0 6px 20px -4px rgba(251, 146, 60, 0.7);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.graveyard-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px -4px rgba(251, 146, 60, 0.85);
+}
+
+.graveyard-cta:active {
+  transform: translateY(0);
+}
+
+/* Compact pill for the app header — visible on every screen */
+.graveyard-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(220, 38, 38, 0.4);
+  background: linear-gradient(180deg, #fef2f2, #fee2e2);
+  color: #b91c1c;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.graveyard-pill:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px -6px rgba(220, 38, 38, 0.5);
+}
+
+.graveyard-pill svg {
+  animation: graveyard-blink 2s ease-in-out infinite;
+}
+
+@keyframes graveyard-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+
+@media (max-width: 680px) {
+  .graveyard-banner {
+    flex-wrap: wrap;
+    gap: 14px;
+    padding: 18px;
+  }
+
+  .graveyard-cta {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .graveyard-pill span {
+    max-width: 110px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .graveyard-banner,
+  .graveyard-pulse,
+  .graveyard-icon,
+  .graveyard-pill svg {
+    animation: none;
+  }
+}

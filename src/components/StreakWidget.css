@@ -1,0 +1,167 @@
+/* ------------------------------------------------------------------ */
+/* Recovery Streaks — money dopamine widget                           */
+/* ------------------------------------------------------------------ */
+
+.streak-widget {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(130% 130% at 100% 0%, rgba(249, 115, 22, 0.14) 0%, transparent 55%),
+    #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  box-shadow: 0 4px 20px -8px rgba(15, 23, 42, 0.08);
+}
+
+.streak-celebration {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #fff7ed, #ffedd5);
+  border: 1px solid #fdba74;
+  color: #9a3412;
+  animation: streak-celebrate 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes streak-celebrate {
+  0% { opacity: 0; transform: scale(0.94); }
+  60% { transform: scale(1.02); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.streak-celebration strong {
+  font-size: 15px;
+}
+
+.streak-celebration span {
+  font-size: 13px;
+  opacity: 0.85;
+}
+
+.streak-main {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.streak-flame {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  background: #f1f5f9;
+  color: #94a3b8;
+  transition: all 0.4s ease;
+}
+
+.streak-flame.lit {
+  background: linear-gradient(135deg, #fff7ed, #fed7aa);
+  color: #ea580c;
+  box-shadow: 0 0 24px -4px rgba(249, 115, 22, 0.55);
+  animation: flame-flicker 2.2s ease-in-out infinite;
+}
+
+@keyframes flame-flicker {
+  0%, 100% { transform: scale(1) rotate(-2deg); }
+  50% { transform: scale(1.06) rotate(2deg); }
+}
+
+.streak-flame-dim {
+  background: #f8fafc;
+}
+
+.streak-numbers {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.streak-count {
+  font-size: clamp(24px, 3vw, 32px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.streak-sub {
+  font-size: 13.5px;
+  color: #64748b;
+}
+
+.streak-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.streak-stat {
+  background: #f8fafc;
+  border: 1px solid #eef2f7;
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.streak-stat-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #94a3b8;
+}
+
+.streak-stat-value {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 20px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: #0f172a;
+}
+
+.streak-stat small {
+  font-size: 12.5px;
+  color: #64748b;
+}
+
+.streak-empty {
+  flex-direction: row;
+  align-items: center;
+}
+
+.streak-empty h3 {
+  margin: 6px 0 4px;
+  font-size: 17px;
+}
+
+.streak-empty p {
+  margin: 0;
+  font-size: 13.5px;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+@media (max-width: 560px) {
+  .streak-stats {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .streak-flame.lit,
+  .streak-celebration {
+    animation: none;
+  }
+}

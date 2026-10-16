@@ -1,0 +1,146 @@
+/* ------------------------------------------------------------------ */
+/* Loss Reason modal — the one-tap "why did we lose them" survey        */
+/* ------------------------------------------------------------------ */
+
+.loss-modal {
+  width: min(480px, calc(100vw - 40px));
+  max-height: calc(100vh - 60px);
+  overflow-y: auto;
+  background: #fff;
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: 0 24px 70px -12px rgba(15, 23, 42, 0.35);
+  animation: loss-pop 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes loss-pop {
+  from { opacity: 0; transform: scale(0.96) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.loss-modal h3 {
+  margin: 8px 0 4px;
+  font-size: 21px;
+  letter-spacing: -0.01em;
+}
+
+.loss-modal-sub {
+  margin: 0 0 18px;
+  font-size: 14px;
+  color: #64748b;
+}
+
+.loss-reasons {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.loss-reason {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  background: #fff;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.1s ease;
+}
+
+.loss-reason:hover {
+  border-color: #c7d2fe;
+  background: #f8fafc;
+}
+
+.loss-reason.selected {
+  border-color: #6d28d9;
+  background: #f5f3ff;
+  box-shadow: 0 0 0 3px rgba(109, 40, 217, 0.12);
+}
+
+.loss-reason-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.loss-reason.selected .loss-reason-icon {
+  background: #6d28d9;
+  color: #fff;
+}
+
+.loss-reason-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.loss-reason-text strong {
+  font-size: 15px;
+}
+
+.loss-reason-text small {
+  font-size: 12.5px;
+  color: #64748b;
+}
+
+.loss-note-label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 20px;
+}
+
+.loss-note-label textarea {
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.loss-note-label textarea:focus {
+  outline: none;
+  border-color: #6d28d9;
+  box-shadow: 0 0 0 3px rgba(109, 40, 217, 0.12);
+}
+
+.loss-modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.loss-confirm {
+  padding: 12px 22px;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(180deg, #dc2626, #b91c1c);
+  cursor: pointer;
+  box-shadow: 0 8px 20px -6px rgba(220, 38, 38, 0.6);
+  transition: transform 0.12s ease, opacity 0.12s ease;
+}
+
+.loss-confirm:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.loss-confirm:not(:disabled):hover {
+  transform: translateY(-1px);
+}
