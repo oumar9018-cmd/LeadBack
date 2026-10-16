@@ -24,6 +24,7 @@ import { ROUTER_BASENAME } from './basePath.js'
 // prerendered HTML automatically.
 import { ROUTED_SEO_PAGES } from './seo/pages.js'
 import WhatsAppActions from './components/WhatsAppActions.jsx'
+import DripSequences from './components/DripSequences.jsx'
 import BookingPage from './BookingPage.jsx'
 import './App.css'
 
@@ -804,6 +805,14 @@ function Dashboard() {
               businessName={businessName}
               onAction={(type, templateId) => {
                 logActivity(selectedInquiry.id, type === 'voice-note' ? 'Voice note opened' : `WhatsApp sent (${templateId})`)
+              }}
+            />
+
+            <DripSequences
+              inquiry={selectedInquiry}
+              businessName={businessName}
+              onSave={(steps) => {
+                logActivity(selectedInquiry.id, `Drip sequence saved (${steps.length} steps)`)
               }}
             />
 

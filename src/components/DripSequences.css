@@ -1,0 +1,149 @@
+/* Wynback drip sequence builder */
+
+.drip-builder {
+  border-top: 1px solid #edf0f4;
+  padding-top: 24px;
+  margin-top: 8px;
+}
+
+.drip-heading h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 6px 0 4px;
+  font-size: 17px;
+  color: #111827;
+}
+
+.drip-heading h3 svg {
+  color: #2457ff;
+}
+
+.drip-heading p {
+  margin: 0 0 18px;
+  font-size: 13.5px;
+  color: #6b7280;
+  line-height: 1.6;
+}
+
+.drip-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.drip-step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 12px;
+  background: #fff;
+  transition: all 0.15s ease;
+}
+
+.drip-step.disabled {
+  opacity: 0.5;
+  background: #f9fafb;
+}
+
+.drip-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.drip-toggle input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #2457ff;
+  cursor: pointer;
+}
+
+.drip-day {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #374151;
+  white-space: nowrap;
+}
+
+.drip-day svg {
+  color: #2457ff;
+}
+
+.drip-day-input {
+  width: 52px;
+  padding: 6px 8px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+  outline: none;
+}
+
+.drip-day-input:focus {
+  border-color: #2457ff;
+}
+
+.drip-day-input:disabled {
+  background: #f3f4f6;
+  color: #9ca3af;
+}
+
+.drip-template-select {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: inherit;
+  background: #fff;
+  cursor: pointer;
+  outline: none;
+}
+
+.drip-template-select:focus {
+  border-color: #2457ff;
+}
+
+.drip-template-select:disabled {
+  background: #f3f4f6;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.drip-actions {
+  margin-bottom: 12px;
+}
+
+.drip-actions .save-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.drip-saved-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13.5px;
+  color: #16a34a;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.drip-saved-note svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
