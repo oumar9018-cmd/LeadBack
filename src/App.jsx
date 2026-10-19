@@ -697,7 +697,7 @@ function Dashboard() {
               </div>
 
               <div className="inquiry-score">
-                <WinbackScoreBadge inquiry={item} />
+                {/* <WinbackScoreBadge inquiry={item} /> */}
               </div>
 
               <div>
