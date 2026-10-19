@@ -97,8 +97,8 @@ const industries = [
 ]
 
 const stats = [
-  { value: '₹48K+', label: 'Recovered by early users' },
-  { value: '70%', label: 'Win-back rate' },
+  { value: '₹48K+', label: 'Illustrative demo data' },
+  { value: '70%', label: 'Target win-back rate' },
   { value: '10s', label: 'To send a follow-up' },
   { value: '24/7', label: 'Inquiry capture, zero effort' },
 ]
@@ -202,8 +202,8 @@ function App() {
           </nav>
 
           <div className="nav-actions">
-            <a className="nav-login" href={url('/login')}>Log in</a>
-            <a className="btn btn-primary btn-sm" href={url('/login')}>Get started</a>
+            <Link className="nav-login" to="/login">Log in</Link>
+            <Link className="btn btn-primary btn-sm" to="/login">Get started</Link>
           </div>
         </div>
       </header>
@@ -220,12 +220,12 @@ function App() {
                 note. Nothing slips away.
               </p>
               <div className="hero-actions">
-                <a className="btn btn-primary" href={url('/login')}>
+                <Link className="btn btn-primary" to="/login">
                   Get started <IconArrowRight width={16} height={16} />
-                </a>
-                <a className="btn btn-secondary" href={url('/how-it-works')}>
+                </Link>
+                <Link className="btn btn-secondary" to="/how-it-works">
                   See how it works
-                </a>
+                </Link>
               </div>
               <p className="hero-note">Free during early access · No credit card required</p>
             </div>
@@ -439,9 +439,9 @@ function App() {
                 <h2>Give every missed customer a reason to come back</h2>
                 <p>Join the waitlist and be first in when Wynback launches — with missed-call recovery, one-tap WhatsApp follow-ups, and voice-note win-backs.</p>
                 <div className="cta-actions">
-                  <a className="btn btn-white" href={url('/login')}>
+                  <Link className="btn btn-white" to="/login">
                     Get early access <IconArrowRight width={16} height={16} />
-                  </a>
+                  </Link>
                 </div>
                 <p className="cta-note">Free during early access · <IconShield width={14} height={14} /> Your data stays private</p>
               </div>
@@ -479,8 +479,8 @@ function App() {
             <div className="footer-group">
               <p className="footer-title">Get started</p>
               <ul>
-                <li><Link to={url('/login')}>Log in</Link></li>
-                <li><Link to={url('/login')}>Get early access</Link></li>
+                <li><Link to="/login">Log in</Link></li>
+                <li><Link to="/login">Get early access</Link></li>
               </ul>
             </div>
           </div>
