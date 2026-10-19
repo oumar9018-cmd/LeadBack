@@ -576,7 +576,7 @@ function Dashboard() {
         </div>
       </div>
 
-      <GraveyardCounter items={items} currency={currency} />
+      {/* <GraveyardCounter items={items} currency={currency} /> */}
 
       <section className="stats-grid">
         <div className="stat-card stat-hero">
@@ -619,12 +619,12 @@ function Dashboard() {
       </section>
 
       <section className="dashboard-insights">
-        <StreakWidget items={items} currency={currency} />
-        <LossIntelligence items={items} currency={currency} />
+        {/* <StreakWidget items={items} currency={currency} /> */}
+        {/* <LossIntelligence items={items} currency={currency} /> */}
       </section>
 
       <section className="dashboard-insights">
-        <ForecastWidget inquiries={items} />
+        {/* <ForecastWidget inquiries={items} /> */}
         <div className="blitz-promo">
           <span className="app-eyebrow">BLITZ MODE</span>
           <h3>Win back customers in one session</h3>
