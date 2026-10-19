@@ -193,7 +193,7 @@ function Dashboard() {
   )
   const [profileOpen, setProfileOpen] = useState(false)
   const [businessName, setBusinessName] = useState('')
-  const businessSlug = businessName
+  const businessSlug = (businessName || '')
     .toLowerCase()
     .trim()
     .replace(/[^a-z0-9]+/g, '-')
