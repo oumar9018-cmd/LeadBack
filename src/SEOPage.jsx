@@ -104,21 +104,21 @@ const ICONS = {
 const CURRENT_YEAR = new Date().getFullYear()
 
 /* ------------------------------------------------------------------ */
-/* Industry identity — each vertical gets its own accent paired with   */
-/* the molten-gold brand, plus a hero watermark icon.                 */
+/* Industry identity — each vertical gets its own professional blue    */
+/* accent paired with the light theme, plus a hero watermark icon.     */
 /* ------------------------------------------------------------------ */
 
 const INDUSTRY_ACCENTS = {
-  salons: { accent: '#F2A3AC', glow: 'rgba(242,163,172,0.14)' }, // rose gold
-  'auto-repair': { accent: '#E8A33D', glow: 'rgba(232,163,61,0.14)' }, // steel + amber
-  clinics: { accent: '#4ED6C3', glow: 'rgba(78,214,195,0.13)' }, // teal + gold
-  coaches: { accent: '#9B8CFF', glow: 'rgba(155,140,255,0.15)' }, // indigo + gold
-  'real-estate': { accent: '#4ADE9E', glow: 'rgba(74,222,158,0.13)' }, // emerald + gold
-  freelancers: { accent: '#FF8A66', glow: 'rgba(255,138,102,0.14)' }, // coral + gold
-  'car-detailing': { accent: '#FF7A45', glow: 'rgba(255,122,69,0.15)' }, // molten orange + gold
+  salons: { accent: '#2563EB', glow: 'rgba(37,99,235,0.10)' }, // primary blue
+  'auto-repair': { accent: '#1E40AF', glow: 'rgba(30,64,175,0.10)' }, // deep blue
+  clinics: { accent: '#0284C7', glow: 'rgba(2,132,199,0.10)' }, // sky blue
+  coaches: { accent: '#1D4ED8', glow: 'rgba(29,78,216,0.10)' }, // royal blue
+  'real-estate': { accent: '#0369A1', glow: 'rgba(3,105,161,0.10)' }, // ocean blue
+  freelancers: { accent: '#3B82F6', glow: 'rgba(59,130,246,0.10)' }, // bright blue
+  'car-detailing': { accent: '#1E40AF', glow: 'rgba(30,64,175,0.10)' }, // deep blue
 }
 
-const DEFAULT_ACCENT = { accent: '#E8B44A', glow: 'rgba(232,180,74,0.14)' }
+const DEFAULT_ACCENT = { accent: '#2563EB', glow: 'rgba(37,99,235,0.10)' }
 
 const INDUSTRY_TYPES = new Set(Object.keys(INDUSTRY_ACCENTS))
 

@@ -231,20 +231,9 @@ export function IconSend(props) {
 }
 
 export function LogoMark(props) {
-  const gid = `wbg-${Math.random().toString(36).slice(2, 8)}`
   return (
     <svg viewBox="0 0 40 40" fill="none" aria-hidden="true" {...props}>
-      <defs>
-        <linearGradient id={gid} x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#e8b44a">
-            <animate attributeName="stop-color" values="#e8b44a;#ff6b35;#e8b44a" dur="4s" repeatCount="indefinite" />
-          </stop>
-          <stop offset="100%" stopColor="#ff6b35">
-            <animate attributeName="stop-color" values="#ff6b35;#e8b44a;#ff6b35" dur="4s" repeatCount="indefinite" />
-          </stop>
-        </linearGradient>
-      </defs>
-      <rect width="40" height="40" rx="11" fill={`url(#${gid})`} />
+      <rect width="40" height="40" rx="10" fill="#2563eb" />
       <path
         d="M9 27 L14 13 L19 24 L24 13"
         stroke="#fff"
@@ -254,21 +243,17 @@ export function LogoMark(props) {
       />
       <path
         d="M22 25 L31 16"
-        stroke="#1a1206"
+        stroke="#fff"
         strokeWidth={3.4}
         strokeLinecap="round"
-      >
-        <animate attributeName="opacity" values="1;0.55;1" dur="2.4s" repeatCount="indefinite" />
-      </path>
+      />
       <path
         d="M25.5 16 h5.5 v5.5"
-        stroke="#1a1206"
+        stroke="#fff"
         strokeWidth={3.4}
         strokeLinecap="round"
         strokeLinejoin="round"
-      >
-        <animate attributeName="opacity" values="1;0.55;1" dur="2.4s" repeatCount="indefinite" />
-      </path>
+      />
     </svg>
   )
 }

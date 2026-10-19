@@ -112,16 +112,12 @@ export default function BookingPage() {
     return (
       <div className="booking-shell">
         <div className="booking-card booking-success booking-enter">
-          <span className="success-rings" aria-hidden="true">
-            <span className="ring ring-1" />
-            <span className="ring ring-2" />
-          </span>
           <span className="success-icon">
             <svg viewBox="0 0 72 72" width="40" height="40" aria-hidden="true">
               <defs>
-                <linearGradient id="successGold" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0" stopColor="#E8B44A" />
-                  <stop offset="1" stopColor="#FF6B35" />
+                <linearGradient id="successBlue" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stopColor="#2563EB" />
+                  <stop offset="1" stopColor="#1D4ED8" />
                 </linearGradient>
               </defs>
               <circle className="success-circle" cx="36" cy="36" r="32" />

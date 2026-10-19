@@ -4,6 +4,7 @@
 
 .offers-page {
   padding: 8px 0 40px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 .offers-inner {
@@ -88,8 +89,8 @@
   width: 72px;
   height: 72px;
   border-radius: 20px;
-  background: #f5f3ff;
-  color: #7c3aed;
+  background: #eff6ff;
+  color: #2563eb;
   margin-bottom: 6px;
 }
 
@@ -141,7 +142,7 @@
 
 .offer-row-discount {
   font-size: 13.5px;
-  color: #6d28d9;
+  color: #1d4ed8;
   font-weight: 600;
 }
 
@@ -201,8 +202,12 @@
   font-size: 13px !important;
   font-weight: 700 !important;
   color: #fff !important;
-  background: linear-gradient(180deg, #22c55e, #16a34a) !important;
+  background: #16a34a !important;
   border-radius: 9px !important;
+}
+
+.offer-recovered-btn:hover {
+  background: #15803d !important;
 }
 
 @media (max-width: 680px) {

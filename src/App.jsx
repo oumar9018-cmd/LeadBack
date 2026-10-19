@@ -147,7 +147,7 @@ function Modal({ open, onClose, wide = false, children }) {
   )
 }
 
-/** Gold radar-sweep illustration for empty states. Pure SVG, no emojis. */
+/** Blue radar illustration for empty states. Pure SVG, no emojis. */
 function EmptyArt({ compact = false }) {
   return (
     <svg
@@ -156,27 +156,21 @@ function EmptyArt({ compact = false }) {
       aria-hidden="true"
     >
       <defs>
-        <linearGradient id="ea-gold" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#E8B44A" />
-          <stop offset="1" stopColor="#FF6B35" />
+        <linearGradient id="ea-blue" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#2563eb" />
+          <stop offset="1" stopColor="#1d4ed8" />
         </linearGradient>
         <radialGradient id="ea-glow" cx="0.5" cy="0.5" r="0.5">
-          <stop offset="0" stopColor="#E8B44A" stopOpacity="0.28" />
-          <stop offset="1" stopColor="#E8B44A" stopOpacity="0" />
+          <stop offset="0" stopColor="#2563eb" stopOpacity="0.12" />
+          <stop offset="1" stopColor="#2563eb" stopOpacity="0" />
         </radialGradient>
       </defs>
-      <ellipse cx="80" cy="106" rx="54" ry="8" fill="rgba(232,180,74,0.07)" />
+      <ellipse cx="80" cy="106" rx="54" ry="8" fill="rgba(37,99,235,0.06)" />
       <circle cx="80" cy="60" r="44" fill="url(#ea-glow)" />
-      <circle cx="80" cy="60" r="34" fill="none" stroke="url(#ea-gold)" strokeWidth="2.5" opacity="0.9" />
-      <circle cx="80" cy="60" r="24" fill="none" stroke="#E8B44A" strokeWidth="1.5" strokeDasharray="4 6" opacity="0.45" />
-      <circle cx="80" cy="60" r="14" fill="none" stroke="#E8B44A" strokeWidth="1" strokeDasharray="2 4" opacity="0.3" />
-      <path d="M80 60 L104 36" stroke="url(#ea-gold)" strokeWidth="2.5" strokeLinecap="round">
-        <animateTransform attributeName="transform" type="rotate" from="0 80 60" to="360 80 60" dur="6s" repeatCount="indefinite" />
-      </path>
-      <circle cx="80" cy="60" r="4.5" fill="url(#ea-gold)" />
-      <circle cx="104" cy="36" r="3" fill="#FF6B35" opacity="0.9">
-        <animate attributeName="opacity" values="0.9;0.3;0.9" dur="2s" repeatCount="indefinite" />
-      </circle>
+      <circle cx="80" cy="60" r="34" fill="none" stroke="url(#ea-blue)" strokeWidth="2.5" opacity="0.9" />
+      <circle cx="80" cy="60" r="24" fill="none" stroke="#2563eb" strokeWidth="1.5" strokeDasharray="4 6" opacity="0.35" />
+      <circle cx="80" cy="60" r="14" fill="none" stroke="#2563eb" strokeWidth="1" strokeDasharray="2 4" opacity="0.25" />
+      <circle cx="80" cy="60" r="4.5" fill="url(#ea-blue)" />
     </svg>
   )
 }

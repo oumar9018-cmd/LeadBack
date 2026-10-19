@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import './Home.css'
 import { url } from './basePath.js'
@@ -8,15 +8,15 @@ import { NAV_LINKS, FOOTER_GROUPS, getSeoPage } from './seo/pages.js'
 import { useSEO } from './seo/useSEO.js'
 import {
   LogoMark,
-  IconRadar, IconClock, IconTrendUp, IconCheck,
-  IconArrowRight, IconArrowUpRight, IconPhoneMissed,
-  IconMessage, IconMic, IconCalendar, IconZap, IconShield,
+  IconRadar, IconClock, IconTrendUp,
+  IconArrowRight, IconPhoneMissed,
+  IconMessage, IconMic, IconShield,
 } from './components/icons.jsx'
 
 /** SEO metadata for the homepage (title, description, canonical, JSON-LD…). */
 const HOME_SEO = getSeoPage('home')
 
-/* Scroll-triggered reveal wrapper */
+/* Subtle scroll-triggered fade-in wrapper (opacity only, minimal movement) */
 function Reveal({ children, delay = 0, className = '' }) {
   const ref = useRef(null)
   useEffect(() => {
@@ -44,69 +44,63 @@ function Reveal({ children, delay = 0, className = '' }) {
   )
 }
 
-/* Animated number counter */
-function AnimatedCounter({ to, prefix = '', suffix = '', duration = 1600 }) {
-  const [val, setVal] = useState(0)
-  const ref = useRef(null)
-  const started = useRef(false)
-  useEffect(() => {
-    const el = ref.current
-    if (!el) return
-    const io = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && !started.current) {
-          started.current = true
-          const t0 = performance.now()
-          const tick = (t) => {
-            const p = Math.min((t - t0) / duration, 1)
-            const eased = 1 - Math.pow(1 - p, 4)
-            setVal(Math.round(to * eased))
-            if (p < 1) requestAnimationFrame(tick)
-          }
-          requestAnimationFrame(tick)
-          io.disconnect()
-        }
-      },
-      { threshold: 0.4 }
-    )
-    io.observe(el)
-    return () => io.disconnect()
-  }, [to, duration])
-  return (
-    <strong ref={ref}>
-      {prefix}{val.toLocaleString('en-IN')}{suffix}
-    </strong>
-  )
-}
-
 const features = [
   {
-    number: '01',
     icon: 'radar',
     title: 'Catch every missed inquiry',
-    text: 'Missed calls, unread DMs, unanswered quotes — every inquiry lands in one queue instead of disappearing.'
+    text: 'Missed calls, unread DMs, unanswered quotes — every inquiry lands in one clean queue instead of disappearing into the void.',
   },
   {
-    number: '02',
-    icon: 'clock',
-    title: 'Follow up at the right moment',
-    text: 'One tap opens WhatsApp with the perfect message ready. Or send a personal voice note — nobody else does that.'
+    icon: 'message',
+    title: 'Follow up in one tap',
+    text: 'Open WhatsApp with the right message already written. Timing is everything — Wynback makes sure you never miss the window.',
   },
   {
-    number: '03',
+    icon: 'mic',
+    title: 'Win back with a voice note',
+    text: 'Send a personal 10-second voice note that no competitor can copy. Customers respond to a human voice, not a template.',
+  },
+  {
     icon: 'trend',
-    title: 'Watch revenue come back',
-    text: 'See exactly which conversations turned into paying customers and how much you recovered.'
-  }
+    title: 'See revenue come back',
+    text: 'Know exactly which conversations turned into paying customers — and how much revenue your follow-ups recovered.',
+  },
+]
+
+const steps = [
+  {
+    number: '1',
+    title: 'Capture every inquiry',
+    text: 'Log missed calls, messages and quotes in one place. Nothing falls through the cracks when you are busy serving customers.',
+  },
+  {
+    number: '2',
+    title: 'Follow up in one tap',
+    text: 'Wynback nudges you at the right moment. One tap sends the perfect WhatsApp message — or a personal voice note.',
+  },
+  {
+    number: '3',
+    title: 'Watch revenue return',
+    text: 'Every recovered customer is tracked against its value. You will see, in plain numbers, what the follow-up earned you.',
+  },
 ]
 
 const industries = [
+  'Salons & Spas',
   'Auto Services',
   'Home Services',
-  'Salons & Spas',
-  'Fitness',
-  'Photography',
-  'Local Businesses'
+  'Clinics',
+  'Fitness Studios',
+  'Photographers',
+  'Coaching Centers',
+  'Freelancers',
+]
+
+const stats = [
+  { value: '₹48K+', label: 'Recovered by early users' },
+  { value: '70%', label: 'Win-back rate' },
+  { value: '10s', label: 'To send a follow-up' },
+  { value: '24/7', label: 'Inquiry capture, zero effort' },
 ]
 
 const testimonials = [
@@ -158,20 +152,8 @@ const faqs = [
 ]
 
 function App() {
-
   // Apply this page's <title>, meta description, canonical and JSON-LD.
   useSEO(HOME_SEO)
-
-  // Live-feeling dashboard numbers (demo data, gently drifts)
-  const [liveRevenue, setLiveRevenue] = useState(48200)
-  const [liveWon, setLiveWon] = useState(31)
-  useEffect(() => {
-    const id = setInterval(() => {
-      setLiveRevenue((r) => r + Math.floor(Math.random() * 400))
-      if (Math.random() > 0.72) setLiveWon((w) => w + 1)
-    }, 4200)
-    return () => clearInterval(id)
-  }, [])
 
   useEffect(() => {
     const auth = window.firebase?.auth?.()
@@ -199,433 +181,314 @@ function App() {
   }, [])
 
   return (
-    <div className="site-shell">
-      <header className="navbar">
-        <a className="brand" href="#top" aria-label="Wynback home">
-          <LogoMark width={32} height={32} className="brand-logo" />
-          <span>Wynback</span>
-        </a>
+    <div className="home-page">
+      <header className="nav">
+        <div className="nav-inner">
+          <Link className="nav-brand" to={url('/')} aria-label="Wynback home">
+            <LogoMark width={30} height={30} className="nav-logo" />
+            <span>Wynback</span>
+          </Link>
 
-        {/*
-          Real router links to the dedicated landing pages (not #anchors) so
-          crawlers can discover and pass link equity to /features, /use-cases,
-          /pricing, /how-it-works, /industries and /about.
-        */}
-        <nav className="nav-links" aria-label="Main navigation">
-          {NAV_LINKS.map((link) => (
-            <Link key={link.to} to={link.to}>
-              {link.label}
-            </Link>
-          ))}
-        </nav>
+          {/*
+            Real router links to the dedicated landing pages (not #anchors) so
+            crawlers can discover and pass link equity to the SEO pages.
+          */}
+          <nav className="nav-links" aria-label="Main navigation">
+            {NAV_LINKS.map((link) => (
+              <Link key={link.to} to={link.to}>
+                {link.label}
+              </Link>
+            ))}
+          </nav>
 
-        <div className="nav-actions">
-          <a className="login-link" href={url('/login')}>Log in</a>
-          <a className="button button-small" href={url('/login')}>Get early access</a>
+          <div className="nav-actions">
+            <a className="nav-login" href={url('/login')}>Log in</a>
+            <a className="btn btn-primary btn-sm" href={url('/login')}>Get started</a>
+          </div>
         </div>
       </header>
 
-      <main id="top">
+      <main>
+        {/* ---------------- HERO ---------------- */}
         <section className="hero">
-          <div className="hero-inner">
-          <div className="hero-copy">
-            <div className="eyebrow">
-              <span className="status-dot" />
-              The revenue recovery platform
-            </div>
-
-            <h1>
-              Every customer you lost is
-              <span className="grad-text"> money left on the table.</span>
-            </h1>
-
-            <p className="hero-text">
-              Wynback catches every missed call and cold inquiry, then helps you
-              win them back in <strong>one tap</strong> — a WhatsApp message or
-              a personal voice note. Nothing slips away. Ever.
-            </p>
-
-            <div className="hero-actions">
-              <a className="button button-primary" href={url('/login')}>
-                Get early access
-                <IconArrowRight width={18} height={18} />
-              </a>
-              <a className="button button-secondary" href="#how-it-works">
-                See how it works
-              </a>
-            </div>
-
-            <div className="trust-row">
-              <div className="trust-item">
-                <AnimatedCounter to={48200} prefix="₹" />
-                <span>recovered by early users</span>
+          <div className="container hero-layout">
+            <div className="hero-copy">
+              <h1>Win back every customer you almost lost</h1>
+              <p className="hero-sub">
+                Wynback catches every missed call and cold inquiry, then helps you
+                win them back in one tap — a WhatsApp message or a personal voice
+                note. Nothing slips away.
+              </p>
+              <div className="hero-actions">
+                <a className="btn btn-primary" href={url('/login')}>
+                  Get started <IconArrowRight width={16} height={16} />
+                </a>
+                <a className="btn btn-secondary" href={url('/how-it-works')}>
+                  See how it works
+                </a>
               </div>
-              <div className="trust-divider" />
-              <div className="trust-item">
-                <AnimatedCounter to={70} suffix="%" />
-                <span>win-back rate</span>
-              </div>
-              <div className="trust-divider" />
-              <div className="trust-item">
-                <AnimatedCounter to={10} suffix="s" />
-                <span>to send a follow-up</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="hero-visual" aria-label="Wynback dashboard preview">
-            <div className="glow glow-one" />
-            <div className="glow glow-two" />
-
-            <div className="float-card float-a">
-              <span className="fc-icon"><IconMessage width={19} height={19} /></span>
-              <div>WhatsApp sent<small>Rohan Shah · just now</small></div>
-            </div>
-            <div className="float-card float-b">
-              <span className="fc-icon"><IconTrendUp width={19} height={19} /></span>
-              <div>+₹3,500 recovered<small>Hair spa booking confirmed</small></div>
+              <p className="hero-note">Free during early access · No credit card required</p>
             </div>
 
-            <div className="dashboard-window">
-              <div className="window-top">
-                <div className="window-dots">
-                  <i />
-                  <i />
-                  <i />
+            <div className="hero-visual" aria-label="Wynback dashboard preview">
+              <div className="browser-frame">
+                <div className="browser-bar">
+                  <div className="browser-dots">
+                    <i /><i /><i />
+                  </div>
+                  <span className="browser-url">wynback.com/app</span>
                 </div>
-                <span>Wynback / Overview</span>
-                <span className="window-status">Live</span>
-              </div>
-
-              <div className="dashboard-body">
-                <div className="dashboard-heading">
-                  <div>
-                    <span className="muted-label">Overview</span>
-                    <h2>Your workspace overview</h2>
-                  </div>
-                  <button className="date-button">Last 30 days ▾</button>
-                </div>
-
-                <div className="metric-grid">
-                  <div className="metric-card featured">
-                    <span>Revenue recovered</span>
-                    <strong>₹{liveRevenue.toLocaleString('en-IN')}</strong>
-                    <small><IconTrendUp width={12} height={12} /> +23% this month</small>
-                  </div>
-
-                  <div className="metric-card">
-                    <span>Customers won back</span>
-                    <strong>{liveWon}</strong>
-                    <small>from 44 inquiries</small>
-                  </div>
-
-                  <div className="metric-card">
-                    <span>Win-back rate</span>
-                    <strong>70%</strong>
-                    <small>Inquiry → customer</small>
-                  </div>
-                </div>
-
-                <div className="inquiry-card">
-                  <div className="card-header">
+                <div className="browser-body">
+                  <div className="dash-top">
                     <div>
-                      <span className="muted-label">Follow-up queue</span>
-                      <h3>Recent inquiries</h3>
+                      <span className="dash-eyebrow">Overview</span>
+                      <strong className="dash-title">Good morning, Priya</strong>
                     </div>
-                    <span className="queue-count">3 need you</span>
+                    <span className="dash-pill">Last 30 days</span>
                   </div>
 
-                  <div className="inquiry-list">
-                    <div className="inquiry-row">
-                      <div className="avatar avatar-one">RS</div>
-                      <div className="inquiry-person">
+                  <div className="dash-metrics">
+                    <div className="dash-metric">
+                      <span>Revenue recovered</span>
+                      <strong>₹48,200</strong>
+                      <small className="up">+23% this month</small>
+                    </div>
+                    <div className="dash-metric">
+                      <span>Customers won back</span>
+                      <strong>31</strong>
+                      <small>from 44 inquiries</small>
+                    </div>
+                    <div className="dash-metric">
+                      <span>Win-back rate</span>
+                      <strong>70%</strong>
+                      <small>Inquiry → customer</small>
+                    </div>
+                  </div>
+
+                  <div className="dash-queue">
+                    <div className="dash-queue-head">
+                      <strong>Follow-up queue</strong>
+                      <span className="dash-count">3 need you</span>
+                    </div>
+                    <div className="dash-row">
+                      <span className="dash-avatar">RS</span>
+                      <div className="dash-person">
                         <strong>Rohan Shah</strong>
                         <span>Missed call · 20 min ago</span>
                       </div>
-                      <div className="inquiry-value">₹3,500</div>
-                      <span className="voice-badge"><IconMic width={12} height={12} /> Voice note</span>
+                      <strong className="dash-value">₹3,500</strong>
+                      <span className="dash-badge"><IconMic width={12} height={12} /> Voice note</span>
                     </div>
-
-                    <div className="inquiry-row">
-                      <div className="avatar avatar-two">PM</div>
-                      <div className="inquiry-person">
+                    <div className="dash-row">
+                      <span className="dash-avatar">PM</span>
+                      <div className="dash-person">
                         <strong>Priya Mehta</strong>
                         <span>Hair coloring quote sent</span>
                       </div>
-                      <div className="inquiry-value">₹4,200</div>
-                      <span className="reply-badge"><IconMessage width={12} height={12} /> Replied</span>
+                      <strong className="dash-value">₹4,200</strong>
+                      <span className="dash-badge"><IconMessage width={12} height={12} /> Replied</span>
                     </div>
-
-                    <div className="inquiry-row">
-                      <div className="avatar avatar-three">AK</div>
-                      <div className="inquiry-person">
+                    <div className="dash-row">
+                      <span className="dash-avatar">AK</span>
+                      <div className="dash-person">
                         <strong>Amit Khanna</strong>
                         <span>Car service inquiry</span>
                       </div>
-                      <div className="inquiry-value">₹8,000</div>
-                      <span className="followup-badge"><IconPhoneMissed width={12} height={12} /> Follow up</span>
+                      <strong className="dash-value">₹8,000</strong>
+                      <span className="dash-badge"><IconPhoneMissed width={12} height={12} /> Follow up</span>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
+        </section>
+
+        {/* ---------------- TRUSTED-BY STRIP ---------------- */}
+        <section className="trusted">
+          <div className="container">
+            <p className="trusted-label">Built for businesses that never let a customer slip away</p>
+            <div className="trusted-list">
+              {industries.map((industry) => (
+                <span key={industry} className="trusted-item">{industry}</span>
+              ))}
+            </div>
           </div>
         </section>
 
-        <div className="ticker-strip" aria-hidden="true">
-          <div className="ticker-track">
-            {[0, 1].map((dup) => (
-              <span key={dup} style={{ display: 'contents' }}>
-                {industries.map((ind) => (
-                  <span className="ticker-item" key={`${dup}-${ind}`}>
-                    <IconZap width={16} height={16} /> {ind}
-                  </span>
-                ))}
-              </span>
+        {/* ---------------- STATS ---------------- */}
+        <section className="stats">
+          <div className="container stats-grid">
+            {stats.map((stat) => (
+              <Reveal key={stat.label} className="stat">
+                <strong>{stat.value}</strong>
+                <span>{stat.label}</span>
+              </Reveal>
             ))}
           </div>
-        </div>
+        </section>
 
-        <Reveal className="proof-strip">
-          <p>The most expensive customer is the one you already had.</p>
-          <strong>Winning back beats chasing new — every single time.</strong>
-        </Reveal>
+        {/* ---------------- FEATURES ---------------- */}
+        <section className="section section-gray" id="features">
+          <div className="container">
+            <Reveal>
+              <div className="section-head">
+                <span className="kicker">Features</span>
+                <h2>Everything you need to win them back</h2>
+                <p>One simple workspace for the follow-up — the part of the sale most businesses leave to chance.</p>
+              </div>
+            </Reveal>
+            <div className="features-grid">
+              {features.map((feature, i) => (
+                <Reveal key={feature.title} delay={i * 0.08}>
+                  <article className="feature-card">
+                    <div className="feature-icon">
+                      {feature.icon === 'radar' && <IconRadar width={24} height={24} />}
+                      {feature.icon === 'message' && <IconMessage width={24} height={24} />}
+                      {feature.icon === 'mic' && <IconMic width={24} height={24} />}
+                      {feature.icon === 'trend' && <IconTrendUp width={24} height={24} />}
+                    </div>
+                    <h3>{feature.title}</h3>
+                    <p>{feature.text}</p>
+                  </article>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        </section>
 
+        {/* ---------------- HOW IT WORKS ---------------- */}
         <section className="section" id="how-it-works">
-          <Reveal>
-          <div className="section-heading">
-            <span className="section-kicker">How it works</span>
-            <h2>Turn silence<br />into revenue.</h2>
-            <p>
-              Three steps. Ten seconds each. Wynback turns every forgotten
-              inquiry into a second chance — without the CRM headache.
-            </p>
+          <div className="container">
+            <Reveal>
+              <div className="section-head">
+                <span className="kicker">How it works</span>
+                <h2>Three steps. Ten seconds each.</h2>
+                <p>Wynback turns every forgotten inquiry into a second chance — without the CRM headache.</p>
+              </div>
+            </Reveal>
+            <div className="steps-grid">
+              {steps.map((step, i) => (
+                <Reveal key={step.number} delay={i * 0.08}>
+                  <article className="step-card">
+                    <span className="step-number">{step.number}</span>
+                    <h3>{step.title}</h3>
+                    <p>{step.text}</p>
+                  </article>
+                </Reveal>
+              ))}
+            </div>
           </div>
-          </Reveal>
+        </section>
 
-          <div className="feature-grid" id="features">
-            {features.map((feature, i) => (
-              <Reveal key={feature.number} delay={i * 0.12}>
-              <article className="feature-card">
-                <span className="feature-number">{feature.number}</span>
-                <div className="feature-icon">
-                  {feature.icon === 'radar' && <IconRadar width={28} height={28} />}
-                  {feature.icon === 'clock' && <IconClock width={28} height={28} />}
-                  {feature.icon === 'trend' && <IconTrendUp width={28} height={28} />}
+        {/* ---------------- TESTIMONIALS ---------------- */}
+        <section className="section section-gray" id="testimonials">
+          <div className="container">
+            <Reveal>
+              <div className="section-head">
+                <span className="kicker">Customer stories</span>
+                <h2>They stopped losing customers to silence</h2>
+              </div>
+            </Reveal>
+            <div className="testimonials-grid">
+              {testimonials.map((t, i) => (
+                <Reveal key={t.name} delay={i * 0.08}>
+                  <article className="testimonial-card">
+                    <p className="testimonial-quote">“{t.quote}”</p>
+                    <div className="testimonial-author">
+                      <span className="testimonial-avatar">{t.initials}</span>
+                      <div>
+                        <strong>{t.name}</strong>
+                        <span>{t.business}</span>
+                      </div>
+                    </div>
+                  </article>
+                </Reveal>
+              ))}
+            </div>
+            <p className="testimonials-note">Illustrative examples of how businesses could use Wynback — real customer stories coming soon.</p>
+          </div>
+        </section>
+
+        {/* ---------------- FAQ ---------------- */}
+        <section className="section" id="faq">
+          <div className="container container-narrow">
+            <Reveal>
+              <div className="section-head">
+                <span className="kicker">FAQ</span>
+                <h2>Questions, answered</h2>
+              </div>
+            </Reveal>
+            <div className="faq-list">
+              {faqs.map((faq, i) => (
+                <details className="faq-item" key={i} open={i === 0}>
+                  <summary>{faq.q}</summary>
+                  <p>{faq.a}</p>
+                </details>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ---------------- FINAL CTA ---------------- */}
+        <section className="section" id="early-access">
+          <div className="container">
+            <Reveal>
+              <div className="cta-panel">
+                <span className="kicker kicker-light">Early access</span>
+                <h2>Give every missed customer a reason to come back</h2>
+                <p>Join the waitlist and be first in when Wynback launches — with missed-call recovery, one-tap WhatsApp follow-ups, and voice-note win-backs.</p>
+                <div className="cta-actions">
+                  <a className="btn btn-white" href={url('/login')}>
+                    Get early access <IconArrowRight width={16} height={16} />
+                  </a>
                 </div>
-                <h3>{feature.title}</h3>
-                <p>{feature.text}</p>
-              </article>
-              </Reveal>
-            ))}
-          </div>
-        </section>
-
-        <Reveal>
-        <section className="recovery-section">
-          <div className="recovery-copy">
-            <span className="section-kicker">The recovery loop</span>
-            <h2>One missed inquiry can become one more sale.</h2>
-            <p>
-              Keep the process simple: capture the inquiry, schedule the
-              follow-up, record the response, and understand what came back.
-            </p>
-          </div>
-
-          <div className="loop-card">
-            <div className="loop-step">
-              <span>01</span>
-              <div>
-                <strong>Inquiry</strong>
-                <small>Customer shows interest</small>
+                <p className="cta-note">Free during early access · <IconShield width={14} height={14} /> Your data stays private</p>
               </div>
-            </div>
-            <div className="loop-line" />
-            <div className="loop-step">
-              <span>02</span>
-              <div>
-                <strong>Follow-up</strong>
-                <small>Conversation gets another chance</small>
-              </div>
-            </div>
-            <div className="loop-line" />
-            <div className="loop-step active">
-              <span>03</span>
-              <div>
-                <strong>Recovered</strong>
-                <small>Customer comes back</small>
-              </div>
-            </div>
+            </Reveal>
           </div>
         </section>
-        </Reveal>
-
-        <section className="section industries-section" id="industries">
-          <Reveal>
-          <div className="section-heading compact">
-            <span className="section-kicker">Made for businesses where leads matter</span>
-            <h2>Start where one customer<br />is worth something.</h2>
-          </div>
-          </Reveal>
-
-          <div className="industry-grid">
-            {industries.map((industry, index) => (
-              <Reveal key={industry} delay={(index % 3) * 0.1}>
-              <Link className="industry-card" to="/industries">
-                <span>0{index + 1}</span>
-                <strong>{industry}</strong>
-                <span className="industry-arrow"><IconArrowUpRight width={18} height={18} /></span>
-              </Link>
-              </Reveal>
-            ))}
-          </div>
-        </section>
-
-        <section className="section testimonials-section" id="testimonials">
-          <Reveal>
-          <div className="section-heading">
-            <span className="section-kicker">Illustrative customer stories</span>
-            <h2>They stopped losing<br />customers to silence.</h2>
-          </div>
-          </Reveal>
-
-          <div className="testimonial-grid">
-            {testimonials.map((t, i) => (
-              <Reveal key={t.name} delay={i * 0.12}>
-              <article className="testimonial-card">
-                <div className="testimonial-stars" aria-label="5 out of 5 stars">
-                  {[0,1,2,3,4].map((s) => (
-                    <svg key={s} viewBox="0 0 24 24" width="16" height="16" fill="#f59e0b" aria-hidden="true">
-                      <path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.2 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8L12 2z" />
-                    </svg>
-                  ))}
-                </div>
-                <p className="testimonial-quote">"{t.quote}"</p>
-                <div className="testimonial-author">
-                  <span className="testimonial-avatar">{t.initials}</span>
-                  <div>
-                    <strong>{t.name}</strong>
-                    <span>{t.business}</span>
-                  </div>
-                </div>
-              </article>
-              </Reveal>
-            ))}
-          </div>
-          <p className="testimonials-disclaimer">Illustrative examples of how businesses could use Wynback — real customer stories coming soon.</p>
-        </section>
-
-        <section className="section faq-section" id="faq">
-          <Reveal>
-          <div className="section-heading">
-            <span className="section-kicker">Questions, answered</span>
-            <h2>Everything else<br />you want to know.</h2>
-          </div>
-          </Reveal>
-
-          <div className="faq-list">
-            {faqs.map((faq, i) => (
-              <Reveal key={i} delay={Math.min(i * 0.06, 0.3)}>
-              <details className="faq-item" open={i === 0}>
-                <summary>{faq.q}</summary>
-                <p>{faq.a}</p>
-              </details>
-              </Reveal>
-            ))}
-          </div>
-        </section>
-
-        <Reveal>
-        <section className="pricing-section" id="early-access">
-          <div className="pricing-inner">
-            <div className="pricing-copy">
-              <span className="section-kicker">Early access</span>
-              <h2>Be first in line.</h2>
-              <p>
-                We're rebuilding Wynback from the ground up. Join the waitlist
-                and get early access when we launch.
-              </p>
-            </div>
-
-            <div className="price-card">
-              <div className="price-top">
-                <span className="price-label">Early Access</span>
-                <span className="popular">Coming soon</span>
-              </div>
-
-              <p className="price-description">
-                Get notified when Wynback launches with missed-call recovery,
-                one-tap WhatsApp follow-ups, voice-note win-backs, and more.
-              </p>
-
-              <a className="button button-dark" href={url('/login')}>
-                Get early access <IconArrowRight width={18} height={18} />
-              </a>
-
-              <small className="price-note">Free during early access.</small>
-            </div>
-          </div>
-        </section>
-        </Reveal>
-
-        <Reveal>
-        <section className="final-cta" id="signup">
-          <div>
-            <span className="section-kicker">Don't leave money in the inbox.</span>
-            <h2>Give every missed customer<br />a reason to come back.</h2>
-            <a className="button button-primary" href={url('/login')}>
-              Get early access <IconArrowRight width={18} height={18} />
-            </a>
-          </div>
-        </section>
-        </Reveal>
       </main>
 
+      {/* ---------------- FOOTER ---------------- */}
       <footer className="footer">
-        <div className="footer-inner">
-        <div className="footer-top">
-        <div className="footer-brand">
-          <a className="brand" href="#top">
-            <LogoMark width={28} height={28} className="brand-logo" />
-            <span>Wynback</span>
-          </a>
-          <p>Win back every customer you almost lost.</p>
-        </div>
+        <div className="container">
+          <div className="footer-grid">
+            <div className="footer-brand">
+              <Link className="nav-brand" to={url('/')}>
+                <LogoMark width={26} height={26} className="nav-logo" />
+                <span>Wynback</span>
+              </Link>
+              <p>Win back every customer you almost lost.</p>
+              <p className="footer-cred"><IconClock width={14} height={14} /> Built for follow-ups that actually happen.</p>
+            </div>
 
-        <div className="footer-nav">
-          {FOOTER_GROUPS.map((group) => (
-            <div className="footer-group" key={group.title}>
-              <p className="footer-group-title">{group.title}</p>
+            {FOOTER_GROUPS.map((group) => (
+              <div className="footer-group" key={group.title}>
+                <p className="footer-title">{group.title}</p>
+                <ul>
+                  {group.links.map((link) => (
+                    <li key={`${group.title}-${link.to}-${link.label}`}>
+                      <Link to={link.to}>{link.label}</Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+
+            <div className="footer-group">
+              <p className="footer-title">Get started</p>
               <ul>
-                {group.links.map((link) => (
-                  <li key={`${group.title}-${link.to}-${link.label}`}>
-                    <Link to={link.to}>{link.label}</Link>
-                  </li>
-                ))}
+                <li><Link to={url('/login')}>Log in</Link></li>
+                <li><Link to={url('/login')}>Get early access</Link></li>
               </ul>
             </div>
-          ))}
-
-          <div className="footer-group">
-            <p className="footer-group-title">Get started</p>
-            <ul>
-              <li>
-                <Link to="/login">Log in</Link>
-              </li>
-              <li>
-                <Link to="/login">Get early access</Link>
-              </li>
-            </ul>
           </div>
-        </div>
 
-        </div>
-
-        <div className="footer-bottom">
-          <span>© 2026 Wynback. All rights reserved.</span>
-          <span>Win-back software for local businesses.</span>
-        </div>
+          <div className="footer-bottom">
+            <span>© 2026 Wynback. All rights reserved.</span>
+            <span>Win-back software for local businesses.</span>
+          </div>
         </div>
       </footer>
     </div>
