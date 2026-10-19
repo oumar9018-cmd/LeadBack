@@ -41,8 +41,8 @@
   const firebaseConfig = {
     apiKey: "AIzaSyCX1lbzgXwdy3HPU-qFcix1O7X2FahXIFo",
     authDomain: "leadback-3345f.firebaseapp.com",
-    projectId: "wynback-3345f",
-    storageBucket: "wynback-3345f.firebasestorage.app",
+    projectId: "leadback-3345f",
+    storageBucket: "leadback-3345f.firebasestorage.app",
     messagingSenderId: "469238593875",
     appId: "1:469238593875:web:a83795cfd62ace047409a6"
   };
@@ -64,7 +64,17 @@
 
 </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Branded loading splash: shown while the JS bundle downloads/parses.
+           Prevents a bare white page on slow connections; React replaces it. -->
+      <div id="wynback-splash" style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#ffffff;font-family:Inter,system-ui,sans-serif;">
+        <div style="text-align:center;">
+          <div style="width:56px;height:56px;margin:0 auto 16px;border-radius:16px;background:#2563EB;color:#fff;font-weight:700;font-size:28px;display:flex;align-items:center;justify-content:center;">W</div>
+          <div style="font-weight:600;color:#0f172a;">Wynback</div>
+          <div style="font-size:13px;color:#64748b;margin-top:4px;">Loading your workspace…</div>
+        </div>
+      </div>
+    </div>
     <script>
       // Keep SITE_BASE in sync with `base` in vite.config.js.
       var SITE_BASE = '/LeadBack/';
