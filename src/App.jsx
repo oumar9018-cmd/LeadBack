@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import {
   BrowserRouter,
   Routes,
@@ -333,6 +333,13 @@ function Dashboard() {
   const [search, setSearch] = useState('')
   const [showAddInquiry, setShowAddInquiry] = useState(false)
   const [selectedInquiry, setSelectedInquiry] = useState(null)
+  // The detail modal below has a 260ms close animation: it keeps rendering
+  // AFTER selectedInquiry is set back to null. Freeze the last opened
+  // inquiry so the closing frame never reads `.name` (etc.) off null,
+  // which crashed the whole app into the error page.
+  const lastInquiryRef = useRef(null)
+  if (selectedInquiry !== null) lastInquiryRef.current = selectedInquiry
+  const detailInquiry = selectedInquiry ?? lastInquiryRef.current
   const [lossTarget, setLossTarget] = useState(null)
   const [offerTarget, setOfferTarget] = useState(null)
 
@@ -972,8 +979,8 @@ function Dashboard() {
             <div className="modal-header">
               <div>
                 <span className="app-eyebrow">INQUIRY DETAILS</span>
-                <h2>{selectedInquiry.name}</h2>
-                <p>{selectedInquiry.phone}</p>
+                <h2>{detailInquiry.name}</h2>
+                <p>{detailInquiry.phone}</p>
               </div>
 
               <button
@@ -989,33 +996,33 @@ function Dashboard() {
             <div className="detail-grid">
               <div className="detail-card">
                 <span>Service</span>
-                <strong>{selectedInquiry.service}</strong>
+                <strong>{detailInquiry.service}</strong>
               </div>
 
               <div className="detail-card">
                 <span>Estimated value</span>
-                <strong>{money(Number(selectedInquiry.value) || 0)}</strong>
+                <strong>{money(Number(detailInquiry.value) || 0)}</strong>
               </div>
 
               <div className="detail-card">
                 <span>Status</span>
                 <strong>
-                  <span className={`status status-${selectedInquiry.status}`}>
-                    {statusLabels[selectedInquiry.status]}
+                  <span className={`status status-${detailInquiry.status}`}>
+                    {statusLabels[detailInquiry.status]}
                   </span>
                 </strong>
               </div>
 
               <div className="detail-card">
                 <span>Added</span>
-                <strong>{selectedInquiry.date}</strong>
+                <strong>{detailInquiry.date}</strong>
               </div>
 
-              {selectedInquiry.status === 'lost' && selectedInquiry.lossReason && (
+              {detailInquiry.status === 'lost' && detailInquiry.lossReason && (
                 <div className="detail-card detail-card-loss">
                   <span>Lost reason</span>
-                  <strong>{LOSS_REASON_LABELS[selectedInquiry.lossReason] || selectedInquiry.lossReason}</strong>
-                  {selectedInquiry.lossNote && <small>{selectedInquiry.lossNote}</small>}
+                  <strong>{LOSS_REASON_LABELS[detailInquiry.lossReason] || detailInquiry.lossReason}</strong>
+                  {detailInquiry.lossNote && <small>{detailInquiry.lossNote}</small>}
                 </div>
               )}
             </div>
@@ -1065,31 +1072,31 @@ function Dashboard() {
             </div>
 
             <WhatsAppActions
-              inquiry={selectedInquiry}
+              inquiry={detailInquiry}
               businessName={businessName}
               onAction={(type, templateId) => {
-                logActivity(selectedInquiry.id, type === 'voice-note' ? 'Voice note opened' : `WhatsApp sent (${templateId})`)
+                logActivity(detailInquiry.id, type === 'voice-note' ? 'Voice note opened' : `WhatsApp sent (${templateId})`)
               }}
             />
 
             <SmartComposer
-              inquiry={selectedInquiry}
+              inquiry={detailInquiry}
               businessName={businessName}
               businessSlug={businessSlug}
               onAction={(type, tone) => {
-                logActivity(selectedInquiry.id, `Smart message sent (${tone})`)
+                logActivity(detailInquiry.id, `Smart message sent (${tone})`)
               }}
             />
 
             <DripSequences
-              inquiry={selectedInquiry}
+              inquiry={detailInquiry}
               businessName={businessName}
               onSave={(steps) => {
-                logActivity(selectedInquiry.id, `Drip sequence saved (${steps.length} steps)`)
+                logActivity(detailInquiry.id, `Drip sequence saved (${steps.length} steps)`)
               }}
             />
 
-            {selectedInquiry.followupHistory?.length > 0 && (
+            {detailInquiry.followupHistory?.length > 0 && (
               <div className="followup-history">
                 <div className="followup-history-header">
                   <div>
@@ -1097,13 +1104,13 @@ function Dashboard() {
                     <h3>Follow-up history</h3>
                   </div>
                   <span>
-                    {selectedInquiry.followupHistory.length} event
-                    {selectedInquiry.followupHistory.length === 1 ? '' : 's'}
+                    {detailInquiry.followupHistory.length} event
+                    {detailInquiry.followupHistory.length === 1 ? '' : 's'}
                   </span>
                 </div>
 
                 <div className="history-list">
-                  {[...selectedInquiry.followupHistory].reverse().map(entry => (
+                  {[...detailInquiry.followupHistory].reverse().map(entry => (
                     <div className="history-item" key={entry.id}>
                       <div className="history-dot"></div>
 
@@ -1136,57 +1143,57 @@ function Dashboard() {
                 Save follow-up
               </button>
 
-              {selectedInquiry.status === 'new' && (
+              {detailInquiry.status === 'new' && (
                 <button
                   type="button"
                   className="save-button"
                   onClick={() => {
-                    updateStatus(selectedInquiry.id, 'followup')
-                    setSelectedInquiry({ ...selectedInquiry, status: 'followup' })
+                    updateStatus(detailInquiry.id, 'followup')
+                    setSelectedInquiry({ ...detailInquiry, status: 'followup' })
                   }}
                 >
                   Start follow-up
                 </button>
               )}
 
-              {selectedInquiry.status === 'followup' && (
+              {detailInquiry.status === 'followup' && (
                 <button
                   type="button"
                   className="save-button"
                   onClick={() => {
-                    updateStatus(selectedInquiry.id, 'replied')
-                    setSelectedInquiry({ ...selectedInquiry, status: 'replied' })
+                    updateStatus(detailInquiry.id, 'replied')
+                    setSelectedInquiry({ ...detailInquiry, status: 'replied' })
                   }}
                 >
                   Mark replied
                 </button>
               )}
 
-              {selectedInquiry.status === 'replied' && (
+              {detailInquiry.status === 'replied' && (
                 <button
                   type="button"
                   className="save-button"
-                  onClick={() => markRecovered(selectedInquiry.id)}
+                  onClick={() => markRecovered(detailInquiry.id)}
                 >
                   Mark recovered
                 </button>
               )}
 
-              {['new', 'followup', 'replied'].includes(selectedInquiry.status) && (
+              {['new', 'followup', 'replied'].includes(detailInquiry.status) && (
                 <button
                   type="button"
                   className="offer-action-button"
-                  onClick={() => setOfferTarget(selectedInquiry)}
+                  onClick={() => setOfferTarget(detailInquiry)}
                 >
                   Send second-chance offer
                 </button>
               )}
 
-              {['new', 'followup', 'replied'].includes(selectedInquiry.status) && (
+              {['new', 'followup', 'replied'].includes(detailInquiry.status) && (
                 <button
                   type="button"
                   className="danger-outline-button"
-                  onClick={() => setLossTarget(selectedInquiry)}
+                  onClick={() => setLossTarget(detailInquiry)}
                 >
                   Mark lost
                 </button>
