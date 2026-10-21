@@ -73,11 +73,6 @@ export default class ErrorBoundary extends React.Component {
             Wynback hit an unexpected error. Your data is safe — reloading
             usually fixes it.
           </p>
-          {this.state.error && (
-            <p style={{ fontSize: 12, color: '#dc2626', margin: '0 0 20px', wordBreak: 'break-word' }}>
-              Error: {String(this.state.error.message || this.state.error)}
-            </p>
-          )}
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
             <button
               type="button"
