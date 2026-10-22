@@ -132,48 +132,6 @@ const INDUSTRY_ICONS = {
   'car-detailing': 'refresh',
 }
 
-/**
- * Illustrative pull-quotes, one per industry page. These are fictional
- * examples written to show the workflow's value — every card is labeled
- * as illustrative so it is never mistaken for a real customer.
- */
-const INDUSTRY_QUOTES = {
-  salons: {
-    quote:
-      'The 6 PM “do you have anything tomorrow?” messages used to die in my DMs. Now every single one gets a reply — and half of them book.',
-    who: 'Salon owner · two chairs',
-  },
-  'auto-repair': {
-    quote:
-      'I quoted a clutch job on Monday, followed up on Thursday, and the car was on my ramp on Friday. That one job paid for the year.',
-    who: 'Independent garage owner',
-  },
-  clinics: {
-    quote:
-      'Our no-shows fell because someone finally calls every missed caller back the same day. Patients tell us they feel remembered.',
-    who: 'Dental clinic · front desk',
-  },
-  coaches: {
-    quote:
-      'A discovery-call enquiry from three months ago became my highest-paying client. I just kept the thread warm until she was ready.',
-    who: 'Business coach · solo practice',
-  },
-  'real-estate': {
-    quote:
-      'The valuation I did in March listed with me in September — because I was the only agent who stayed in touch.',
-    who: 'Estate agent · small agency',
-  },
-  freelancers: {
-    quote:
-      'The proposal I had almost given up on closed after one follow-up. Ten minutes of work, a month of revenue.',
-    who: 'Freelance designer',
-  },
-  'car-detailing': {
-    quote:
-      'Ceramic coating quotes are big tickets. Chasing every single one properly doubled my close rate in a season.',
-    who: 'Detailing studio owner',
-  },
-}
 
 function Icon({ name, className }) {
   const shapes = ICONS[name] || ICONS.sparkles
@@ -326,7 +284,7 @@ function Hero({ page, industry }) {
 
       <div className="seo-hero-actions hero-anim" style={{ '--d': '360ms' }}>
         <Link className="seo-button seo-button-primary" to="/login">
-          Get early access <span aria-hidden="true">→</span>
+          Start free <span aria-hidden="true">→</span>
         </Link>
         <Link className="seo-button seo-button-ghost" to="/how-it-works">
           See how it works
@@ -433,30 +391,6 @@ function Chapters({ page }) {
         </p>
         <cite>— The Wynback creed</cite>
       </blockquote>
-    </section>
-  )
-}
-
-/**
- * Industry pull-quote — a fictional, illustrative example so each vertical
- * page has a human voice. Always labeled as illustrative.
- */
-function IndustryQuote({ page }) {
-  const quote = INDUSTRY_QUOTES[page.type]
-  if (!quote) return null
-
-  return (
-    <section className="seo-block seo-block-quote">
-      <figure className="seo-quote reveal">
-        <span className="seo-quote-mark" aria-hidden="true">“</span>
-        <blockquote>
-          <p>{quote.quote}</p>
-        </blockquote>
-        <figcaption>
-          <span className="seo-quote-who">{quote.who}</span>
-          <span className="seo-quote-label">Illustrative example — not a real customer</span>
-        </figcaption>
-      </figure>
     </section>
   )
 }
@@ -585,11 +519,11 @@ function FinalCta() {
         <span className="seo-kicker">WYNBACK</span>
         <h2>Turn missed inquiries into customers.</h2>
         <p>
-          Get early access and build a clearer follow-up
-          workflow for your business. Free during early access.
+          Start free and build a clearer follow-up
+          workflow for your business. Every feature is free — no paid plans, no gates.
         </p>
         <Link className="seo-button seo-button-primary" to="/login">
-          Get early access <span aria-hidden="true">→</span>
+          Start free <span aria-hidden="true">→</span>
         </Link>
       </div>
     </section>
@@ -631,7 +565,7 @@ export default function SEOPage({ type }) {
           <>
             <Steps page={page} />
             <Cards page={page} />
-            {isIndustry && <IndustryQuote page={page} />}
+            
             <Plans page={page} />
             <Showcase page={page} />
             <Faq page={page} />
