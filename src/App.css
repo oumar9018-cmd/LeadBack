@@ -731,53 +731,6 @@ a {
 }
 
 @media (max-width: 800px) {
-  .sidebar {
-    width: 70px;
-    padding: 18px 10px;
-  }
-
-  .sidebar-brand {
-    justify-content: center;
-    padding: 2px 0 25px;
-  }
-
-  .sidebar-brand span,
-  .workspace,
-  .side-nav a:not(.active)::after,
-  .sidebar-bottom span {
-    display: none;
-  }
-
-  .side-nav a {
-    font-size: 0;
-    text-align: center;
-    padding: 12px 5px;
-  }
-
-  .side-nav a::first-letter {
-    font-size: 15px;
-  }
-
-  .sidebar-bottom {
-    padding: 0;
-    text-align: center;
-  }
-
-  .app-main {
-    width: calc(100% - 70px);
-    margin-left: 70px;
-    padding: 25px 18px;
-  }
-
-  .app-header {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .header-actions {
-    width: 100%;
-  }
-
   .date-button,
   .primary-action {
     flex: 1;
@@ -871,16 +824,6 @@ a {
 }
 
 @media (max-width: 390px) {
-  .sidebar {
-    width: 58px;
-  }
-
-  .app-main {
-    width: calc(100% - 58px);
-    margin-left: 58px;
-    padding: 16px 9px;
-  }
-
   .stats-grid {
     grid-template-columns: 1fr;
   }
@@ -5036,6 +4979,8 @@ a {
   }
 
   .sidebar {
+    width: 264px;
+    max-width: 84vw;
     z-index: 90;
     transform: translateX(-100%);
     transition: transform 180ms ease;
@@ -5047,7 +4992,7 @@ a {
   }
 
   .app-shell.sidebar-open .mobile-menu-button {
-    left: 202px;
+    left: 216px;
   }
 
   .app-shell.sidebar-open .mobile-menu-button span:nth-child(1) {
@@ -5063,12 +5008,7 @@ a {
   }
 }
 
-@media (max-width: 620px) {
 
-  .app-shell.sidebar-open .mobile-menu-button {
-    left: 192px;
-  }
-}
 
 
 /* ==============================
@@ -5795,4 +5735,83 @@ a {
 /* Make sure the profile page content is centered nicely too */
 .app-main .profile-page {
   display: block;
+}
+
+/* ==============================
+   SLIM TOPBAR + MOBILE POLISH (2026-10-22)
+   Every page renders its own header now; the shell topbar only carries
+   the Graveyard pill + profile menu, right-aligned and compact.
+============================== */
+
+.app-header-topbar {
+  align-items: center;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 620px) {
+  /* Topbar compaction: avatar-only profile button, pill stays small */
+  .app-header-topbar .profile-name,
+  .app-header-topbar .profile-chevron {
+    display: none;
+  }
+
+  .app-header-topbar .profile-button {
+    padding: 4px;
+    border-radius: 999px;
+  }
+
+  /* Modals: use the small screen properly */
+  .modal-backdrop {
+    padding: 10px;
+  }
+
+  .inquiry-modal {
+    max-height: calc(100dvh - 20px);
+    padding: 18px;
+    border-radius: 14px;
+  }
+
+  /* Comfortable tap targets in the drawer nav */
+  .side-nav a {
+    padding: 13px 12px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 620px) {
+  /* Dashboard header stacks: greeting full-width, action button below it */
+  .dashboard-overview-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+
+  .dashboard-overview-header .header-actions .primary-action {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Detail-modal delete (added 2026-10-22 with the delete feature) */
+.danger-solid-button {
+  border: 1px solid #d92d20;
+  background: #d92d20;
+  color: #fff;
+  border-radius: 9px;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.danger-solid-button:hover {
+  background: #b42318;
+}
+
+.delete-confirm-text {
+  align-self: center;
+  color: #b42318;
+  font-size: 12px;
+  font-weight: 700;
 }
