@@ -97,32 +97,12 @@ const industries = [
 ]
 
 const stats = [
-  { value: '₹48K+', label: 'Illustrative demo data' },
-  { value: '70%', label: 'Target win-back rate' },
+  { value: '₹0', label: 'Every feature free — no paid plan, ever' },
   { value: '10s', label: 'To send a follow-up' },
   { value: '24/7', label: 'Inquiry capture, zero effort' },
+  { value: '1 tap', label: 'WhatsApp message or voice note' },
 ]
 
-const testimonials = [
-  {
-    quote: 'A customer called while I was with another client. Wynback reminded me in 10 minutes — I sent a voice note and she booked a ₹2,500 hair spa the same evening.',
-    name: 'Priya Nair',
-    business: 'Glow Studio, Kochi',
-    initials: 'PN',
-  },
-  {
-    quote: 'I used to lose 3-4 inquiries every week because I forgot to call back. Now every missed call becomes a WhatsApp conversation. Recovered ₹18,000 last month.',
-    name: 'Rajesh Kumar',
-    business: 'City Auto Care, Delhi',
-    initials: 'RK',
-  },
-  {
-    quote: 'The voice note feature is genius. Customers feel I personally care — because I do. My rebooking rate doubled in two months.',
-    name: 'Anita Desai',
-    business: 'Serene Spa, Mumbai',
-    initials: 'AD',
-  },
-]
 
 const faqs = [
   {
@@ -139,11 +119,11 @@ const faqs = [
   },
   {
     q: 'Is my customer data private?',
-    a: 'Yes. Your inquiries live in your private workspace. We never sell data, never show ads, and you can export or delete everything anytime.',
+    a: 'Yes. Your inquiries live in your private workspace, under your control — delete any inquiry permanently, anytime. We never sell data and never show ads.',
   },
   {
     q: 'How much does Wynback cost?',
-    a: 'Wynback is free during early access. Paid plans will be announced before launch — early members lock in founding pricing.',
+    a: 'Wynback is completely free — every feature included, no paid plans, no feature gates, no credit card. Tools like this usually charge for automations, reminders and analytics; we would rather earn your trust first.',
   },
   {
     q: 'Which businesses is Wynback for?',
@@ -227,7 +207,7 @@ function App() {
                   See how it works
                 </Link>
               </div>
-              <p className="hero-note">Free during early access · No credit card required</p>
+              <p className="hero-note">Free forever · Every feature included · No credit card required</p>
             </div>
 
             <div className="hero-visual" aria-label="Wynback dashboard preview">
@@ -238,65 +218,44 @@ function App() {
                   </div>
                   <span className="browser-url">wynback.com/app</span>
                 </div>
-                <div className="browser-body">
+                <div className="browser-body flow-body">
                   <div className="dash-top">
                     <div>
-                      <span className="dash-eyebrow">Overview</span>
-                      <strong className="dash-title">Good morning, Priya</strong>
+                      <span className="dash-eyebrow">How it works</span>
+                      <strong className="dash-title">Never lose an inquiry again</strong>
                     </div>
-                    <span className="dash-pill">Last 30 days</span>
+                    <span className="dash-pill">Free forever</span>
                   </div>
 
-                  <div className="dash-metrics">
-                    <div className="dash-metric">
-                      <span>Revenue recovered</span>
-                      <strong>₹48,200</strong>
-                      <small className="up">+23% this month</small>
+                  <div className="flow-steps">
+                    <div className="flow-step">
+                      <span className="flow-icon"><IconPhoneMissed width={16} height={16} /></span>
+                      <div className="flow-text">
+                        <strong>A customer reaches out</strong>
+                        <span>Missed call, DM or quote — it lands in one queue</span>
+                      </div>
                     </div>
-                    <div className="dash-metric">
-                      <span>Customers won back</span>
-                      <strong>31</strong>
-                      <small>from 44 inquiries</small>
+                    <div className="flow-step">
+                      <span className="flow-icon"><IconMessage width={16} height={16} /></span>
+                      <div className="flow-text">
+                        <strong>You follow up in one tap</strong>
+                        <span>A WhatsApp message, already written for you</span>
+                      </div>
                     </div>
-                    <div className="dash-metric">
-                      <span>Win-back rate</span>
-                      <strong>70%</strong>
-                      <small>Inquiry → customer</small>
+                    <div className="flow-step">
+                      <span className="flow-icon"><IconMic width={16} height={16} /></span>
+                      <div className="flow-text">
+                        <strong>Or send a personal voice note</strong>
+                        <span>The human touch no template can copy</span>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="dash-queue">
-                    <div className="dash-queue-head">
-                      <strong>Follow-up queue</strong>
-                      <span className="dash-count">3 need you</span>
-                    </div>
-                    <div className="dash-row">
-                      <span className="dash-avatar">RS</span>
-                      <div className="dash-person">
-                        <strong>Rohan Shah</strong>
-                        <span>Missed call · 20 min ago</span>
-                      </div>
-                      <strong className="dash-value">₹3,500</strong>
-                      <span className="dash-badge"><IconMic width={12} height={12} /> Voice note</span>
-                    </div>
-                    <div className="dash-row">
-                      <span className="dash-avatar">PM</span>
-                      <div className="dash-person">
-                        <strong>Priya Mehta</strong>
-                        <span>Hair coloring quote sent</span>
-                      </div>
-                      <strong className="dash-value">₹4,200</strong>
-                      <span className="dash-badge"><IconMessage width={12} height={12} /> Replied</span>
-                    </div>
-                    <div className="dash-row">
-                      <span className="dash-avatar">AK</span>
-                      <div className="dash-person">
-                        <strong>Amit Khanna</strong>
-                        <span>Car service inquiry</span>
-                      </div>
-                      <strong className="dash-value">₹8,000</strong>
-                      <span className="dash-badge"><IconPhoneMissed width={12} height={12} /> Follow up</span>
-                    </div>
+                  <div className="flow-chips">
+                    <span>Win-Back Score</span>
+                    <span>Blitz Mode</span>
+                    <span>Second-Chance Offers</span>
+                    <span>Revenue Forecast</span>
                   </div>
                 </div>
               </div>
@@ -381,35 +340,6 @@ function App() {
           </div>
         </section>
 
-        {/* ---------------- TESTIMONIALS ---------------- */}
-        <section className="section section-gray" id="testimonials">
-          <div className="container">
-            <Reveal>
-              <div className="section-head">
-                <span className="kicker">Customer stories</span>
-                <h2>They stopped losing customers to silence</h2>
-              </div>
-            </Reveal>
-            <div className="testimonials-grid">
-              {testimonials.map((t, i) => (
-                <Reveal key={t.name} delay={i * 0.08}>
-                  <article className="testimonial-card">
-                    <p className="testimonial-quote">“{t.quote}”</p>
-                    <div className="testimonial-author">
-                      <span className="testimonial-avatar">{t.initials}</span>
-                      <div>
-                        <strong>{t.name}</strong>
-                        <span>{t.business}</span>
-                      </div>
-                    </div>
-                  </article>
-                </Reveal>
-              ))}
-            </div>
-            <p className="testimonials-note">Illustrative examples of how businesses could use Wynback — real customer stories coming soon.</p>
-          </div>
-        </section>
-
         {/* ---------------- FAQ ---------------- */}
         <section className="section" id="faq">
           <div className="container container-narrow">
@@ -435,15 +365,15 @@ function App() {
           <div className="container">
             <Reveal>
               <div className="cta-panel">
-                <span className="kicker kicker-light">Early access</span>
+                <span className="kicker kicker-light">Get started</span>
                 <h2>Give every missed customer a reason to come back</h2>
-                <p>Join the waitlist and be first in when Wynback launches — with missed-call recovery, one-tap WhatsApp follow-ups, and voice-note win-backs.</p>
+                <p>Start free today — every feature included: missed-inquiry recovery, one-tap WhatsApp follow-ups, and voice-note win-backs.</p>
                 <div className="cta-actions">
                   <Link className="btn btn-white" to="/login">
-                    Get early access <IconArrowRight width={16} height={16} />
+                    Start free <IconArrowRight width={16} height={16} />
                   </Link>
                 </div>
-                <p className="cta-note">Free during early access · <IconShield width={14} height={14} /> Your data stays private</p>
+                <p className="cta-note">Free forever · <IconShield width={14} height={14} /> Your data stays private</p>
               </div>
             </Reveal>
           </div>
@@ -480,7 +410,7 @@ function App() {
               <p className="footer-title">Get started</p>
               <ul>
                 <li><Link to="/login">Log in</Link></li>
-                <li><Link to="/login">Get early access</Link></li>
+                <li><Link to="/login">Start free</Link></li>
               </ul>
             </div>
           </div>
