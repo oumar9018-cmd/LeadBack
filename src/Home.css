@@ -237,6 +237,62 @@
 .home-page .browser-body {
   padding: 22px;
 }
+
+/* Hero "how it works" flow visual (honest product mechanics, no fake data) */
+.home-page .flow-steps {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.home-page .flow-step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+.home-page .flow-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--blue-light);
+  color: var(--blue-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.home-page .flow-text {
+  flex: 1;
+  min-width: 0;
+}
+.home-page .flow-text strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+}
+.home-page .flow-text span {
+  display: block;
+  font-size: 12.5px;
+  color: var(--muted);
+  margin-top: 1px;
+}
+.home-page .flow-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.home-page .flow-chips span {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  border: 1px solid var(--line);
+  background: #f8fafc;
+  border-radius: 999px;
+  padding: 5px 11px;
+}
 .home-page .dash-top {
   display: flex;
   align-items: flex-start;
