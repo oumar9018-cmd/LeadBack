@@ -757,11 +757,11 @@ const about = {
     },
     {
       q: 'Who is behind Wynback?',
-      a: 'Wynback is built by a small team focused on practical software for local service businesses, with pricing designed for businesses that cannot absorb enterprise software costs.',
+      a: 'Wynback is built by a small team focused on practical software for local service businesses — and it is completely free, every feature included, because businesses that cannot absorb enterprise software costs still deserve enterprise-grade tools.',
     },
     {
       q: 'How do I get in touch?',
-      a: 'Start a free trial and reach support from inside your workspace, or email the team from the address listed in your billing settings.',
+      a: 'Create your free account and reach support from inside your workspace.',
     },
   ],
 }
