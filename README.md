@@ -118,3 +118,6 @@ The marketing pages no longer rely on it — they are real directories.
 - **Marketing/SEO pages** — `src/Home.jsx`, `src/SEOPage.jsx`
 - **Authenticated workspace** — `src/AppLayout.jsx` + the `/app/*` routes in `src/App.jsx`
 - **Auth** — `src/Login.jsx`, `src/Trial.jsx` (Firebase Google sign-in, 1-month free trial)
+
+
+<!-- Overhaul — 2026-10-22: fake/demo content removed, mobile drawer rebuilt, inquiry delete added, free-forever positioning. -->
