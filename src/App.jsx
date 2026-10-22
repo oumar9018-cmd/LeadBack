@@ -343,6 +343,31 @@ function Dashboard() {
   const lastInquiryRef = useRef(null)
   if (selectedInquiry !== null) lastInquiryRef.current = selectedInquiry
   const detailInquiry = selectedInquiry ?? lastInquiryRef.current
+  const [deleteConfirmId, setDeleteConfirmId] = useState(null)
+
+  // Permanent delete (the UI had no way to remove an inquiry before).
+  // The items->Firestore sync only ever SETs docs for items in state, so an
+  // explicit doc delete + state removal stays deleted across reloads.
+  async function deleteInquiry(id) {
+    setDeleteConfirmId(null)
+    setSelectedInquiry(null)
+    setItems(prev => prev.filter(item => String(item.id) !== String(id)))
+    try {
+      const auth = window.firebase?.auth?.()
+      const db = window.firebase?.firestore?.()
+      const user = auth?.currentUser
+      if (user && db) {
+        await db
+          .collection('users')
+          .doc(user.uid)
+          .collection('inquiries')
+          .doc(String(id))
+          .delete()
+      }
+    } catch (error) {
+      console.error('Inquiry delete failed:', error)
+    }
+  }
   const [lossTarget, setLossTarget] = useState(null)
   const [offerTarget, setOfferTarget] = useState(null)
 
@@ -572,10 +597,6 @@ function Dashboard() {
         </div>
 
         <div className="header-actions">
-          <button className="date-button" type="button">
-            Last 30 days <IconChevronDown width={12} height={12} />
-          </button>
-
           <button
             className="primary-action"
             type="button"
@@ -977,7 +998,7 @@ function Dashboard() {
       {detailInquiry && (
       <Modal
         open={selectedInquiry !== null}
-        onClose={() => setSelectedInquiry(null)}
+        onClose={() => { setSelectedInquiry(null); setDeleteConfirmId(null) }}
         wide
       >
             <div className="modal-header">
@@ -990,7 +1011,7 @@ function Dashboard() {
               <button
                 type="button"
                 className="modal-close"
-                onClick={() => setSelectedInquiry(null)}
+                onClick={() => { setSelectedInquiry(null); setDeleteConfirmId(null) }}
                 aria-label="Close"
               >
                 <IconX width={15} height={15} />
@@ -1206,10 +1227,40 @@ function Dashboard() {
               <button
                 type="button"
                 className="cancel-button"
-                onClick={() => setSelectedInquiry(null)}
+                onClick={() => { setSelectedInquiry(null); setDeleteConfirmId(null) }}
               >
                 Close
               </button>
+
+              {deleteConfirmId === detailInquiry.id ? (
+                <>
+                  <span className="delete-confirm-text">
+                    Delete this inquiry permanently?
+                  </span>
+                  <button
+                    type="button"
+                    className="danger-solid-button"
+                    onClick={() => deleteInquiry(detailInquiry.id)}
+                  >
+                    Yes, delete
+                  </button>
+                  <button
+                    type="button"
+                    className="cancel-button"
+                    onClick={() => setDeleteConfirmId(null)}
+                  >
+                    Keep it
+                  </button>
+                </>
+              ) : (
+                <button
+                  type="button"
+                  className="danger-outline-button"
+                  onClick={() => setDeleteConfirmId(detailInquiry.id)}
+                >
+                  Delete inquiry
+                </button>
+              )}
             </div>
       </Modal>
       )}
