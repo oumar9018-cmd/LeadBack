@@ -335,8 +335,11 @@ function Dashboard() {
   const [selectedInquiry, setSelectedInquiry] = useState(null)
   // The detail modal below has a 260ms close animation: it keeps rendering
   // AFTER selectedInquiry is set back to null. Freeze the last opened
-  // inquiry so the closing frame never reads `.name` (etc.) off null,
-  // which crashed the whole app into the error page.
+  // inquiry so the closing frame never reads `.name` (etc.) off null.
+  // The modal is ALSO only mounted once detailInquiry is non-null (see the
+  // {detailInquiry && (...)} guard at its usage): JSX children expressions
+  // are evaluated during Dashboard render even while the Modal shell itself
+  // returns null, so an unguarded detailInquiry.name crashed /app on load.
   const lastInquiryRef = useRef(null)
   if (selectedInquiry !== null) lastInquiryRef.current = selectedInquiry
   const detailInquiry = selectedInquiry ?? lastInquiryRef.current
@@ -971,6 +974,7 @@ function Dashboard() {
             </form>
       </Modal>
 
+      {detailInquiry && (
       <Modal
         open={selectedInquiry !== null}
         onClose={() => setSelectedInquiry(null)}
@@ -1208,6 +1212,7 @@ function Dashboard() {
               </button>
             </div>
       </Modal>
+      )}
 
       {lossTarget && (
         <LossReasonModal
