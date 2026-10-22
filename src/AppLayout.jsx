@@ -85,7 +85,7 @@ export default function AppLayout() {
     setSidebarOpen(false)
   }
 
-  const displayName = businessName || 'AutoDetail Pro'
+  const displayName = businessName || 'My Workspace'
 
   return (
     <div className={`app-shell ${sidebarOpen ? 'sidebar-open' : ''}`}>
@@ -111,7 +111,7 @@ export default function AppLayout() {
 
       <aside className="sidebar">
         <div className="sidebar-brand">
-          <div className="brand-mark">L</div>
+          <div className="brand-mark">W</div>
           <span>Wynback</span>
         </div>
 
@@ -137,13 +137,7 @@ export default function AppLayout() {
       </aside>
 
       <main className="app-main">
-        <header className="app-header app-header-subpage">
-          <div>
-            <span className="app-eyebrow">WYNBACK</span>
-            <h1>{displayName}</h1>
-            <p>Manage your workspace and customer recovery.</p>
-          </div>
-
+        <header className="app-header app-header-topbar">
           <div className="header-actions">
             <GraveyardPill />
             <button
