@@ -12,7 +12,7 @@ import React from 'react'
 export default class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props)
-    this.state = { hasError: false, error: null }
+    this.state = { hasError: false, error: null, info: null }
   }
 
   static getDerivedStateFromError(error) {
@@ -22,10 +22,13 @@ export default class ErrorBoundary extends React.Component {
   componentDidCatch(error, info) {
     // Keep the crash visible in the console for diagnostics.
     console.error('Wynback crashed:', error, info)
+    // TEMP DIAGNOSTIC: surface the error on the fallback page so a headless
+    // test can read the exact message + component stack. Remove after fix.
+    this.setState({ info })
   }
 
   handleReload = () => {
-    this.setState({ hasError: false, error: null })
+    this.setState({ hasError: false, error: null, info: null })
     window.location.reload()
   }
 
@@ -73,6 +76,28 @@ export default class ErrorBoundary extends React.Component {
             Wynback hit an unexpected error. Your data is safe — reloading
             usually fixes it.
           </p>
+          {this.state.error && (
+            <pre
+              data-testid="crash-diagnostic"
+              style={{
+                fontSize: 11,
+                color: '#b91c1c',
+                background: '#fef2f2',
+                border: '1px solid #fecaca',
+                borderRadius: 8,
+                padding: 12,
+                margin: '0 0 20px',
+                textAlign: 'left',
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'break-word',
+                maxHeight: 260,
+                overflow: 'auto',
+              }}
+            >
+              {String(this.state.error.message || this.state.error)}
+              {this.state.info ? '\n--- component stack ---' + this.state.info.componentStack : ''}
+            </pre>
+          )}
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
             <button
               type="button"
