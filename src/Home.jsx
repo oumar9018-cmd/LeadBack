@@ -210,13 +210,13 @@ function App() {
               <p className="hero-note">Free forever · Every feature included · No credit card required</p>
             </div>
 
-            <div className="hero-visual" aria-label="Wynback dashboard preview">
+            <div className="hero-visual" aria-label="How Wynback works">
               <div className="browser-frame">
                 <div className="browser-bar">
                   <div className="browser-dots">
                     <i /><i /><i />
                   </div>
-                  <span className="browser-url">wynback.com/app</span>
+                  <span className="browser-url">oumar9018-cmd.github.io/LeadBack/app</span>
                 </div>
                 <div className="browser-body flow-body">
                   <div className="dash-top">

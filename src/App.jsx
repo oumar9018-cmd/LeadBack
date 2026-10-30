@@ -30,6 +30,7 @@ import SmartComposer from './components/SmartComposer.jsx'
 import ForecastWidget from './components/ForecastWidget.jsx'
 import VoiceInput from './components/VoiceInput.jsx'
 import BlitzMode from './components/BlitzMode.jsx'
+import OwnerBookings from './components/OwnerBookings.jsx'
 import BookingPage from './BookingPage.jsx'
 import OfferPage from './OfferPage.jsx'
 import Offers from './Offers.jsx'
@@ -48,6 +49,7 @@ import {
   IconMessage,
   IconZap,
 } from './components/icons.jsx'
+import { bookingLinkFor } from './utils/whatsapp.js'
 import './App.css'
 
 const statusLabels = {
@@ -609,6 +611,22 @@ function Dashboard() {
 
       <GraveyardCounter items={items} currency={currency} />
 
+      <OwnerBookings
+        onAddInquiry={(booking) => {
+          const newInquiry = {
+            id: Date.now(),
+            name: booking.customerName,
+            phone: booking.customerPhone,
+            service: `Booking request — ${booking.preferredDate}${booking.preferredTime ? ` at ${booking.preferredTime}` : ''}`,
+            value: 0,
+            status: 'new',
+            date: 'Just now',
+            createdAt: Date.now(),
+          }
+          setItems(current => [newInquiry, ...current])
+        }}
+      />
+
       <section className="stats-grid">
         <div className="stat-card stat-hero">
           <div className="stat-icon stat-icon-gold">
@@ -1026,7 +1044,7 @@ function Dashboard() {
 
               <div className="detail-card">
                 <span>Estimated value</span>
-                <strong>{money(Number(detailInquiry.value) || 0)}</strong>
+                <strong>{money(Number(detailInquiry.value) || 0, currency)}</strong>
               </div>
 
               <div className="detail-card">
@@ -1099,8 +1117,9 @@ function Dashboard() {
             <WhatsAppActions
               inquiry={detailInquiry}
               businessName={businessName}
+              bookingLink={bookingLinkFor(businessSlug)}
               onAction={(type, templateId) => {
-                logActivity(detailInquiry.id, type === 'voice-note' ? 'Voice note opened' : `WhatsApp sent (${templateId})`)
+                logActivity(detailInquiry.id, type === 'voice-note' ? 'Voice note opened' : `WhatsApp opened (${templateId})`)
               }}
             />
 
@@ -1109,14 +1128,28 @@ function Dashboard() {
               businessName={businessName}
               businessSlug={businessSlug}
               onAction={(type, tone) => {
-                logActivity(detailInquiry.id, `Smart message sent (${tone})`)
+                logActivity(detailInquiry.id, `Smart message opened (${tone})`)
               }}
             />
 
             <DripSequences
               inquiry={detailInquiry}
               businessName={businessName}
+              initialSteps={detailInquiry.dripSteps}
               onSave={(steps) => {
+                // Persist the steps onto the inquiry (the whole-list sync
+                // effect writes them to Firestore) and surface due steps
+                // in the follow-up queue. Due dates are computed from the
+                // day the sequence was saved.
+                const today = new Date()
+                const dripSteps = steps.map((step) => {
+                  const due = new Date(today)
+                  due.setDate(due.getDate() + Math.max(0, Number(step.day) - 1))
+                  return { ...step, dueDate: due.toISOString().slice(0, 10), sent: false }
+                })
+                const updated = { ...detailInquiry, dripSteps }
+                setItems(prev => prev.map(item => String(item.id) === String(detailInquiry.id) ? updated : item))
+                setSelectedInquiry(updated)
                 logActivity(detailInquiry.id, `Drip sequence saved (${steps.length} steps)`)
               }}
             />

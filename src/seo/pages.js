@@ -124,15 +124,15 @@ const features = {
     },
     {
       q: 'Can more than one person use Wynback?',
-      a: 'Yes. Wynback is built for small teams. Everyone sees the same inquiry list and follow-up queue, so a customer is never dropped because one person was away.',
+      a: 'Not yet. Wynback is built for a solo owner right now: one workspace, one follow-up queue, so nothing depends on memory. Team seats are not available yet — if your business grows into a team, that goes on the roadmap.',
     },
     {
       q: 'How is Wynback different from a CRM?',
-      a: 'A general CRM tries to run your whole business. Wynback does one thing: making sure an interested customer who has already contacted you gets a reply and a follow-up. That narrower focus is why teams actually keep using it.',
+      a: 'A general CRM tries to run your whole business. Wynback does one thing: making sure an interested customer who has already contacted you gets a reply and a follow-up. That narrower focus is why owners actually keep using it.',
     },
     {
       q: 'Is my data exported if I cancel?',
-      a: 'Yes. Your inquiry, follow-up and revenue records remain yours and can be exported at any time from your workspace.',
+      a: 'Your records remain yours and cancelling never deletes the history you built. Export is not available in this version yet — you can view your inquiry, follow-up and revenue records in your workspace any time.',
     },
   ],
 }
@@ -295,7 +295,7 @@ const missedInquiries = {
     },
     {
       q: 'Can I track inquiries I lost months ago?',
-      a: 'Yes — and it is often worth it. Importing old enquiries into Wynback gives your team a ready-made list of people who already expressed interest but never got a proper follow-up.',
+      a: 'Yes — and it is often worth it. Logging your old enquiries in Wynback gives you a ready-made list of people who already expressed interest but never got a proper follow-up.',
     },
   ],
 }
@@ -347,8 +347,8 @@ const followUpManagement = {
     },
     {
       icon: 'users',
-      title: 'Shared across the team',
-      text: 'Anyone can pick up where someone else left off, because the history and the next step are both on the record.',
+      title: 'One queue, nothing slips',
+      text: 'Every enquiry keeps its history and next step on the record, so nothing depends on one person\'s memory.',
     },
     {
       icon: 'refresh',
@@ -368,7 +368,7 @@ const followUpManagement = {
     },
     {
       q: 'Can my team share follow-ups?',
-      a: 'Yes. Follow-ups live on the customer record rather than in an individual’s inbox or phone, so cover during holidays and staff changes is automatic.',
+      a: 'Not yet — Wynback is a solo-owner workspace today, so there are no team seats to share. Follow-ups do live on the customer record rather than in a phone or inbox, so the history is never trapped in one device.',
     },
     {
       q: 'Is Wynback an automation tool?',
@@ -445,7 +445,7 @@ const revenueRecovery = {
     },
     {
       q: 'How long before I can see a recovery figure?',
-      a: 'Most businesses have a meaningful number within 30 days. If you import old enquiries when you start, you can often produce recovered revenue in the first fortnight.',
+      a: 'Most businesses have a meaningful number within 30 days. If you log your old unanswered enquiries when you start, you can often produce recovered revenue in the first fortnight.',
     },
     {
       q: 'Do I need accounting data to use this?',
@@ -493,12 +493,12 @@ const howItWorks = {
     {
       icon: 'zap',
       title: 'Set up in an afternoon',
-      text: 'Sign in with Google, add your team and start logging inquiries. There is no data migration and no configuration project.',
+      text: 'Sign in with Google and start logging inquiries. There is no data migration and no configuration project.',
     },
     {
       icon: 'users',
-      title: 'Adopted by whole teams',
-      text: 'Because the daily action is one short list, Wynback survives staff changes — the kind of event that usually kills a CRM rollout.',
+      title: 'Survives a busy week',
+      text: 'Because the daily action is one short list, Wynback survives the kind of week that usually kills a CRM rollout.',
     },
     {
       icon: 'trending',
@@ -508,21 +508,21 @@ const howItWorks = {
     {
       icon: 'shield',
       title: 'Your data stays yours',
-      text: 'Records are exportable at any time, and cancelling never means losing the history you built.',
+      text: 'Your records stay in your workspace, and cancelling never means losing the history you built. Export is not available yet.',
     },
   ],
   faq: [
     {
       q: 'How long does it take to get started?',
-      a: 'Most businesses are logging live inquiries the same day. The only setup is signing in with Google and inviting your team — there is no data import required to start, though importing old enquiries is a good idea.',
+      a: 'Most businesses are logging live inquiries the same day. The only setup is signing in with Google — nothing to install, and logging your old unanswered enquiries first is a good idea.',
     },
     {
       q: 'Do I have to change how we take bookings?',
       a: 'No. Wynback sits alongside whatever you already use. You log the inquiry in Wynback so it gets followed up; your existing tools keep doing what they do.',
     },
     {
-      q: 'What does my team have to do every day?',
-      a: 'Open the follow-up queue, work through what is due, and record the outcome. For most teams that is 10 to 15 minutes a day.',
+      q: 'What do I have to do every day?',
+      a: 'Open the follow-up queue, work through what is due, and record the outcome. For most owners that is 10 to 15 minutes a day.',
     },
   ],
 }
@@ -623,8 +623,8 @@ const industries = {
       a: 'Wynback is designed for businesses where a customer inquiry usually needs a human response before it converts — which covers most local service businesses. If your sales cycle is long and multi-stakeholder, a full CRM will fit you better.',
     },
     {
-      q: 'Can I use Wynback with a mobile or field team?',
-      a: 'Yes. Wynback runs in the browser, so detailers, cleaners and technicians can log and work inquiries from a phone while on site.',
+      q: 'Can I use Wynback on site, from my phone?',
+      a: 'Yes. Wynback runs in the browser, so you can log and work inquiries from a phone while on site.',
     },
     {
       q: 'Do you support businesses outside India?',
@@ -697,7 +697,7 @@ const carDetailing = {
     },
     {
       q: 'How quickly will I see recovered bookings?',
-      a: 'Businesses that import their last few months of unanswered enquiries typically recover their first job within a fortnight. Starting from scratch, expect a meaningful figure within about 30 days.',
+      a: 'Businesses that log their last few months of unanswered enquiries typically recover their first job within a fortnight. Starting from scratch, expect a meaningful figure within about 30 days.',
     },
     {
       q: 'Do I need to connect my Instagram or phone?',
@@ -1021,7 +1021,7 @@ const clinics = {
     {
       icon: 'shield',
       title: 'Your records stay yours',
-      text: 'Enquiry and follow-up records are exportable at any time. No lock-in, no data hostage situations.',
+      text: 'Enquiry and follow-up records stay in your workspace. No data hostage situations — cancelling never deletes your history. Export is not available yet.',
     },
   ],
   faq: [
@@ -1160,8 +1160,8 @@ const realEstate = {
     },
     {
       icon: 'users',
-      title: 'Works for small teams',
-      text: 'One shared queue means cover is automatic when someone is on a viewing. Nothing depends on one person’s memory.',
+      title: 'One queue, nothing slips',
+      text: 'Every enquiry and follow-up lives in one queue. Nothing depends on one person’s memory.',
     },
   ],
   faq: [

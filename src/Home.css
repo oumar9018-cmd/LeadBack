@@ -602,63 +602,6 @@
   margin: 0;
 }
 
-/* ---------- Testimonials ---------- */
-.home-page .testimonials-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-}
-.home-page .testimonial-card {
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  padding: 28px;
-  box-shadow: var(--shadow-sm);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-.home-page .testimonial-quote {
-  font-size: 15px;
-  line-height: 1.65;
-  color: var(--ink-soft);
-  margin: 0 0 24px;
-}
-.home-page .testimonial-author {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.home-page .testimonial-avatar {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  background: var(--blue-light);
-  color: var(--blue-dark);
-  font-size: 14px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-.home-page .testimonial-author strong {
-  display: block;
-  font-size: 14.5px;
-  font-weight: 600;
-}
-.home-page .testimonial-author span {
-  display: block;
-  font-size: 13px;
-  color: var(--muted);
-}
-.home-page .testimonials-note {
-  text-align: center;
-  font-size: 13px;
-  color: var(--muted);
-  margin: 32px 0 0;
-}
-
 /* ---------- FAQ ---------- */
 .home-page .faq-list {
   display: flex;
@@ -845,11 +788,6 @@
     grid-template-columns: repeat(2, 1fr);
   }
   .home-page .steps-grid {
-    grid-template-columns: 1fr;
-    max-width: 560px;
-    margin: 0 auto;
-  }
-  .home-page .testimonials-grid {
     grid-template-columns: 1fr;
     max-width: 560px;
     margin: 0 auto;

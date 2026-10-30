@@ -1,26 +1,36 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { LogoMark, IconCalendar, IconPhone, IconCheck } from './components/icons.jsx'
 import './BookingPage.gold.css'
 
 /**
- * Public booking page: wynback.app/b/{businessSlug}
- * A customer opens this from a WhatsApp message and picks a slot.
+ * Public booking page: /b/{businessSlug}
+ * A customer opens this from a WhatsApp message and requests a time.
  * No login required — this is the business's public face.
+ *
+ * Honest by design: the customer picks a PREFERRED day/time, not a
+ * guaranteed slot. Nothing here promises a slot the business never
+ * offered. The request lands in the business's bookings and the owner
+ * confirms it on WhatsApp — and can add it as an inquiry in one tap.
+ * The business record itself is created from Settings (slug, services,
+ * hours); this page only reads it.
  */
 export default function BookingPage() {
   const { slug } = useParams()
   const [business, setBusiness] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [selectedSlot, setSelectedSlot] = useState(null)
+  const [loadState, setLoadState] = useState('loading') // loading | ready | not-found | load-error
+  const [preferredDate, setPreferredDate] = useState('')
+  const [preferredTime, setPreferredTime] = useState('')
+  const [note, setNote] = useState('')
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
   const [booked, setBooked] = useState(false)
+  const [submitError, setSubmitError] = useState('')
 
   useEffect(() => {
     const db = window.firebase?.firestore?.()
     if (!db || !slug) {
-      setLoading(false)
+      setLoadState('not-found')
       return
     }
     db.collection('businesses')
@@ -28,53 +38,48 @@ export default function BookingPage() {
       .limit(1)
       .get()
       .then((snap) => {
-        if (!snap.empty) setBusiness({ id: snap.docs[0].id, ...snap.docs[0].data() })
-        setLoading(false)
+        if (!snap.empty) {
+          setBusiness({ id: snap.docs[0].id, ...snap.docs[0].data() })
+          setLoadState('ready')
+        } else {
+          setLoadState('not-found')
+        }
       })
-      .catch(() => setLoading(false))
+      .catch((error) => {
+        console.error('Booking page load failed:', error)
+        setLoadState('load-error')
+      })
   }, [slug])
-
-  // Demo slots — in production these come from the business's availability
-  const slots = [
-    'Today · 4:00 PM', 'Today · 5:30 PM',
-    'Tomorrow · 10:00 AM', 'Tomorrow · 12:30 PM',
-    'Tomorrow · 4:00 PM', 'Tomorrow · 6:00 PM',
-  ]
-
-  // Group "Day · Time" strings by day for a calmer picker
-  const slotGroups = useMemo(() => {
-    const groups = []
-    slots.forEach((slot) => {
-      const [day, time] = slot.split(' · ')
-      let group = groups.find((g) => g.day === day)
-      if (!group) {
-        group = { day, items: [] }
-        groups.push(group)
-      }
-      group.items.push({ label: slot, time })
-    })
-    return groups
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   async function handleBook(e) {
     e.preventDefault()
-    if (!selectedSlot || !name.trim() || !phone.trim()) return
+    if (!preferredDate || !name.trim() || !phone.trim()) return
+    setSubmitError('')
     const db = window.firebase?.firestore?.()
-    if (db && business) {
+    if (!db || !business) {
+      setSubmitError('Could not send your request right now. Please try again, or message the business directly.')
+      return
+    }
+    try {
       await db.collection('businesses').doc(business.id)
         .collection('bookings').add({
-          slot: selectedSlot,
           customerName: name.trim(),
           customerPhone: phone.trim(),
+          preferredDate,
+          preferredTime: preferredTime || '',
+          note: note.trim(),
           status: 'pending',
           source: 'wynback-link',
           createdAt: new Date().toISOString(),
         })
+      setBooked(true)
+    } catch (error) {
+      console.error('Booking request failed:', error)
+      setSubmitError('Could not send your request right now. Please try again, or message the business directly.')
     }
-    setBooked(true)
   }
 
-  if (loading) {
+  if (loadState === 'loading') {
     return (
       <div className="booking-shell">
         <div className="booking-card booking-loading" aria-label="Loading booking page">
@@ -94,7 +99,21 @@ export default function BookingPage() {
     )
   }
 
-  if (!business) {
+  if (loadState === 'load-error') {
+    return (
+      <div className="booking-shell">
+        <div className="booking-card booking-enter">
+          <span className="booking-mark">
+            <LogoMark width={44} height={44} />
+          </span>
+          <h1>Could not load this booking page</h1>
+          <p className="booking-sub">Something went wrong loading the business details. Please try again in a moment, or ask the business for a fresh link.</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (loadState === 'not-found' || !business) {
     return (
       <div className="booking-shell">
         <div className="booking-card booking-enter">
@@ -124,10 +143,15 @@ export default function BookingPage() {
               <path className="success-tick" d="M23 37.5 32 46l17-19" />
             </svg>
           </span>
-          <h1 className="success-title">You&rsquo;re booked!</h1>
+          <h1 className="success-title">Request sent!</h1>
           <p className="success-copy">
             <strong>{business.name}</strong> will confirm{' '}
-            <strong className="success-slot">{selectedSlot}</strong> shortly on WhatsApp.
+            {preferredTime ? (
+              <>your preferred time of <strong className="success-slot">{preferredDate} at {preferredTime}</strong></>
+            ) : (
+              <>your preferred day of <strong className="success-slot">{preferredDate}</strong></>
+            )}{' '}
+            shortly on WhatsApp.
           </p>
           <p className="booking-powered">Powered by Wynback</p>
         </div>
@@ -144,43 +168,51 @@ export default function BookingPage() {
           </span>
           <div>
             <strong>{business.name}</strong>
-            <span>Book your slot</span>
+            <span>Request a booking</span>
           </div>
         </div>
 
-        <h1>Pick a time that works for you</h1>
-        <p className="booking-sub">Choose a slot below — we&rsquo;ll confirm on WhatsApp.</p>
-
-        <div className="slot-days">
-          {slotGroups.map((group) => (
-            <div className="slot-day" key={group.day}>
-              <p className="slot-day-label">{group.day}</p>
-              <div className="slot-grid">
-                {group.items.map(({ label, time }) => (
-                  <button
-                    key={label}
-                    type="button"
-                    aria-pressed={selectedSlot === label}
-                    className={selectedSlot === label ? 'slot selected' : 'slot'}
-                    onClick={() => setSelectedSlot(label)}
-                  >
-                    <IconCalendar width={16} height={16} />
-                    {time}
-                  </button>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
+        <h1>When would suit you?</h1>
+        <p className="booking-sub">
+          Tell us your preferred day and time — the business will confirm on WhatsApp.
+          {business.services ? ` Services: ${business.services}.` : ''}
+          {business.hours ? ` Open: ${business.hours}.` : ''}
+        </p>
 
         <form onSubmit={handleBook} className="booking-form">
+          <label>
+            Preferred day
+            <input
+              type="date"
+              value={preferredDate}
+              onChange={(e) => setPreferredDate(e.target.value)}
+              required
+            />
+          </label>
+          <label>
+            Preferred time (optional)
+            <input
+              type="time"
+              value={preferredTime}
+              onChange={(e) => setPreferredTime(e.target.value)}
+            />
+          </label>
+          <label>
+            Anything we should know? (optional)
+            <input
+              type="text"
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="e.g. haircut and colour"
+            />
+          </label>
           <label>
             Your name
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. Priya Sharma"
+              placeholder="Your full name"
               autoComplete="name"
               required
             />
@@ -196,11 +228,12 @@ export default function BookingPage() {
               required
             />
           </label>
-          <button type="submit" className="button button-primary" disabled={!selectedSlot}>
+          <button type="submit" className="button button-primary" disabled={!preferredDate}>
             <IconPhone width={18} height={18} />
-            Confirm booking
+            Send booking request
           </button>
-          {!selectedSlot && <small className="hint">Pick a slot above first</small>}
+          {!preferredDate && <small className="hint">Pick a preferred day first</small>}
+          {submitError && <p className="booking-error" role="alert">{submitError}</p>}
         </form>
 
         <p className="booking-powered">Powered by Wynback</p>

@@ -5815,3 +5815,62 @@ a {
   font-size: 12px;
   font-weight: 700;
 }
+
+/* ---------- Drip steps due (Follow-ups queue) ---------- */
+.followup-drip {
+  background: #fff;
+  border: 1px solid var(--line, #e5e7eb);
+  border-radius: 14px;
+  padding: 20px 22px;
+  margin-bottom: 20px;
+}
+.followup-drip h2 {
+  margin: 0 0 4px;
+}
+.followup-drip > p {
+  color: var(--muted, #6b7280);
+  font-size: 14px;
+  margin: 0 0 14px;
+}
+
+/* ---------- Owner booking requests (Dashboard) ---------- */
+.owner-bookings {
+  background: #fff;
+  border: 1px solid var(--line, #e5e7eb);
+  border-radius: 14px;
+  padding: 20px 22px;
+  margin-bottom: 20px;
+}
+.owner-bookings h2 {
+  margin: 0 0 4px;
+}
+.owner-bookings > div > p {
+  color: var(--muted, #6b7280);
+  font-size: 14px;
+  margin: 0 0 14px;
+}
+.owner-bookings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.owner-booking-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  border-top: 1px solid var(--line, #e5e7eb);
+  padding-top: 12px;
+}
+.owner-booking-row > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.owner-booking-row > div span {
+  font-size: 13px;
+  color: var(--muted, #6b7280);
+}
+.owner-booking-row button {
+  margin-left: auto;
+}

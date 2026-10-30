@@ -17,10 +17,16 @@ const DEFAULT_STEPS = [
  * Props:
  * - inquiry: the inquiry this sequence is for
  * - businessName: string
+ * - initialSteps: previously saved steps (with dueDate/sent attached) —
+ *   reopening the builder shows the saved days/templates, not defaults
  * - onSave: (steps) => void
  */
-export default function DripSequences({ inquiry, businessName, onSave }) {
-  const [steps, setSteps] = useState(DEFAULT_STEPS)
+export default function DripSequences({ inquiry, businessName, initialSteps, onSave }) {
+  const [steps, setSteps] = useState(() =>
+    Array.isArray(initialSteps) && initialSteps.length
+      ? initialSteps.map(s => ({ day: s.day, templateId: s.templateId, enabled: true }))
+      : DEFAULT_STEPS
+  )
   const [saved, setSaved] = useState(false)
 
   function toggleStep(index) {

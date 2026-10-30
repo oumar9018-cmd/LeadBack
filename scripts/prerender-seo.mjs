@@ -179,11 +179,19 @@ function buildRobots() {
 Allow: /
 
 # Private / app surfaces — no value in the index, and they need auth anyway.
+# Both the root paths and the GitHub Pages base-path variants are listed:
+# the live site serves under /LeadBack/, so the unprefixed lines alone
+# would not actually disallow the real app/login URLs.
 Disallow: /app
 Disallow: /app/
 Disallow: /ceo
 Disallow: /trial
 Disallow: /login
+Disallow: /LeadBack/app
+Disallow: /LeadBack/app/
+Disallow: /LeadBack/ceo
+Disallow: /LeadBack/trial
+Disallow: /LeadBack/login
 
 Sitemap: ${SITE_ORIGIN}/sitemap.xml
 `

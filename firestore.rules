@@ -85,6 +85,29 @@ service cloud.firestore {
       allow delete: if signedIn() && request.auth.uid == resource.data.ownerUid;
     }
 
+    // Public booking pages (/b/{slug}): the business record contains only
+    // public listing info (name, slug, services, hours), so anyone with a
+    // link can look it up. Only the owning business may write it.
+    match /businesses/{businessId} {
+      allow get, list: if true;
+      allow create, update: if signedIn() &&
+        request.resource.data.ownerUid == request.auth.uid;
+      allow delete: if signedIn() &&
+        resource.data.ownerUid == request.auth.uid;
+
+      // Booking requests: anyone with the link can create one; only the
+      // owning business can read them.
+      match /bookings/{bookingId} {
+        allow create: if request.resource.data.keys().hasAll(
+            ['customerName', 'customerPhone', 'preferredDate', 'status']) &&
+          request.resource.data.status == 'pending';
+        allow read: if signedIn() &&
+          get(/databases/$(database)/documents/businesses/$(businessId)).data.ownerUid == request.auth.uid;
+        allow update, delete: if signedIn() &&
+          get(/databases/$(database)/documents/businesses/$(businessId)).data.ownerUid == request.auth.uid;
+      }
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }

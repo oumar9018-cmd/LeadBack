@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { TEMPLATES, waLink, fillTemplate } from './utils/whatsapp.js'
 
 function money(value) {
   return new Intl.NumberFormat('en-IN', {
@@ -108,6 +109,41 @@ export default function Followups() {
       followupState: getFollowupState(item),
     }))
 
+  // Drip steps whose due day has arrived and which have not been sent
+  // yet. These surface here even when the inquiry's status is not
+  // 'followup' — saving a drip used to vanish silently, now it shows up.
+  const todayKey = new Date().toISOString().slice(0, 10)
+  const dripDue = []
+  items.forEach(item => {
+    if (item.status === 'recovered' || item.status === 'lost') return
+    ;(item.dripSteps || []).forEach((step, index) => {
+      if (!step.sent && step.dueDate && step.dueDate <= todayKey) {
+        dripDue.push({ item, step, index })
+      }
+    })
+  })
+
+  async function markDripSent(dripEntry) {
+    const { item, index } = dripEntry
+    const nextSteps = (item.dripSteps || []).map((s, i) =>
+      i === index ? { ...s, sent: true } : s
+    )
+    setItems(prev => prev.map(it =>
+      String(it.id) === String(item.id) ? { ...it, dripSteps: nextSteps } : it
+    ))
+    try {
+      const auth = window.firebase?.auth?.()
+      const db = window.firebase?.firestore?.()
+      const user = auth?.currentUser
+      if (user && db) {
+        await db.collection('users').doc(user.uid).collection('inquiries')
+          .doc(String(item.id)).set({ dripSteps: nextSteps }, { merge: true })
+      }
+    } catch (error) {
+      console.error('Mark drip sent failed:', error)
+    }
+  }
+
   const filtered = followups.filter(item => {
     const query = search.toLowerCase().trim()
 
@@ -141,6 +177,55 @@ export default function Followups() {
             Back to dashboard
           </button>
         </header>
+
+        {dripDue.length > 0 && (
+          <section className="followup-drip">
+            <h2>Drip steps due</h2>
+            <p>Saved drip sequences whose day has arrived. Open WhatsApp with the message ready, then mark the step sent.</p>
+            <div className="followup-list">
+              {dripDue.map(({ item, step, index }) => {
+                const template = TEMPLATES[step.templateId]
+                return (
+                  <div className="followup-row" key={`${item.id}-${index}`}>
+                    <div className="followup-customer">
+                      <strong>{item.name}</strong>
+                      <span>{item.phone}</span>
+                    </div>
+                    <div className="followup-service">
+                      <strong>{template ? template.label : step.templateId}</strong>
+                      <span>Due {step.dueDate}</span>
+                    </div>
+                    <div className="followup-right">
+                      <button
+                        type="button"
+                        className="ghost-button"
+                        onClick={() => {
+                          const message = template ? fillTemplate(template.text, {
+                            name: item.name?.split(' ')[0],
+                            business: '',
+                            service: item.service,
+                            link: '',
+                          }) : ''
+                          const link = waLink(item.phone, message)
+                          if (link) window.open(link, '_blank', 'noopener')
+                        }}
+                      >
+                        Open WhatsApp
+                      </button>
+                      <button
+                        type="button"
+                        className="primary-button"
+                        onClick={() => markDripSent({ item, index })}
+                      >
+                        Mark sent
+                      </button>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </section>
+        )}
 
         <div className="followup-summary">
           <div>

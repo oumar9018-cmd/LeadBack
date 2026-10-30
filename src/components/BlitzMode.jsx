@@ -50,7 +50,7 @@ export default function BlitzMode() {
         const snap = await db.collection('users').doc(user.uid).collection('inquiries').get()
         setItems(snap.docs.map(d => ({ id: d.id, ...d.data() })))
 
-        const settings = await db.collection('users').doc(user.uid).collection('settings').doc('profile').get()
+        const settings = await db.collection('users').doc(user.uid).collection('settings').doc('workspace').get()
         const data = settings.data() || {}
         setBusinessName(data.businessName || '')
         setBusinessSlug(data.businessSlug || data.slug || '')
@@ -119,7 +119,7 @@ export default function BlitzMode() {
     })
     const link = waLink(current.phone, text)
     if (link) window.open(link, '_blank', 'noopener')
-    logActivity(current.id, 'Win-back message sent via Blitz')
+    logActivity(current.id, 'Win-back WhatsApp opened via Blitz')
     setDone(d => [...d, current.id])
     setCursor(c => c + 1)
   }

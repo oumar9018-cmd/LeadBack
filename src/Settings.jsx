@@ -8,6 +8,17 @@ const defaultSettings = {
   currency: 'INR',
   timezone: 'Asia/Kolkata',
   followupReminder: '1',
+  services: '',
+  hours: '',
+}
+
+/** Same slug algorithm as the dashboard's businessSlug. */
+function slugify(name) {
+  return (name || '')
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
 }
 
 export default function Settings() {
@@ -85,6 +96,28 @@ export default function Settings() {
         .doc('workspace')
         .set(settings, { merge: true })
 
+      // Publish the public booking page record. The booking page reads
+      // `businesses` by slug; nothing else in the app creates this doc,
+      // which is why every booking link used to land on "not found".
+      // This write needs the matching firestore.rules entry (deployed by
+      // the owner via Firebase Console); if the rules are not live yet
+      // this fails quietly and settings still save.
+      const slug = slugify(settings.businessName)
+      if (slug) {
+        try {
+          await db.collection('businesses').doc(user.uid).set({
+            ownerUid: user.uid,
+            slug,
+            name: settings.businessName.trim(),
+            services: (settings.services || '').trim(),
+            hours: (settings.hours || '').trim(),
+            updatedAt: new Date().toISOString(),
+          }, { merge: true })
+        } catch (businessError) {
+          console.error('Booking page publish failed (rules may not be deployed yet):', businessError)
+        }
+      }
+
       setSaved(true)
     } catch (error) {
       console.error('Settings save failed:', error)
@@ -156,6 +189,50 @@ export default function Settings() {
                   placeholder="business@example.com"
                 />
               </label>
+
+            </div>
+          </section>
+
+          <section className="settings-card">
+            <div className="settings-card-header">
+              <div>
+                <span className="settings-label">BOOKING PAGE</span>
+                <h2>Public booking link</h2>
+                <p>Customers open this link from your WhatsApp messages and request a preferred day and time. Saving publishes it — the business confirms each request on WhatsApp.</p>
+              </div>
+            </div>
+
+            <div className="settings-grid">
+
+              <label className="settings-full">
+                <span>Services (shown on the booking page)</span>
+                <input
+                  value={settings.services}
+                  onChange={e =>
+                    update('services', e.target.value)
+                  }
+                  placeholder="e.g. Haircut, Colour, Facial"
+                />
+              </label>
+
+              <label className="settings-full">
+                <span>Working hours (shown on the booking page)</span>
+                <input
+                  value={settings.hours}
+                  onChange={e =>
+                    update('hours', e.target.value)
+                  }
+                  placeholder="e.g. Tue–Sun, 10 AM – 8 PM"
+                />
+              </label>
+
+              {slugify(settings.businessName) ? (
+                <p className="settings-full">
+                  Your booking link: <strong>{`${typeof window !== 'undefined' ? window.location.origin : ''}/b/${slugify(settings.businessName)}`}</strong>
+                </p>
+              ) : (
+                <p className="settings-full">Add a business name above to get your booking link.</p>
+              )}
 
             </div>
           </section>
