@@ -17,6 +17,8 @@ const ACTION_LABELS = {
   member_added: 'Member added',
   member_removed: 'Member removed',
   member_role_changed: 'Member role changed',
+  member_availability_changed: 'Member availability changed',
+  inquiry_assigned: 'Inquiry assigned',
   export: 'Data exported',
 }
 

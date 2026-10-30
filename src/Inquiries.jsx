@@ -46,8 +46,13 @@ export default function Inquiries() {
   // Workspace currency (timezone default until Settings saves one).
   const [currency, setCurrency] = useState(() => defaultCurrencyForBrowser())
 
-  // Loads from the workspace owner's data root and filters to the
-  // member's scope (rules filter server-side too).
+  // Loads from the workspace owner's data root. Gate 6 fix: Firestore
+  // rules are NOT filters — an unfiltered collection get is denied
+  // outright for staff, because the per-doc rule only allows rows in
+  // their scope. The query itself is therefore scoped server-side to
+  // exactly what the rule allows (rep: assignedTo == uid; manager:
+  // branchId == branch). inScope() below stays as belt-and-braces
+  // for aggregates that read the whole list.
   useEffect(() => {
     if (wsLoading || !workspace) {
       if (!wsLoading) setItems([])
@@ -58,13 +63,18 @@ export default function Inquiries() {
     let cancelled = false
     ;(async () => {
       try {
-        const snapshot = await db
+        const uid = window.firebase?.auth?.().currentUser?.uid
+        let query = db
           .collection('users')
           .doc(workspace.ownerUid)
           .collection('inquiries')
-          .get()
+        if (workspace.role === 'sales_rep') {
+          query = query.where('assignedTo', '==', uid || '')
+        } else if (workspace.role === 'branch_manager') {
+          query = query.where('branchId', '==', workspace.branchId || '')
+        }
+        const snapshot = await query.get()
         if (cancelled) return
-        const uid = window.firebase?.auth?.().currentUser?.uid
         setItems(
           snapshot.docs
             .map(doc => ({ id: doc.id, ...doc.data() }))
@@ -102,10 +112,15 @@ export default function Inquiries() {
 
   const [showAddInquiry, setShowAddInquiry] = useState(false)
   const [showCsvImport, setShowCsvImport] = useState(false)
-  // Batch 5: the list loads the whole collection, so rendering is
+  // Batch 5: the list can be large, so rendering is
   // capped (200 rows + "Show more") — the safeguard the CSV spec
   // requires before large imports are offered.
   const [visibleCount, setVisibleCount] = useState(200)
+  // Gate 6 backfill: routing only runs at inquiry creation, so rows
+  // that queued unassigned before a member became available stay
+  // unassigned until an owner/admin routes them by hand.
+  const [routing, setRouting] = useState(false)
+  const [routeReport, setRouteReport] = useState('')
   const [form, setForm] = useState({
     name: '',
     phone: '',
@@ -208,6 +223,66 @@ export default function Inquiries() {
     }
   }
 
+  // Gate 6 backfill (owner/admin only): run the round-robin router
+  // over every currently-unassigned row and report how many routed
+  // vs stayed unassigned. Routing only — this never sends a message,
+  // never touches Blitz, and never re-deals rows that already have
+  // an assignee.
+  async function handleRouteUnassigned() {
+    if (!workspace || routing) return
+    const db = window.firebase?.firestore?.()
+    if (!db) return
+    setRouting(true)
+    setRouteReport('')
+    const unassigned = items.filter(item => (item.assignedTo || '') === '')
+    let routed = 0
+    const updates = []
+    for (const item of unassigned) {
+      const route = await assignNext(db, workspace.ownerUid, {
+        branchId: item.branchId || '',
+      })
+      if (!route.assignedTo) continue
+      try {
+        await db
+          .collection('users')
+          .doc(workspace.ownerUid)
+          .collection('inquiries')
+          .doc(String(item.id))
+          .update({
+            assignedTo: route.assignedTo,
+            assignedAt: route.assignedAt,
+            assignedBy: route.assignedBy,
+          })
+        routed += 1
+        updates.push({
+          id: item.id,
+          assignedTo: route.assignedTo,
+          assignedAt: route.assignedAt,
+          assignedBy: route.assignedBy,
+        })
+      } catch (error) {
+        // assignNext already bumped the pick's count; the row simply
+        // stays unassigned and is counted as such below.
+        console.error('Route unassigned update failed:', error)
+      }
+    }
+    if (updates.length > 0) {
+      setItems(current =>
+        current.map(item => {
+          const update = updates.find(u => u.id === item.id)
+          return update ? { ...item, ...update } : item
+        })
+      )
+    }
+    setRouting(false)
+    const stayed = unassigned.length - routed
+    setRouteReport(
+      unassigned.length === 0
+        ? 'No unassigned inquiries.'
+        : `Routed ${routed} of ${unassigned.length} unassigned ${unassigned.length === 1 ? 'inquiry' : 'inquiries'}; ${stayed} stayed unassigned (no available agent).`
+    )
+  }
+
   const options = [
     ['all', 'All statuses'],
     ['new', 'New'],
@@ -280,8 +355,22 @@ export default function Inquiries() {
               Import CSV
             </button>
           )}
+          {canManageTeam(workspace?.role) && (
+            <button
+              type="button"
+              className="ghost-button"
+              onClick={handleRouteUnassigned}
+              disabled={routing}
+            >
+              {routing ? 'Routing…' : 'Route unassigned now'}
+            </button>
+          )}
           </div>
         </header>
+
+        {routeReport && (
+          <p className="route-report">{routeReport}</p>
+        )}
 
         <section className="inquiries-panel">
 

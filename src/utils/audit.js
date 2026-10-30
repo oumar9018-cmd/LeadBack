@@ -8,7 +8,8 @@
  * (not even the owner) may update or delete an audit record.
  *
  * Actions: 'status_changed' | 'member_added' | 'member_removed' |
- * 'member_role_changed' | 'export' (export is reserved — no export
+ * 'member_role_changed' | 'member_availability_changed' |
+ * 'inquiry_assigned' | 'export' (export is reserved — no export
  * feature exists yet; the future export path must log here).
  */
 
@@ -17,6 +18,8 @@ export const AUDIT_ACTIONS = [
   'member_added',
   'member_removed',
   'member_role_changed',
+  'member_availability_changed',
+  'inquiry_assigned',
   'export',
 ]
 

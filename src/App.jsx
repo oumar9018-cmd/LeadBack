@@ -323,9 +323,12 @@ function Dashboard() {
 
   // Inquiries load from the workspace owner's data root, filtered to
   // the member's scope (owner/admins see all; managers their branch;
-  // reps their assigned rows). The rules filter server-side too; the
-  // client filter keeps aggregates (revenue, counts) consistent with
-  // the rows actually shown.
+  // reps their assigned rows). Gate 6 fix: Firestore rules are NOT
+  // filters — an unfiltered collection get is denied outright for
+  // staff, so the query itself is scoped server-side to exactly what
+  // the per-doc rule allows. The client filter below stays as
+  // belt-and-braces so aggregates (revenue, counts) match the rows
+  // actually shown.
   useEffect(() => {
     if (wsLoading) return undefined
     const db = window.firebase?.firestore?.()
@@ -342,18 +345,36 @@ function Dashboard() {
     setInquiriesError('')
     ;(async () => {
       try {
-        const snapshot = await db
+        const uid = window.firebase?.auth?.().currentUser?.uid
+        let query = db
           .collection('users')
           .doc(workspace.ownerUid)
           .collection('inquiries')
-          .orderBy('createdAt', 'desc')
-          .get()
+        let scoped = false
+        if (workspace.role === 'sales_rep') {
+          query = query.where('assignedTo', '==', uid || '')
+          scoped = true
+        } else if (workspace.role === 'branch_manager') {
+          query = query.where('branchId', '==', workspace.branchId || '')
+          scoped = true
+        }
+        // Scoped queries skip orderBy: an equality filter plus
+        // orderBy on a different field needs a composite index, so
+        // the newest-first sort happens client-side below instead.
+        if (!scoped) query = query.orderBy('createdAt', 'desc')
+        const snapshot = await query.get()
         if (cancelled) return
-        const uid = window.firebase?.auth?.().currentUser?.uid
         const remoteItems = snapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data(),
         }))
+        if (scoped) {
+          const createdTime = value =>
+            typeof value === 'number' ? value : value ? Date.parse(value) || 0 : 0
+          remoteItems.sort(
+            (a, b) => createdTime(b.createdAt) - createdTime(a.createdAt)
+          )
+        }
         setItems(remoteItems.filter(item => inScope(item, workspace, uid)))
       } catch (error) {
         console.error('Inquiry load failed:', error)
@@ -463,15 +484,52 @@ function Dashboard() {
 
   const [searchParams] = useSearchParams()
 
+  // Direct-link resolution for /app/inquiry?inquiry=<id>. The list
+  // path wins whenever the row is already loaded; otherwise (empty
+  // list, or a row outside it) fetch the single doc directly — a
+  // single-doc get IS allowed by the per-doc rule even when a
+  // collection get is not, so a rep opening their own row's link no
+  // longer lands on an empty list. One attempt per inquiry id; a
+  // denied or missing row simply leaves the modal closed.
+  const detailFetchRef = useRef({ id: null, done: false })
   React.useEffect(() => {
     const inquiryId = searchParams.get('inquiry')
-    if (!inquiryId) return
+    if (!inquiryId) {
+      detailFetchRef.current = { id: null, done: false }
+      return
+    }
 
     const inquiry = items.find(item => String(item.id) === inquiryId)
     if (inquiry) {
       setSelectedInquiry(inquiry)
+      return
     }
-  }, [items, searchParams])
+
+    if (
+      detailFetchRef.current.id === inquiryId &&
+      detailFetchRef.current.done
+    ) {
+      return
+    }
+    const db = window.firebase?.firestore?.()
+    if (!workspace || !db) return
+    detailFetchRef.current = { id: inquiryId, done: true }
+    ;(async () => {
+      try {
+        const snap = await db
+          .collection('users')
+          .doc(workspace.ownerUid)
+          .collection('inquiries')
+          .doc(String(inquiryId))
+          .get()
+        if (snap.exists) {
+          setSelectedInquiry({ id: snap.id, ...snap.data() })
+        }
+      } catch (error) {
+        console.error('Inquiry detail load failed:', error)
+      }
+    })()
+  }, [items, searchParams, workspace])
 
   const [followupForm, setFollowupForm] = useState({
     date: '',
@@ -1212,6 +1270,20 @@ function Dashboard() {
                       setSelectedInquiry(current =>
                         current ? { ...current, assignedTo } : current
                       )
+                      // Gate 8 fix: the items sync effect persists
+                      // this change without logging it, so log the
+                      // assignment here (manual moves only — routing
+                      // logs its own lines at creation time).
+                      if (assignedTo !== (detailInquiry.assignedTo || '')) {
+                        const assignee = members.find(m => m.id === assignedTo)
+                        logAudit(workspace?.ownerUid, {
+                          action: 'inquiry_assigned',
+                          inquiryId: detailInquiry.id,
+                          detail: assignedTo
+                            ? `assigned to ${assignee?.email || assignedTo}`
+                            : 'unassigned',
+                        })
+                      }
                     }}
                   >
                     <option value="">Unassigned</option>

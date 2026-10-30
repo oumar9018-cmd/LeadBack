@@ -64,9 +64,11 @@ export function canWriteSettings(role) {
   return role === 'owner' || role === 'admin'
 }
 
-/** Client-side scope filter. The rules filter server-side too; this
- *  keeps scoped rows out of aggregates (revenue, customers, blitz)
- *  that read the whole list. */
+/** Client-side scope filter. Rules are NOT filters — they only allow
+ *  or deny each doc, so every list query must ALSO be scoped
+ *  server-side to what the rule allows (see Inquiries.jsx and App.jsx);
+ *  this filter keeps scoped rows out of aggregates (revenue, customers,
+ *  blitz) that read the whole list. */
 export function inScope(item, workspace, uid) {
   if (!workspace) return false
   if (workspace.role === 'owner' || workspace.role === 'admin') return true

@@ -26,8 +26,12 @@ export default function Customers() {
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState('')
 
-  // Loads from the workspace owner's data root and filters to the
-  // member's scope (rules filter server-side too).
+  // Loads from the workspace owner's data root. Gate 6 fix: Firestore
+  // rules are NOT filters — an unfiltered collection get is denied
+  // outright for staff, because the per-doc rule only allows rows in
+  // their scope. The query itself is therefore scoped server-side to
+  // exactly what the rule allows (rep: assignedTo == uid; manager:
+  // branchId == branch). inScope() below stays as belt-and-braces.
   useEffect(() => {
     if (wsLoading || !workspace) {
       if (!wsLoading) {
@@ -44,13 +48,18 @@ export default function Customers() {
     setLoadError('')
     ;(async () => {
       try {
-        const snapshot = await db
+        const uid = window.firebase?.auth?.().currentUser?.uid
+        let query = db
           .collection('users')
           .doc(workspace.ownerUid)
           .collection('inquiries')
-          .get()
+        if (workspace.role === 'sales_rep') {
+          query = query.where('assignedTo', '==', uid || '')
+        } else if (workspace.role === 'branch_manager') {
+          query = query.where('branchId', '==', workspace.branchId || '')
+        }
+        const snapshot = await query.get()
         if (cancelled) return
-        const uid = window.firebase?.auth?.().currentUser?.uid
         setItems(
           snapshot.docs
             .map(doc => ({ id: doc.id, ...doc.data() }))

@@ -179,7 +179,7 @@ service cloud.firestore {
         allow get, list: if isOwner(userId) || isWorkspaceAdmin(userId) || isCeo();
         allow create: if (isOwner(userId) || isWorkspaceMember(userId)) &&
           request.resource.data.actorUid == request.auth.uid &&
-          request.resource.data.action in ['status_changed', 'member_added', 'member_removed', 'member_role_changed', 'export'];
+          request.resource.data.action in ['status_changed', 'member_added', 'member_removed', 'member_role_changed', 'member_availability_changed', 'inquiry_assigned', 'export'];
         allow update, delete: if false;
       }
     }

@@ -3274,6 +3274,12 @@ a {
   font-size: 14px;
 }
 
+.route-report {
+  margin: 0 0 16px;
+  color: #475569;
+  font-size: 14px;
+}
+
 .inquiries-show-more p {
   margin: 0;
 }

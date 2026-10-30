@@ -258,6 +258,14 @@ export default function TeamMembers() {
         .collection('members')
         .doc(member.id)
         .update({ [field]: value })
+      // Gate 8 fix: toggles used to persist with no audit record at
+      // all (the viewer only ever showed invites, roles and
+      // removals). Audit must never break the toggle itself, and
+      // logAudit is already fire-and-forget.
+      await logAudit(workspace.ownerUid, {
+        action: 'member_availability_changed',
+        detail: `${member.email || member.id}: ${field} -> ${value}`,
+      })
       reload()
     } catch (e) {
       console.error('Member availability toggle failed:', e)
@@ -310,7 +318,8 @@ export default function TeamMembers() {
           <p>
             Invite staff by email. Admins see everything; Branch Managers
             see only their branch; Sales Reps see only their assigned
-            leads. Staff can never delete data. Every change is written
+            leads. Staff can never delete data. Invites, role changes,
+            availability toggles, assignments and removals are written
             to the audit log.
           </p>
         </div>
