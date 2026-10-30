@@ -4,6 +4,7 @@ import TeamMembers from './components/TeamMembers.jsx'
 import BranchesCard from './components/BranchesCard.jsx'
 import AuditLog from './components/AuditLog.jsx'
 import { useWorkspace } from './components/WorkspaceContext.jsx'
+import { url } from './basePath.js'
 import { canManageTeam, canViewSettings, canWriteSettings } from './utils/workspace.js'
 import { CURRENCIES, defaultCurrencyForBrowser } from './utils/money.js'
 
@@ -265,7 +266,7 @@ export default function Settings() {
 
               {slugify(settings.businessName) ? (
                 <p className="settings-full">
-                  Your booking link: <strong>{`${typeof window !== 'undefined' ? window.location.origin : ''}/b/${slugify(settings.businessName)}`}</strong>
+                  Your booking link: <strong>{`${typeof window !== 'undefined' ? window.location.origin : ''}${url(`/b/${slugify(settings.businessName)}`)}`}</strong>
                 </p>
               ) : (
                 <p className="settings-full">Add a business name above to get your booking link.</p>

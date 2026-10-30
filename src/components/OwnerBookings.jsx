@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { useWorkspace } from './WorkspaceContext.jsx'
 
 /**
  * Owner bookings — booking requests customers sent from the public
@@ -66,6 +67,19 @@ export default function OwnerBookings({ onAddInquiry }) {
     }
   }
 
+  async function dismissBooking(booking) {
+    setBookings(prev => prev.filter(b => b.id !== booking.id))
+    try {
+      const db = window.firebase?.firestore?.()
+      if (db && businessId) {
+        await db.collection('businesses').doc(businessId)
+          .collection('bookings').doc(booking.id).delete()
+      }
+    } catch (error) {
+      console.error('Dismiss booking failed:', error)
+    }
+  }
+
   if (loading || bookings.length === 0) return null
 
   const pending = bookings.filter(b => b.status === 'pending')
@@ -95,6 +109,13 @@ export default function OwnerBookings({ onAddInquiry }) {
               onClick={() => markAdded(booking)}
             >
               Add as inquiry
+            </button>
+            <button
+              type="button"
+              className="danger-solid-button"
+              onClick={() => dismissBooking(booking)}
+            >
+              Dismiss
             </button>
           </div>
         ))}
