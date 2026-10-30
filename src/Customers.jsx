@@ -143,8 +143,7 @@ export default function Customers() {
             <div>
               <h2>All customers</h2>
               <p>
-                {filtered.length} customer
-                {filtered.length === 1 ? '' : 's'}
+                {`${filtered.length} ${filtered.length === 1 ? 'customer' : 'customers'}`}
               </p>
             </div>
 

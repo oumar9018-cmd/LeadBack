@@ -274,8 +274,7 @@ export default function Followups() {
             <div>
               <h2>Follow-up queue</h2>
               <p>
-                {filtered.length} customer
-                {filtered.length === 1 ? '' : 's'}
+                {`${filtered.length} ${filtered.length === 1 ? 'customer' : 'customers'}`}
               </p>
             </div>
 

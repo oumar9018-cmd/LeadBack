@@ -232,7 +232,7 @@ export default function Inquiries() {
             <div>
               <h2>All inquiries</h2>
               <p>
-                {filtered.length} {filtered.length === 1 ? 'inquiry' : 'inquiries'}
+                {`${filtered.length} ${filtered.length === 1 ? 'inquiry' : 'inquiries'}`}
               </p>
             </div>
 
