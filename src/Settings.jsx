@@ -10,6 +10,7 @@ const defaultSettings = {
   followupReminder: '1',
   services: '',
   hours: '',
+  googleReviewLink: '',
 }
 
 /** Same slug algorithm as the dashboard's businessSlug. */
@@ -137,9 +138,9 @@ export default function Settings() {
 
           <button
             className="primary-button"
-            onClick={() => navigate('/app')}
+            onClick={() => navigate('/app/inquiries')}
           >
-            Back to dashboard
+            Back to inquiries
           </button>
         </header>
 
@@ -233,6 +234,33 @@ export default function Settings() {
               ) : (
                 <p className="settings-full">Add a business name above to get your booking link.</p>
               )}
+
+            </div>
+          </section>
+
+          <section className="settings-card">
+            <div className="settings-card-header">
+              <div>
+                <span className="settings-label">REVIEWS</span>
+                <h2>Google review link</h2>
+                <p>Paste your Google review link here — it is used in the one-tap review message. Leave it blank and the button stays hidden.</p>
+              </div>
+            </div>
+
+            <div className="settings-grid">
+
+              <label className="settings-full">
+                <span>Google review link</span>
+                <input
+                  value={settings.googleReviewLink}
+                  onChange={e =>
+                    update('googleReviewLink', e.target.value)
+                  }
+                  placeholder="https://g.page/r/.../review"
+                />
+              </label>
+
+              <p className="settings-full">Recovered customers get a one-tap "Ask for Google review" button in their inquiry details. Lost customers never get a review ask — they get a private recovery draft instead.</p>
 
             </div>
           </section>

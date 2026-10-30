@@ -100,12 +100,52 @@ function setJsonLd(html, json) {
 }
 
 function setRoot(html, body) {
-  const pattern = /<div\s+id="root"><\/div>/i
-
-  if (pattern.test(html)) {
-    return html.replace(pattern, () => `<div id="root">${body}</div>`)
+  // The vite template's root is NOT empty — it holds the splash markup
+  // (<div id="root"><div id="wynback-splash">…nested divs…</div></div>),
+  // so the old empty-root pattern never matched and the fallback below
+  // APPENDED a second <div id="root"> holding the prerendered page.
+  // On every route that left the full landing page sitting underneath
+  // the live SPA content — exactly the reported "landing content below
+  // the app" bug (app dashboard + app footer on top, landing header +
+  // hero + Get started buttons below it).
+  // Fix: replace the existing root div's whole span with the prerendered
+  // body, keeping exactly one #root. Div depth is counted from the root's
+  // open tag to its matching close tag so the nested splash divs are
+  // consumed, not cut short (a non-greedy match to the first </div>
+  // would orphan the rest of the splash). React's createRoot then clears
+  // the single root and renders the SPA — standard behaviour, no
+  // duplication. This repairs all 18 prerendered files at once.
+  const openMatch = html.match(/<div\s+id="root"[^>]*>/i)
+  if (openMatch) {
+    const start = openMatch.index
+    const afterOpen = start + openMatch[0].length
+    const tagPattern = /<\/?div\b[^>]*>/gi
+    tagPattern.lastIndex = afterOpen
+    let depth = 1
+    let match
+    let end = -1
+    while ((match = tagPattern.exec(html)) !== null) {
+      if (match[0].startsWith('</')) {
+        depth -= 1
+        if (depth === 0) {
+          end = match.index + match[0].length
+          break
+        }
+      } else {
+        depth += 1
+      }
+    }
+    if (end !== -1) {
+      return (
+        html.slice(0, start) +
+        `<div id="root">${body}</div>` +
+        html.slice(end)
+      )
+    }
+    // Unbalanced root div (should not happen): fall through to the
+    // no-root fallback rather than shipping a half-replaced document.
   }
-  // Fall back to injecting just before </body> if the root div changes shape.
+  // Fall back to injecting just before </body> if there is no root div.
   return html.replace(
     '</body>',
     () => `<div id="root">${body}</div>\n  </body>`

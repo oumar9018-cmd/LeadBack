@@ -144,7 +144,7 @@ export default function BlitzMode() {
               <h1>Re-engagement blitz</h1>
               <p>Win back lost customers in one focused session. Pick who to contact, then power through them one by one.</p>
             </div>
-            <button className="primary-button" onClick={() => navigate('/app')}>Back to dashboard</button>
+            <button className="primary-button" onClick={() => navigate('/app/inquiries')}>Back to inquiries</button>
           </header>
 
           {loading && <div className="empty-state">Loading inquiries…</div>}
@@ -215,8 +215,8 @@ export default function BlitzMode() {
             <button type="button" className="primary-button" onClick={() => { setStarted(false); setSelected({}) }}>
               Run another blitz
             </button>
-            <button type="button" className="ghost-button" onClick={() => navigate('/app')}>
-              Back to dashboard
+            <button type="button" className="ghost-button" onClick={() => navigate('/app/inquiries')}>
+              Back to inquiries
             </button>
           </div>
         </div>

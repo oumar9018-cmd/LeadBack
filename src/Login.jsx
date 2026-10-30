@@ -196,7 +196,7 @@ export default function Login() {
       if (accountData?.role === 'ceo') {
         window.location.href = url('/ceo')
       } else {
-        window.location.href = url('/app')
+        window.location.href = url('/app/inquiries')
       }
     } catch (error) {
       console.error('Google Sign-In failed:', error)

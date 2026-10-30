@@ -111,9 +111,9 @@ export default function Customers() {
 
           <button
             className="primary-button"
-            onClick={() => navigate('/app')}
+            onClick={() => navigate('/app/inquiries')}
           >
-            Back to dashboard
+            Back to inquiries
           </button>
         </header>
 
@@ -181,7 +181,7 @@ export default function Customers() {
                 <button
                   type="button"
                   className="customer-main customer-main-button"
-                  onClick={() => navigate(`/app?inquiry=${item.id}`)}
+                  onClick={() => navigate(`/app/inquiry?inquiry=${item.id}`)}
                 >
                   <strong>{item.name}</strong>
                   <span>{item.phone}</span>

@@ -3289,7 +3289,7 @@ a {
 .inquiry-table-head,
 .inquiry-page-row {
   display: grid;
-  grid-template-columns: minmax(190px, 1.5fr) minmax(150px, 1fr) 130px 120px;
+  grid-template-columns: minmax(190px, 1.5fr) minmax(150px, 1fr) 130px 120px 110px;
   align-items: center;
   gap: 20px;
 }
@@ -3313,6 +3313,13 @@ a {
 
 .inquiry-page-row:last-child {
   border-bottom: 0;
+}
+
+/* The status pill always sits in the 5th track. Without this, rows whose
+   win-back badge renders null (recovered inquiries) drop the pill into
+   the 4th track, misaligned with every other row. */
+.inquiry-page-row > .status {
+  grid-column: 5;
 }
 
 .inquiry-page-customer {
@@ -3367,6 +3374,12 @@ a {
   text-align: center;
 }
 
+/* Booking requests sit below the panel on the Inquiries page (batch 2):
+   they need top spacing the Dashboard layout used to give them. */
+.inquiries-inner > .owner-bookings {
+  margin-top: 24px;
+}
+
 @media (max-width: 800px) {
   .inquiries-page {
     padding: 28px 16px 45px;
@@ -3376,6 +3389,10 @@ a {
     align-items: stretch;
     flex-direction: column;
     gap: 18px;
+  }
+
+  .inquiries-header h1 {
+    font-size: 26px;
   }
 
   .inquiries-header .primary-button {
@@ -3405,16 +3422,18 @@ a {
 
   .inquiry-page-row {
     grid-template-columns: 1fr auto;
-    gap: 9px 14px;
-    padding: 17px;
+    gap: 10px 14px;
+    padding: 18px 17px;
   }
 
   .inquiry-page-customer {
     grid-column: 1;
+    grid-row: 1;
   }
 
   .inquiry-page-service {
-    grid-column: 1;
+    grid-column: 1 / -1;
+    grid-row: 2;
   }
 
   .inquiry-page-value {
@@ -3423,9 +3442,18 @@ a {
     text-align: right;
   }
 
+  /* The win-back ring is a real grid item, not a decoration: without an
+     explicit cell it auto-placed into the status pill's cell and the two
+     overlapped on every non-recovered row. Row 3 now holds ring + status. */
+  .inquiry-page-row > .wb-badge {
+    grid-column: 1;
+    grid-row: 3;
+    justify-self: start;
+  }
+
   .inquiry-page-row > .status {
     grid-column: 2;
-    grid-row: 2;
+    grid-row: 3;
     justify-self: end;
   }
 
@@ -5304,9 +5332,10 @@ a {
   margin: 0 auto;
 }
 
-/* Hide the "Back to dashboard" button on these inner pages — the
-   sidebar already provides navigation, so it's redundant. */
-.app-main .inquiries-header .primary-button,
+/* Hide the "Back to inquiries" button on these inner pages — the
+   sidebar already provides navigation, so it's redundant.
+   (Inquiries keeps its header button: since batch 2 it is "Add inquiry",
+   a real action, not a back link — so it is NOT in this list.) */
 .app-main .followups-header .primary-button,
 .app-main .revenue-header .primary-button,
 .app-main .customers-page-header .primary-button,
@@ -5837,5 +5866,94 @@ a {
   .sidebar,
   .mobile-menu-button span {
     transition: none;
+  }
+}
+
+/* ==============================
+   REVIEW REQUESTS (batch 2, 2026-10-30)
+   One-tap Google review ask in the inquiry detail modal, plus the
+   Review Rescue section for lost customers. Unified tokens only.
+============================== */
+.review-request-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 20px 0;
+  padding: 18px 20px;
+  border: 1px solid #E2E8F0;
+  border-radius: 14px;
+  background: #F8FAFC;
+}
+
+.review-request-section h3 {
+  margin: 4px 0 4px;
+  color: #0F172A;
+  font-size: 15px;
+}
+
+.review-request-section p {
+  margin: 0;
+  color: #64748B;
+  font-size: 13px;
+}
+
+.review-request-button {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 10px;
+  background: #2563EB;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.review-request-button:hover {
+  background: #1D4ED8;
+}
+
+.review-request-hint {
+  margin: 20px 0;
+  color: #64748B;
+  font-size: 13px;
+}
+
+.review-rescue-section {
+  background: #FFFAEB;
+  border-color: #F5E6B8;
+}
+
+.review-rescue-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.review-rescue-button {
+  background: #B54708;
+}
+
+.review-rescue-button:hover {
+  background: #93370D;
+}
+
+@media (max-width: 620px) {
+  .review-request-section {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .review-request-button {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .review-rescue-actions .save-button {
+    width: 100%;
   }
 }

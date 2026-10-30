@@ -3,7 +3,6 @@ import { NavLink, Link, Outlet } from 'react-router-dom'
 import { url } from './basePath.js'
 import { GraveyardPill } from './components/GraveyardCounter.jsx'
 import {
-  IconChartBar,
   IconMessage,
   IconClock,
   IconZap,
@@ -16,9 +15,12 @@ import {
  * Mobile-first (P0 rebuild): the hamburger lives INSIDE the sticky
  * topbar (never floating), the drawer is one component with body
  * scroll lock + focus trap + aria-expanded, and phones navigate via
- * a fixed bottom tab bar (Overview / Inquiries / Follow-ups / Blitz
+ * a fixed bottom tab bar (Inquiries / Follow-ups / Blitz
  * + More opening the drawer). At >=900px the sidebar rail returns
  * and the tab bar + hamburger hide (see App.css MOBILE-FIRST SHELL).
+ *
+ * Batch 2 (2026-10-30): the Overview dashboard page was removed, so
+ * Inquiries is the first sidebar entry and the first tab.
  */
 export default function AppLayout() {
   const [authUser, setAuthUser] = useState(null)
@@ -162,7 +164,6 @@ export default function AppLayout() {
         </div>
 
         <nav className="side-nav">
-          <NavLink to="/app" end onClick={closeSidebar}>Overview</NavLink>
           <NavLink to="/app/inquiries" onClick={closeSidebar}>Inquiries</NavLink>
           <NavLink to="/app/followups" onClick={closeSidebar}>Follow-ups</NavLink>
           <NavLink to="/app/blitz" onClick={closeSidebar}>Blitz Mode</NavLink>
@@ -263,7 +264,7 @@ export default function AppLayout() {
           </div>
         </header>
 
-        {/* Render the actual page (Dashboard, Inquiries, …) */}
+        {/* Render the actual page (Inquiries, Follow-ups, …) */}
         <Outlet />
 
         <footer className="app-footer">
@@ -272,10 +273,6 @@ export default function AppLayout() {
       </main>
 
       <nav className="bottom-tabbar" aria-label="Primary navigation">
-        <NavLink to="/app" end>
-          <IconChartBar />
-          <span>Overview</span>
-        </NavLink>
         <NavLink to="/app/inquiries">
           <IconMessage />
           <span>Inquiries</span>

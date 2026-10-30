@@ -150,7 +150,7 @@ function App() {
         if (account?.role === 'ceo') {
           window.location.href = url('/ceo')
         } else {
-          window.location.href = url('/app')
+          window.location.href = url('/app/inquiries')
         }
       } catch (error) {
         console.error('Homepage session check failed:', error)

@@ -37,6 +37,7 @@ import Offers from './Offers.jsx'
 import WinbackScoreBadge from './components/WinbackScore.jsx'
 import { GraveyardCounter } from './components/GraveyardCounter.jsx'
 import LossReasonModal, { LOSS_REASON_LABELS } from './components/LossReasonModal.jsx'
+import Modal from './components/Modal.jsx'
 import LossIntelligence from './components/LossIntelligence.jsx'
 import StreakWidget from './components/StreakWidget.jsx'
 import OfferBuilder from './components/OfferBuilder.jsx'
@@ -49,7 +50,7 @@ import {
   IconMessage,
   IconZap,
 } from './components/icons.jsx'
-import { bookingLinkFor } from './utils/whatsapp.js'
+import { bookingLinkFor, waLink, TEMPLATES, fillTemplate, normalizePhone } from './utils/whatsapp.js'
 import './App.css'
 
 const statusLabels = {
@@ -107,48 +108,6 @@ function useCountUp(target, duration = 1100) {
   return value
 }
 
-/**
- * Frosted modal shell with buttery open/close animation.
- * Purely visual: delays unmount by the close animation, calls onClose
- * on backdrop click exactly like the previous inline markup did.
- */
-function Modal({ open, onClose, wide = false, children }) {
-  const [rendered, setRendered] = useState(false)
-  const [closing, setClosing] = useState(false)
-
-  useEffect(() => {
-    if (open) {
-      setRendered(true)
-      setClosing(false)
-      return undefined
-    }
-    if (!rendered) return undefined
-    setClosing(true)
-    const timer = setTimeout(() => {
-      setRendered(false)
-      setClosing(false)
-    }, 260)
-    return () => clearTimeout(timer)
-  }, [open, rendered])
-
-  if (!rendered) return null
-
-  return (
-    <div
-      className={`modal-backdrop${closing ? ' is-closing' : ''}`}
-      onMouseDown={event => {
-        if (event.target === event.currentTarget) onClose()
-      }}
-    >
-      <div
-        className={`inquiry-modal${wide ? ' detail-modal' : ''}${closing ? ' is-closing' : ''}`}
-      >
-        {children}
-      </div>
-    </div>
-  )
-}
-
 /** Blue radar illustration for empty states. Pure SVG, no emojis. */
 function EmptyArt({ compact = false }) {
   return (
@@ -178,12 +137,21 @@ function EmptyArt({ compact = false }) {
 }
 
 /* ------------------------------------------------------------------ */
-/* Dashboard — main overview page.                                     */
-/* The sidebar/header/footer shell is now provided by <AppLayout/> so  */
+/* Dashboard — inquiry-detail host.                                    */
+/* Batch 2 (2026-10-30): the Overview dashboard page was removed on   */
+/* the owner's order. /app now redirects to /app/inquiries, and this   */
+/* component survives only at /app/inquiry, where it renders the      */
+/* inquiry detail modal (and its write actions) and nothing else.     */
+/* The sidebar/header/footer shell is provided by <AppLayout/> so     */
 /* this component renders only its content.                            */
 /* ------------------------------------------------------------------ */
 function Dashboard() {
   const navigate = useNavigate()
+  const location = useLocation()
+  // Detail-only mode: on /app/inquiry the page sections below are gated
+  // off (see the {!detailOnly && ...} wrapper around the return body), so
+  // no Overview content ever renders on this route — only the modals.
+  const detailOnly = location.pathname === '/app/inquiry'
   const [authUser, setAuthUser] = useState(
     () => window.firebase?.auth?.().currentUser || null
   )
@@ -196,6 +164,7 @@ function Dashboard() {
     .replace(/^-+|-+$/g, '')
   const [profileName, setProfileName] = useState('')
   const [currency, setCurrency] = useState('INR')
+  const [googleReviewLink, setGoogleReviewLink] = useState('')
 
   useEffect(() => {
     const auth = window.firebase?.auth?.()
@@ -207,6 +176,7 @@ function Dashboard() {
       if (!user) {
         setBusinessName('')
         setProfileName('')
+        setGoogleReviewLink('')
         return
       }
 
@@ -225,6 +195,7 @@ function Dashboard() {
         const data = snapshot.exists ? snapshot.data() : {}
         const savedName = data?.businessName
         const savedCurrency = data?.currency
+        const savedReviewLink = data?.googleReviewLink
 
         setBusinessName(
           typeof savedName === 'string' ? savedName.trim() : ''
@@ -235,9 +206,14 @@ function Dashboard() {
             ? savedCurrency
             : 'INR'
         )
+
+        setGoogleReviewLink(
+          typeof savedReviewLink === 'string' ? savedReviewLink.trim() : ''
+        )
       } catch (error) {
         console.error('Workspace settings load failed:', error)
         setBusinessName('')
+        setGoogleReviewLink('')
       }
     })
 
@@ -347,12 +323,37 @@ function Dashboard() {
   const detailInquiry = selectedInquiry ?? lastInquiryRef.current
   const [deleteConfirmId, setDeleteConfirmId] = useState(null)
 
+  // In detail-only mode the modal IS the page: closing it returns to the
+  // Inquiries list instead of leaving a blank shell behind.
+  function closeDetail() {
+    setSelectedInquiry(null)
+    setDeleteConfirmId(null)
+    if (detailOnly) navigate('/app/inquiries')
+  }
+
+  // Review requests (batch 2): the saved Google review link, or '' when
+  // blank or malformed. The button must never render — and never send —
+  // a broken or empty link, so validation happens here, not at click time.
+  function validReviewLink() {
+    const link = (googleReviewLink || '').trim()
+    if (!link) return ''
+    try {
+      const parsed = new URL(link)
+      return parsed.protocol === 'http:' || parsed.protocol === 'https:'
+        ? link
+        : ''
+    } catch {
+      return ''
+    }
+  }
+
   // Permanent delete (the UI had no way to remove an inquiry before).
   // The items->Firestore sync only ever SETs docs for items in state, so an
   // explicit doc delete + state removal stays deleted across reloads.
   async function deleteInquiry(id) {
     setDeleteConfirmId(null)
     setSelectedInquiry(null)
+    if (detailOnly) navigate('/app/inquiries')
     setItems(prev => prev.filter(item => String(item.id) !== String(id)))
     try {
       const auth = window.firebase?.auth?.()
@@ -589,8 +590,25 @@ function Dashboard() {
     setSearch('')
   }
 
+  // Detail-only route without an inquiry to show is not a page — send the
+  // owner back to the list instead of rendering a blank shell. The second
+  // guard covers a stale/unknown id (e.g. a deleted inquiry's deep link)
+  // once the list has loaded.
+  if (detailOnly && !searchParams.get('inquiry')) {
+    return <Navigate to="/app/inquiries" replace />
+  }
+  if (
+    detailOnly &&
+    inquiriesLoaded &&
+    !items.some(item => String(item.id) === searchParams.get('inquiry'))
+  ) {
+    return <Navigate to="/app/inquiries" replace />
+  }
+
   return (
     <>
+      {!detailOnly && (
+      <>
       <div className="dashboard-overview-header">
         <div>
           <span className="app-eyebrow">OVERVIEW</span>
@@ -904,6 +922,8 @@ function Dashboard() {
           </div>
         </div>
       </section>
+      </>
+      )}
 
       <Modal open={showAddInquiry} onClose={() => setShowAddInquiry(false)}>
             <div className="modal-header">
@@ -1016,7 +1036,7 @@ function Dashboard() {
       {detailInquiry && (
       <Modal
         open={selectedInquiry !== null}
-        onClose={() => { setSelectedInquiry(null); setDeleteConfirmId(null) }}
+        onClose={closeDetail}
         wide
       >
             <div className="modal-header">
@@ -1029,7 +1049,7 @@ function Dashboard() {
               <button
                 type="button"
                 className="modal-close"
-                onClick={() => { setSelectedInquiry(null); setDeleteConfirmId(null) }}
+                onClick={closeDetail}
                 aria-label="Close"
               >
                 <IconX width={15} height={15} />
@@ -1122,6 +1142,89 @@ function Dashboard() {
                 logActivity(detailInquiry.id, type === 'voice-note' ? 'Voice note opened' : `WhatsApp opened (${templateId})`)
               }}
             />
+
+            {/* Review requests (batch 2). The ask renders ONLY for a
+                recovered inquiry with a saved, valid review link and a
+                valid phone. No auto-send: the owner taps, WhatsApp opens
+                pre-filled, the owner sends. The tap is logged ("Review
+                requested") so it shows in the timeline — the same
+                persisted state as every other action (the whole-list
+                sync effect writes it to Firestore). */}
+            {detailInquiry.status === 'recovered' && validReviewLink() && normalizePhone(detailInquiry.phone) && (
+              <section className="review-request-section">
+                <div>
+                  <span className="app-eyebrow">GOOGLE REVIEW</span>
+                  <h3>Ask for a review</h3>
+                  <p>This customer recovered — a review ask is welcome now.</p>
+                </div>
+                <a
+                  className="review-request-button"
+                  href={waLink(detailInquiry.phone, fillTemplate(TEMPLATES.reviewRequest.text, {
+                    name: detailInquiry.name,
+                    business: businessName,
+                    service: detailInquiry.service,
+                    link: validReviewLink(),
+                  }))}
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={() => logActivity(detailInquiry.id, 'Review requested')}
+                >
+                  Ask for Google review
+                </a>
+              </section>
+            )}
+
+            {detailInquiry.status === 'recovered' && !validReviewLink() && normalizePhone(detailInquiry.phone) && (
+              <p className="review-request-hint">
+                Add your Google review link in Settings to ask this customer for a review.
+              </p>
+            )}
+
+            {/* Review Rescue: a lost customer NEVER gets a review ask —
+                not even with a saved link. They get a private recovery
+                draft instead, and only become review-eligible if the
+                conversation is reopened and the customer recovers again
+                (replied → Mark recovered), at which point the section
+                above renders. A stale lossReason on a re-recovered
+                inquiry does not block the ask: eligibility is the live
+                status, and the history stays intact for loss
+                intelligence. */}
+            {detailInquiry.status === 'lost' && normalizePhone(detailInquiry.phone) && (
+              <section className="review-request-section review-rescue-section">
+                <div>
+                  <span className="app-eyebrow">REVIEW RESCUE</span>
+                  <h3>Win them back first</h3>
+                  <p>This customer was lost, so no review ask goes out. Send a private recovery message — and if they come back, reopen the conversation so they can recover properly.</p>
+                </div>
+                <div className="review-rescue-actions">
+                  <a
+                    className="review-request-button review-rescue-button"
+                    href={waLink(detailInquiry.phone, fillTemplate(TEMPLATES.recoveryDraft.text, {
+                      name: detailInquiry.name,
+                      business: businessName,
+                      service: detailInquiry.service,
+                      link: '',
+                    }))}
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={() => logActivity(detailInquiry.id, 'Recovery message opened')}
+                  >
+                    Send recovery message
+                  </a>
+                  <button
+                    type="button"
+                    className="save-button"
+                    onClick={() => {
+                      updateStatus(detailInquiry.id, 'replied')
+                      setSelectedInquiry({ ...detailInquiry, status: 'replied' })
+                      logActivity(detailInquiry.id, 'Conversation reopened for recovery')
+                    }}
+                  >
+                    Reopen conversation
+                  </button>
+                </div>
+              </section>
+            )}
 
             <SmartComposer
               inquiry={detailInquiry}
@@ -1260,7 +1363,7 @@ function Dashboard() {
               <button
                 type="button"
                 className="cancel-button"
-                onClick={() => { setSelectedInquiry(null); setDeleteConfirmId(null) }}
+                onClick={closeDetail}
               >
                 Close
               </button>
@@ -1408,7 +1511,7 @@ function RequireCEO({ children }) {
     )
   }
 
-  if (!allowed) return <Navigate to="/app" replace />
+  if (!allowed) return <Navigate to="/app/inquiries" replace />
 
   return children
 }
@@ -1483,7 +1586,12 @@ function App() {
             </RequireAuth>
           }
         >
-          <Route path="/app" element={<Dashboard />} />
+          {/* Batch 2 (2026-10-30): the Overview dashboard page was removed
+              on the owner's order — /app lands directly on Inquiries.
+              /app/inquiry keeps the Dashboard component alive as the
+              inquiry-detail host only (see detailOnly in Dashboard). */}
+          <Route path="/app" element={<Navigate to="/app/inquiries" replace />} />
+          <Route path="/app/inquiry" element={<Dashboard />} />
           <Route path="/app/inquiries" element={<Inquiries />} />
           <Route path="/app/followups" element={<Followups />} />
           <Route path="/app/revenue" element={<Revenue />} />

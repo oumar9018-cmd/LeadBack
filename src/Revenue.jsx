@@ -145,9 +145,9 @@ export default function Revenue() {
 
           <button
             className="primary-button"
-            onClick={() => navigate('/app')}
+            onClick={() => navigate('/app/inquiries')}
           >
-            Back to dashboard
+            Back to inquiries
           </button>
         </header>
 
@@ -303,7 +303,7 @@ export default function Revenue() {
                 className="revenue-row"
                 key={item.id}
                 onClick={() =>
-                  navigate(`/app?inquiry=${item.id}`)
+                  navigate(`/app/inquiry?inquiry=${item.id}`)
                 }
               >
                 <div className="revenue-customer">
