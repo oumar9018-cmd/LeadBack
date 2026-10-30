@@ -15,7 +15,7 @@
 }
 
 .sc-heading h3 svg {
-  color: #2457ff;
+  color: #2563EB;
 }
 
 .sc-heading p {
@@ -44,10 +44,10 @@
 }
 
 .sc-tone.active {
-  background: #2457ff;
-  border-color: #2457ff;
+  background: #2563EB;
+  border-color: #2563EB;
   color: #fff;
-  box-shadow: 0 4px 12px rgba(36, 87, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
 }
 
 .sc-occasion {
@@ -112,7 +112,7 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: #2457ff;
+  background: #2563EB;
   color: #fff;
   border: none;
   border-radius: 12px;
@@ -125,7 +125,7 @@
 
 .sc-send:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 8px 20px rgba(36, 87, 255, 0.35);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
 }
 
 .sc-send:disabled {

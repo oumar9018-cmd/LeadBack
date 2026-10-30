@@ -15,14 +15,14 @@
   border-radius: 50%;
   border: 1px solid #dfe4f0;
   background: #fff;
-  color: #2457ff;
+  color: #2563EB;
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .voice-btn:hover {
-  border-color: #2457ff;
-  box-shadow: 0 4px 12px rgba(36, 87, 255, 0.2);
+  border-color: #2563EB;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
 }
 
 .voice-btn.listening {
@@ -57,7 +57,7 @@
 
 .voice-hint {
   font-size: 13px;
-  color: #2457ff;
+  color: #2563EB;
   font-weight: 600;
   animation: voice-blink 1s ease-in-out infinite;
 }

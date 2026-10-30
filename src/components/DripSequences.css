@@ -16,7 +16,7 @@
 }
 
 .drip-heading h3 svg {
-  color: #2457ff;
+  color: #2563EB;
 }
 
 .drip-heading p {
@@ -59,7 +59,7 @@
 .drip-toggle input[type="checkbox"] {
   width: 18px;
   height: 18px;
-  accent-color: #2457ff;
+  accent-color: #2563EB;
   cursor: pointer;
 }
 
@@ -74,7 +74,7 @@
 }
 
 .drip-day svg {
-  color: #2457ff;
+  color: #2563EB;
 }
 
 .drip-day-input {
@@ -89,7 +89,7 @@
 }
 
 .drip-day-input:focus {
-  border-color: #2457ff;
+  border-color: #2563EB;
 }
 
 .drip-day-input:disabled {
@@ -110,7 +110,7 @@
 }
 
 .drip-template-select:focus {
-  border-color: #2457ff;
+  border-color: #2563EB;
 }
 
 .drip-template-select:disabled {

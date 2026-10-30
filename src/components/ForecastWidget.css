@@ -13,7 +13,7 @@
   font-size: 17px;
 }
 
-.forecast-head h3 svg { color: #2457ff; }
+.forecast-head h3 svg { color: #2563EB; }
 
 .forecast-range strong {
   display: block;
@@ -24,7 +24,7 @@
 
 .forecast-range span {
   font-size: 13px;
-  color: #5b6478;
+  color: #334155;
 }
 
 .forecast-bar {
@@ -32,33 +32,33 @@
   height: 10px;
   border-radius: 999px;
   overflow: hidden;
-  background: #e2e8f7;
+  background: #EFF6FF;
   margin: 14px 0 6px;
 }
 
-.forecast-low { background: #aeb9e8; }
-.forecast-mid { background: #2457ff; }
-.forecast-high { background: #6a5cff; }
+.forecast-low { background: #BFDBFE; }
+.forecast-mid { background: #2563EB; }
+.forecast-high { background: #1D4ED8; }
 
 .forecast-labels {
   display: flex;
   justify-content: space-between;
   font-size: 12px;
   font-weight: 700;
-  color: #8a93ad;
+  color: #64748B;
   margin-bottom: 10px;
 }
 
 .forecast-basis {
   font-size: 13px;
-  color: #5b6478;
+  color: #334155;
   margin: 0 0 6px;
   line-height: 1.5;
 }
 
 .forecast-pipeline {
   font-size: 13px;
-  color: #8a93ad;
+  color: #64748B;
   margin: 0;
 }
 

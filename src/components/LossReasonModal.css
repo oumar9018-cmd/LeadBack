@@ -57,7 +57,7 @@
 .loss-reason.selected {
   border-color: #6d28d9;
   background: #f5f3ff;
-  box-shadow: 0 0 0 3px rgba(109, 40, 217, 0.12);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
 }
 
 .loss-reason-icon {
@@ -113,7 +113,7 @@
 .loss-note-label textarea:focus {
   outline: none;
   border-color: #6d28d9;
-  box-shadow: 0 0 0 3px rgba(109, 40, 217, 0.12);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
 }
 
 .loss-modal-actions {
@@ -129,9 +129,9 @@
   font-size: 15px;
   font-weight: 700;
   color: #fff;
-  background: linear-gradient(180deg, #dc2626, #b91c1c);
+  background: linear-gradient(180deg, #B42318, #b91c1c);
   cursor: pointer;
-  box-shadow: 0 8px 20px -6px rgba(220, 38, 38, 0.6);
+  box-shadow: 0 8px 20px -6px rgba(180, 35, 24, 0.6);
   transition: transform 0.12s ease, opacity 0.12s ease;
 }
 

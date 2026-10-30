@@ -1,15 +1,24 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { NavLink, Link, Outlet } from 'react-router-dom'
 import { url } from './basePath.js'
 import { GraveyardPill } from './components/GraveyardCounter.jsx'
+import {
+  IconChartBar,
+  IconMessage,
+  IconClock,
+  IconZap,
+} from './components/icons.jsx'
 
 /**
- * AppShell — shared sidebar + top-bar layout used by all authenticated /app/* pages.
+ * AppShell — shared topbar + drawer + bottom-tab-bar layout used by all
+ * authenticated /app/* pages.
  *
- * Fixes the bug where navigating to sub-pages (inquiries, billing, etc.)
- * hid the sidebar because each page rendered its own full-screen container.
- * Now every /app route is rendered inside <Outlet /> while the sidebar
- * stays mounted, enabling client-side navigation via NavLink.
+ * Mobile-first (P0 rebuild): the hamburger lives INSIDE the sticky
+ * topbar (never floating), the drawer is one component with body
+ * scroll lock + focus trap + aria-expanded, and phones navigate via
+ * a fixed bottom tab bar (Overview / Inquiries / Follow-ups / Blitz
+ * + More opening the drawer). At >=900px the sidebar rail returns
+ * and the tab bar + hamburger hide (see App.css MOBILE-FIRST SHELL).
  */
 export default function AppLayout() {
   const [authUser, setAuthUser] = useState(null)
@@ -17,6 +26,8 @@ export default function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [businessName, setBusinessName] = useState('')
   const [profileName, setProfileName] = useState('')
+  const drawerRef = useRef(null)
+  const menuButtonRef = useRef(null)
 
   useEffect(() => {
     const auth = window.firebase?.auth?.()
@@ -71,6 +82,44 @@ export default function AppLayout() {
     return unsubscribe
   }, [])
 
+  // Drawer: body scroll lock + focus trap + Escape to close.
+  useEffect(() => {
+    if (!sidebarOpen) return undefined
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    const drawer = drawerRef.current
+    const focusables = drawer
+      ? drawer.querySelectorAll('a[href], button:not([disabled])')
+      : []
+    if (focusables.length > 0) focusables[0].focus()
+
+    function handleKeyDown(event) {
+      if (event.key === 'Escape') {
+        setSidebarOpen(false)
+        menuButtonRef.current?.focus()
+        return
+      }
+      if (event.key !== 'Tab' || focusables.length === 0) return
+      const first = focusables[0]
+      const last = focusables[focusables.length - 1]
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault()
+        last.focus()
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault()
+        first.focus()
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.body.style.overflow = previousOverflow
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [sidebarOpen])
+
   async function handleSignOut() {
     try {
       await window.firebase?.auth?.()?.signOut()
@@ -86,20 +135,12 @@ export default function AppLayout() {
   }
 
   const displayName = businessName || 'My Workspace'
+  const avatarLetter = (authUser?.displayName || authUser?.email || 'U')
+    .charAt(0)
+    .toUpperCase()
 
   return (
     <div className={`app-shell ${sidebarOpen ? 'sidebar-open' : ''}`}>
-      <button
-        type="button"
-        className="mobile-menu-button"
-        aria-label={sidebarOpen ? 'Close navigation' : 'Open navigation'}
-        onClick={() => setSidebarOpen(value => !value)}
-      >
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-
       {sidebarOpen && (
         <button
           type="button"
@@ -109,7 +150,7 @@ export default function AppLayout() {
         />
       )}
 
-      <aside className="sidebar">
+      <aside className="sidebar" ref={drawerRef} id="app-drawer" aria-label="Main navigation">
         <div className="sidebar-brand">
           <div className="brand-mark">W</div>
           <span>Wynback</span>
@@ -133,16 +174,41 @@ export default function AppLayout() {
 
         <div className="sidebar-bottom">
           <Link to="/" onClick={closeSidebar}>← Back to website</Link>
+          <button type="button" onClick={handleSignOut}>
+            Sign out
+          </button>
         </div>
       </aside>
 
       <main className="app-main">
-        <header className="app-header app-header-topbar">
-          <div className="header-actions">
+        <header className="app-topbar">
+          <div className="topbar-left">
+            <button
+              type="button"
+              className="mobile-menu-button"
+              ref={menuButtonRef}
+              aria-label={sidebarOpen ? 'Close navigation' : 'Open navigation'}
+              aria-expanded={sidebarOpen}
+              aria-controls="app-drawer"
+              onClick={() => setSidebarOpen(value => !value)}
+            >
+              <span></span>
+              <span></span>
+              <span></span>
+            </button>
+            <span className="topbar-brand">
+              <span className="brand-mark">W</span>
+              Wynback
+            </span>
+          </div>
+
+          <div className="topbar-right">
             <GraveyardPill />
             <button
               type="button"
               className="profile-button"
+              aria-expanded={profileOpen}
+              aria-haspopup="true"
               onClick={() => setProfileOpen(value => !value)}
             >
               {authUser?.photoURL ? (
@@ -153,9 +219,7 @@ export default function AppLayout() {
                 />
               ) : (
                 <span className="profile-avatar profile-avatar-fallback">
-                  {(authUser?.displayName || authUser?.email || 'U')
-                    .charAt(0)
-                    .toUpperCase()}
+                  {avatarLetter}
                 </span>
               )}
 
@@ -177,9 +241,7 @@ export default function AppLayout() {
                     />
                   ) : (
                     <span className="profile-menu-avatar profile-avatar-fallback">
-                      {(authUser?.displayName || authUser?.email || 'U')
-                        .charAt(0)
-                        .toUpperCase()}
+                      {avatarLetter}
                     </span>
                   )}
 
@@ -208,6 +270,35 @@ export default function AppLayout() {
           Wynback · Revenue recovery workspace
         </footer>
       </main>
+
+      <nav className="bottom-tabbar" aria-label="Primary navigation">
+        <NavLink to="/app" end>
+          <IconChartBar />
+          <span>Overview</span>
+        </NavLink>
+        <NavLink to="/app/inquiries">
+          <IconMessage />
+          <span>Inquiries</span>
+        </NavLink>
+        <NavLink to="/app/followups">
+          <IconClock />
+          <span>Follow-ups</span>
+        </NavLink>
+        <NavLink to="/app/blitz">
+          <IconZap />
+          <span>Blitz</span>
+        </NavLink>
+        <button
+          type="button"
+          onClick={() => setSidebarOpen(true)}
+          aria-label="More pages"
+        >
+          <span className="tab-more-dots" aria-hidden="true">
+            <i></i><i></i><i></i>
+          </span>
+          <span>More</span>
+        </button>
+      </nav>
     </div>
   )
 }

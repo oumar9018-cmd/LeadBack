@@ -24,7 +24,7 @@
   flex-wrap: wrap;
   padding: 12px 16px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #fff7ed, #ffedd5);
+  background: linear-gradient(135deg, #FFFAEB, #ffedd5);
   border: 1px solid #fdba74;
   color: #9a3412;
   animation: streak-celebrate 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
@@ -64,7 +64,7 @@
 }
 
 .streak-flame.lit {
-  background: linear-gradient(135deg, #fff7ed, #fed7aa);
+  background: linear-gradient(135deg, #FFFAEB, #fed7aa);
   color: #ea580c;
   box-shadow: 0 0 24px -4px rgba(249, 115, 22, 0.55);
   animation: flame-flicker 2.2s ease-in-out infinite;

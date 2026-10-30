@@ -43,13 +43,13 @@
 }
 
 .wa-template:hover {
-  border-color: #2457ff;
+  border-color: #2563EB;
 }
 
 .wa-template.active {
-  border-color: #2457ff;
+  border-color: #2563EB;
   background: #eef2ff;
-  color: #2457ff;
+  color: #2563EB;
 }
 
 .wa-preview {
