@@ -33,6 +33,7 @@ export default function Offers() {
   const [offers, setOffers] = useState([])
   const [loading, setLoading] = useState(true)
   const [copiedId, setCopiedId] = useState(null)
+  const [deleteConfirmId, setDeleteConfirmId] = useState(null)
 
   useEffect(() => {
     if (wsLoading || !workspace || workspace.role !== 'owner') {
@@ -77,8 +78,16 @@ export default function Offers() {
     })
   }
 
+  // Inline two-step confirm (same pattern as Delete inquiry): the old
+  // window.confirm() never surfaced a dialog in some browsers, so the
+  // button looked enabled and did nothing. First click arms the
+  // confirm, second click deletes.
   async function handleDelete(offer) {
-    if (!window.confirm(`Delete the offer for ${offer.customerName || 'this customer'}?`)) return
+    if (deleteConfirmId !== offer.id) {
+      setDeleteConfirmId(offer.id)
+      return
+    }
+    setDeleteConfirmId(null)
     const db = window.firebase?.firestore?.()
     try {
       await db.collection('offers').doc(offer.id).delete()
@@ -241,9 +250,20 @@ export default function Offers() {
                         Mark recovered
                       </button>
                     )}
-                    <button type="button" title="Delete offer" onClick={() => handleDelete(offer)}>
-                      <IconTrash width={16} height={16} />
-                    </button>
+                    {deleteConfirmId === offer.id ? (
+                      <>
+                        <button type="button" title="Yes, delete this offer" onClick={() => handleDelete(offer)}>
+                          Yes, delete
+                        </button>
+                        <button type="button" title="Keep this offer" onClick={() => setDeleteConfirmId(null)}>
+                          Cancel
+                        </button>
+                      </>
+                    ) : (
+                      <button type="button" title="Delete offer" onClick={() => handleDelete(offer)}>
+                        <IconTrash width={16} height={16} />
+                      </button>
+                    )}
                   </div>
                 </article>
               )

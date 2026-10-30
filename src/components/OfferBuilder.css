@@ -2,6 +2,19 @@
 /* Second-chance Offer builder modal                                 */
 /* ------------------------------------------------------------------ */
 
+/* The builder opens ON TOP of the inquiry detail drawer (z-index 100),
+   so its overlay must sit higher — without this rule the dialog had
+   no positioning at all and its clicks landed on the drawer behind it. */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(15, 23, 42, 0.45);
+}
+
 .offer-builder {
   width: min(480px, calc(100vw - 40px));
   max-height: calc(100vh - 60px);

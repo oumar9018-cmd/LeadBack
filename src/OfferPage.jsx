@@ -25,8 +25,15 @@ function useCountdown(expiresAt) {
 
 function getRemaining(expiresAt) {
   if (!expiresAt) return null
-  const ms = Date.parse(expiresAt) - Date.now()
-  if (ms <= 0) return { expired: true, days: 0, hours: 0, minutes: 0, seconds: 0 }
+  // expiresAt is an ISO string from OfferBuilder; tolerate a Firestore
+  // Timestamp too, so a format change can never NaN the countdown.
+  const ms =
+    (typeof expiresAt === 'string'
+      ? Date.parse(expiresAt)
+      : expiresAt?.toDate
+        ? expiresAt.toDate().getTime()
+        : NaN) - Date.now()
+  if (Number.isNaN(ms) || ms <= 0) return { expired: true, days: 0, hours: 0, minutes: 0, seconds: 0 }
   return {
     expired: false,
     days: Math.floor(ms / 86400000),
@@ -45,7 +52,13 @@ export default function OfferPage() {
   const [offer, setOffer] = useState(null)
   const [loading, setLoading] = useState(true)
   const [claiming, setClaiming] = useState(false)
-  const countdown = useCountdown(offer?.expiresAt)
+  // The countdown hook returns null until expiresAt is known; the render
+  // below reads countdown.days unconditionally, so a null here used to
+  // throw on the first render after the offer loaded and crash the page.
+  // Default to zeros instead — never render from a null countdown.
+  const countdown = useCountdown(offer?.expiresAt) ?? {
+    expired: false, days: 0, hours: 0, minutes: 0, seconds: 0,
+  }
 
   useEffect(() => {
     const db = window.firebase?.firestore?.()
