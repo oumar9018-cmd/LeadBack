@@ -44,6 +44,7 @@ import {
   defaultCurrencyForBrowser,
 } from './utils/money.js'
 import { logAudit } from './utils/audit.js'
+import { assignNext } from './utils/roundRobin.js'
 import {
   canCreateOffers,
   canDelete,
@@ -661,7 +662,7 @@ function Dashboard() {
     setFollowupForm({ date: '', time: '', note: '' })
   }
 
-  function handleAddInquiry(event) {
+  async function handleAddInquiry(event) {
     event.preventDefault()
 
     if (
@@ -674,6 +675,14 @@ function Dashboard() {
       return
     }
 
+    // Batch 5: route before the whole-list sync writes the row. The
+    // routing fields travel inside the item object like every other
+    // field, so the sync effect needs no change. Routing never blocks
+    // creation — assignNext falls back to unassigned on any failure.
+    const db = window.firebase?.firestore?.()
+    const branchId = workspace?.role === 'branch_manager' ? workspace.branchId || '' : ''
+    const route = await assignNext(db, workspace?.ownerUid, { branchId })
+
     const newInquiry = {
       id: Date.now(),
       name: form.name.trim(),
@@ -683,13 +692,24 @@ function Dashboard() {
       status: form.status,
       date: 'Just now',
       createdAt: Date.now(),
-      assignedTo: '',
+      assignedTo: route.assignedTo,
+      assignedAt: route.assignedAt,
+      assignedBy: route.assignedBy,
+      source: 'manual',
       // Managers create rows in their own branch (rules require it);
       // owners/admins create unbranched rows (admin-visible only).
-      branchId: workspace?.role === 'branch_manager' ? workspace.branchId || '' : '',
+      branchId,
     }
 
     setItems(current => [newInquiry, ...current])
+
+    if (route.assignedTo) {
+      logAudit(workspace?.ownerUid, {
+        action: 'status_changed',
+        inquiryId: String(newInquiry.id),
+        detail: `assigned to ${route.assignedEmail || route.assignedTo}`,
+      })
+    }
 
     setForm({ name: '', phone: '', service: '', value: '', status: 'new' })
     setFormError('')

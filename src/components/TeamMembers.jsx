@@ -211,9 +211,32 @@ export default function TeamMembers() {
       } catch (mirrorError) {
         console.error('Membership mirror cleanup failed:', mirrorError)
       }
+      // Batch 5 (round-robin spec §6): a removed rep's rows return to
+      // the unassigned queue — never silently re-dealt, because
+      // re-dealing hides who was responsible. Admins reassign by hand.
+      let unassignedCount = 0
+      try {
+        const assignedSnap = await database
+          .collection('users')
+          .doc(workspace.ownerUid)
+          .collection('inquiries')
+          .where('assignedTo', '==', member.id)
+          .get()
+        const docs = assignedSnap.docs
+        for (let start = 0; start < docs.length; start += 400) {
+          const batch = database.batch()
+          docs.slice(start, start + 400).forEach(d => {
+            batch.update(d.ref, { assignedTo: '', assignedBy: '' })
+          })
+          await batch.commit()
+        }
+        unassignedCount = docs.length
+      } catch (unassignError) {
+        console.error('Returning removed member rows to unassigned failed:', unassignError)
+      }
       await logAudit(workspace.ownerUid, {
         action: 'member_removed',
-        detail: `${member.email || member.id}`,
+        detail: `${member.email || member.id} (${unassignedCount} rows returned to unassigned)`,
       })
       reload()
     } catch (e) {
@@ -222,8 +245,27 @@ export default function TeamMembers() {
     }
   }
 
-  async function changeMemberRole(member, nextRole) {
+  // Batch 5: routing availability. Owner/admins toggle these here;
+  // members can also toggle their own (narrow rules allowance).
+  async function toggleMemberField(member, field, value) {
     const database = db()
+    const user = currentUser()
+    if (!database || !user || !workspace) return
+    try {
+      await database
+        .collection('users')
+        .doc(workspace.ownerUid)
+        .collection('members')
+        .doc(member.id)
+        .update({ [field]: value })
+      reload()
+    } catch (e) {
+      console.error('Member availability toggle failed:', e)
+      setError('Could not update availability — please try again.')
+    }
+  }
+
+  async function changeMemberRole(member, nextRole) {    const database = db()
     const user = currentUser()
     if (!database || !user || !workspace || member.role === nextRole) return
     try {
@@ -362,6 +404,26 @@ export default function TeamMembers() {
                   <option key={r.value} value={r.value}>{r.label}</option>
                 ))}
               </select>
+              {(member.role === 'sales_rep' || member.role === 'admin') && (
+                <label className="team-availability">
+                  <input
+                    type="checkbox"
+                    checked={member.available === true}
+                    onChange={e => toggleMemberField(member, 'available', e.target.checked)}
+                  />
+                  Available for new leads
+                </label>
+              )}
+              {member.role === 'admin' && (
+                <label className="team-availability">
+                  <input
+                    type="checkbox"
+                    checked={member.takesLeads === true}
+                    onChange={e => toggleMemberField(member, 'takesLeads', e.target.checked)}
+                  />
+                  Takes routed leads
+                </label>
+              )}
               <button type="button" onClick={() => removeMember(member)}>
                 Remove
               </button>

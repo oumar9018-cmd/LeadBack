@@ -12,6 +12,7 @@ import {
 import './BlitzMode.css'
 import { useWorkspace } from './WorkspaceContext.jsx'
 import { inScope } from '../utils/workspace.js'
+import { blastStatus, markBlastStarted } from '../utils/blastGuard.js'
 
 /**
  * Blitz Mode — one-click re-engagement campaigns.
@@ -38,6 +39,14 @@ export default function BlitzMode() {
   const [cursor, setCursor] = useState(0)
   const [done, setDone] = useState([]) // ids contacted
   const [skipped, setSkipped] = useState([])
+  // Batch 5: bulk-blitz guardrail + CSV preselect. lastBlastAt is the
+  // shared 1-blast/week store (CSV spec §5); only a bulk run reads
+  // or writes it — ordinary Blitz starts are unchanged.
+  const [lastBlastAt, setLastBlastAt] = useState('')
+  const [lastBlastLoaded, setLastBlastLoaded] = useState(false)
+  const [bulkActive, setBulkActive] = useState(false)
+  const [bulkBlocked, setBulkBlocked] = useState(null)
+  const [preselectConsumed, setPreselectConsumed] = useState(false)
 
   const occasion = useMemo(() => upcomingOccasion(), [])
 
@@ -64,16 +73,61 @@ export default function BlitzMode() {
         setBusinessName(data.businessName || '')
         setBusinessSlug(data.businessSlug || data.slug || '')
         if (CURRENCY_CODES.includes(data.currency)) setCurrency(data.currency)
+        setLastBlastAt(data.lastBlastAt || '')
       } catch (e) {
         console.error('Blitz load failed:', e)
       } finally {
-        if (!cancelled) setLoading(false)
+        if (!cancelled) {
+          setLoading(false)
+          setLastBlastLoaded(true)
+        }
       }
     })()
     return () => {
       cancelled = true
     }
   }, [wsLoading, workspace])
+
+  // Batch 5: consume a CSV "Blitz these now" preselect (once). A bulk
+  // preselect is refused — not silently started — while the 7-day
+  // guardrail window is still open.
+  useEffect(() => {
+    if (loading || !lastBlastLoaded || preselectConsumed) return
+    let raw = null
+    try {
+      raw = sessionStorage.getItem('wynback-blitz-preselect')
+    } catch {
+      return
+    }
+    if (!raw) return
+    setPreselectConsumed(true)
+    try {
+      sessionStorage.removeItem('wynback-blitz-preselect')
+    } catch {
+      // Non-fatal: a stale preselect is consumed by the flag above.
+    }
+    let parsed = null
+    try {
+      parsed = JSON.parse(raw)
+    } catch {
+      return
+    }
+    const ids = Array.isArray(parsed?.ids) ? parsed.ids : []
+    if (!ids.length) return
+    const present = items.filter(item => ids.includes(item.id))
+    if (!present.length) return
+    if (parsed.bulk) {
+      const { blocked, unlockDate } = blastStatus(lastBlastAt)
+      if (blocked) {
+        setBulkBlocked({ unlockDate })
+        return
+      }
+      setBulkActive(true)
+    }
+    const next = {}
+    present.forEach(item => { next[item.id] = true })
+    setSelected(next)
+  }, [loading, lastBlastLoaded, preselectConsumed, items, lastBlastAt])
 
   const ranked = useMemo(() => rankByWinback(items), [items])
   const selectedCount = Object.values(selected).filter(Boolean).length
@@ -88,11 +142,17 @@ export default function BlitzMode() {
     setSelected(next)
   }
 
-  function startBlitz() {
+  async function startBlitz() {
     const picked = ranked
       .filter(r => selected[r.inquiry.id])
       .map(r => r.inquiry)
     if (!picked.length) return
+    // A bulk run counts the moment it STARTS (guardrail store).
+    if (bulkActive) {
+      const db = window.firebase?.firestore?.()
+      await markBlastStarted(db, workspace?.ownerUid)
+      setBulkActive(false)
+    }
     setQueue(picked)
     setCursor(0)
     setDone([])
@@ -162,6 +222,20 @@ export default function BlitzMode() {
 
           {!loading && ranked.length === 0 && (
             <div className="empty-state">No open inquiries to blitz. Add some first.</div>
+          )}
+
+          {bulkActive && (
+            <div className="blitz-notice">
+              Bulk blitz: {selectedCount} imported leads preselected. Starting this blitz records it as this week&apos;s blast (one per week, so numbers never get spam-flagged).
+            </div>
+          )}
+
+          {bulkBlocked && (
+            <div className="blitz-notice blitz-notice-warn">
+              This imported set was not preselected: a bulk blast ran within the last 7 days, and the next one unlocks on {bulkBlocked.unlockDate ? bulkBlocked.unlockDate.toLocaleDateString() : 'an unknown date'}.
+              You can still pick leads manually below.
+              <button type="button" onClick={() => setBulkBlocked(null)}>Dismiss</button>
+            </div>
           )}
 
           {!loading && ranked.length > 0 && (

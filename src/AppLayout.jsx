@@ -38,6 +38,11 @@ export default function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [businessName, setBusinessName] = useState('')
   const [currency, setCurrency] = useState(() => defaultCurrencyForBrowser())
+  // Batch 5: members toggle their own routing availability here.
+  // (Owner/admins toggle it in TeamMembers too; the member doc update
+  // is covered by the narrow batch-5 rules allowance.)
+  const [myAvailable, setMyAvailable] = useState(false)
+  const [myTakesLeads, setMyTakesLeads] = useState(false)
   const [profileName, setProfileName] = useState('')
   const drawerRef = useRef(null)
   const menuButtonRef = useRef(null)
@@ -73,6 +78,52 @@ export default function AppLayout() {
       cancelled = true
     }
   }, [wsLoading, workspace])
+
+  useEffect(() => {
+    if (wsLoading || !workspace?.isMember) return
+    const db = window.firebase?.firestore?.()
+    const uid = window.firebase?.auth?.().currentUser?.uid
+    if (!db || !uid) return
+    let cancelled = false
+    db.collection('users')
+      .doc(workspace.ownerUid)
+      .collection('members')
+      .doc(uid)
+      .get()
+      .then(snapshot => {
+        if (cancelled || !snapshot.exists) return
+        const data = snapshot.data() || {}
+        setMyAvailable(data.available === true)
+        setMyTakesLeads(data.takesLeads === true)
+      })
+      .catch(error => {
+        console.error('Member availability load failed:', error)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [wsLoading, workspace])
+
+  async function toggleMyField(field, value) {
+    const db = window.firebase?.firestore?.()
+    const uid = window.firebase?.auth?.().currentUser?.uid
+    if (!db || !uid || !workspace) return
+    const previous = field === 'available' ? myAvailable : myTakesLeads
+    if (field === 'available') setMyAvailable(value)
+    else setMyTakesLeads(value)
+    try {
+      await db
+        .collection('users')
+        .doc(workspace.ownerUid)
+        .collection('members')
+        .doc(uid)
+        .update({ [field]: value })
+    } catch (error) {
+      console.error('Availability toggle failed:', error)
+      if (field === 'available') setMyAvailable(previous)
+      else setMyTakesLeads(previous)
+    }
+  }
 
   useEffect(() => {
     const auth = window.firebase?.auth?.()
@@ -178,6 +229,28 @@ export default function AppLayout() {
               {roleLabel(workspace.role)}
               {workspace.branchId ? ` · ${workspace.branchId}` : ''}
             </span>
+          )}
+          {/* Batch 5: routing availability, self-served. Only roles
+              that can receive routed leads see these toggles. */}
+          {workspace?.isMember && (workspace.role === 'sales_rep' || workspace.role === 'admin') && (
+            <label className="workspace-availability">
+              <input
+                type="checkbox"
+                checked={myAvailable}
+                onChange={e => toggleMyField('available', e.target.checked)}
+              />
+              Available for new leads
+            </label>
+          )}
+          {workspace?.isMember && workspace.role === 'admin' && (
+            <label className="workspace-availability">
+              <input
+                type="checkbox"
+                checked={myTakesLeads}
+                onChange={e => toggleMyField('takesLeads', e.target.checked)}
+              />
+              Take routed leads
+            </label>
           )}
         </div>
 

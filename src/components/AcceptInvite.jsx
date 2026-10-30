@@ -102,6 +102,12 @@ export default function AcceptInvite() {
           branchId: invite.branchId || '',
           status: 'active',
           acceptedAt: new Date().toISOString(),
+          // Batch 5: routing defaults — safe side first. Nobody gets
+          // leads by accident; availability is opt-in, and admins do
+          // not take routed leads unless they opt in too.
+          available: false,
+          takesLeads: false,
+          assignedCount: 0,
         })
       // 2. Membership mirror — rules require the member record + role match.
       await db

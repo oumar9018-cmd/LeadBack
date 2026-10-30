@@ -1,0 +1,135 @@
+/* Bulk CSV import modal — batch 5. */
+
+.csv-import .ghost-button {
+  padding: 11px 18px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #fff;
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.csv-import .ghost-button:hover {
+  border-color: #cbd5e1;
+}
+
+.csv-import .csv-step {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.csv-file-label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.csv-file-label input {
+  font-weight: 400;
+}
+
+.csv-error {
+  color: #b42318;
+  font-size: 14px;
+  margin: 0;
+}
+
+.csv-note {
+  color: #64748b;
+  font-size: 14px;
+  margin: 0;
+}
+
+.csv-mapping-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 14px;
+  color: #334155;
+}
+
+.csv-mapping-row select {
+  min-width: 200px;
+  padding: 10px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 14px;
+  background: #fff;
+}
+
+.csv-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.csv-counts {
+  display: flex;
+  gap: 20px;
+  font-size: 15px;
+  color: #334155;
+}
+
+.csv-counts strong {
+  color: #0f172a;
+  font-size: 20px;
+}
+
+.csv-sample-wrap {
+  overflow-x: auto;
+}
+
+.csv-sample {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.csv-sample th,
+.csv-sample td {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid #eef2f7;
+  color: #334155;
+}
+
+.csv-sample th {
+  color: #64748b;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.csv-progress {
+  height: 10px;
+  background: #eef2f7;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.csv-progress span {
+  display: block;
+  height: 100%;
+  background: #2563eb;
+  transition: width 0.2s ease;
+}
+
+@media (max-width: 620px) {
+  .csv-mapping-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .csv-mapping-row select {
+    min-width: 0;
+    width: 100%;
+  }
+}

@@ -6,6 +6,9 @@ import VoiceInput from './components/VoiceInput.jsx'
 import OwnerBookings from './components/OwnerBookings.jsx'
 import { useWorkspace } from './components/WorkspaceContext.jsx'
 import { canManageTeam, inScope } from './utils/workspace.js'
+import { assignNext } from './utils/roundRobin.js'
+import { logAudit } from './utils/audit.js'
+import CsvImport from './components/CsvImport.jsx'
 import { IconPlus, IconX } from './components/icons.jsx'
 import { rankByWinback } from './utils/winbackScore.js'
 import {
@@ -98,6 +101,11 @@ export default function Inquiries() {
   const [sortByScore, setSortByScore] = useState(false)
 
   const [showAddInquiry, setShowAddInquiry] = useState(false)
+  const [showCsvImport, setShowCsvImport] = useState(false)
+  // Batch 5: the list loads the whole collection, so rendering is
+  // capped (200 rows + "Show more") — the safeguard the CSV spec
+  // requires before large imports are offered.
+  const [visibleCount, setVisibleCount] = useState(200)
   const [form, setForm] = useState({
     name: '',
     phone: '',
@@ -134,7 +142,12 @@ export default function Inquiries() {
     }
 
     try {
-      await addInquiryDoc({
+      // Batch 5: route before writing. Routing never blocks creation —
+      // assignNext falls back to unassigned on any failure.
+      const db = window.firebase?.firestore?.()
+      const branchId = workspace?.role === 'branch_manager' ? workspace.branchId || '' : ''
+      const route = await assignNext(db, workspace?.ownerUid, { branchId })
+      const ref = await addInquiryDoc({
         name: form.name.trim(),
         phone: form.phone.trim(),
         service: form.service.trim(),
@@ -142,9 +155,19 @@ export default function Inquiries() {
         status: form.status,
         date: 'Just now',
         createdAt: Date.now(),
-        assignedTo: '',
-        branchId: workspace?.role === 'branch_manager' ? workspace.branchId || '' : '',
+        assignedTo: route.assignedTo,
+        assignedAt: route.assignedAt,
+        assignedBy: route.assignedBy,
+        source: 'manual',
+        branchId,
       })
+      if (route.assignedTo && ref) {
+        logAudit(workspace.ownerUid, {
+          action: 'status_changed',
+          inquiryId: ref.id,
+          detail: `assigned to ${route.assignedEmail || route.assignedTo}`,
+        })
+      }
       setForm({ name: '', phone: '', service: '', value: '', status: 'new' })
       setFormError('')
       setShowAddInquiry(false)
@@ -156,7 +179,10 @@ export default function Inquiries() {
 
   async function handleBookingAsInquiry(booking) {
     try {
-      await addInquiryDoc({
+      const db = window.firebase?.firestore?.()
+      const branchId = workspace?.role === 'branch_manager' ? workspace.branchId || '' : ''
+      const route = await assignNext(db, workspace?.ownerUid, { branchId })
+      const ref = await addInquiryDoc({
         name: booking.customerName,
         phone: booking.customerPhone,
         service: `Booking request — ${booking.preferredDate}${booking.preferredTime ? ` at ${booking.preferredTime}` : ''}`,
@@ -164,9 +190,19 @@ export default function Inquiries() {
         status: 'new',
         date: 'Just now',
         createdAt: Date.now(),
-        assignedTo: '',
-        branchId: workspace?.role === 'branch_manager' ? workspace.branchId || '' : '',
+        assignedTo: route.assignedTo,
+        assignedAt: route.assignedAt,
+        assignedBy: route.assignedBy,
+        source: 'booking',
+        branchId,
       })
+      if (route.assignedTo && ref) {
+        logAudit(workspace.ownerUid, {
+          action: 'status_changed',
+          inquiryId: ref.id,
+          detail: `assigned to ${route.assignedEmail || route.assignedTo}`,
+        })
+      }
     } catch (error) {
       console.error('Add booking as inquiry failed:', error)
     }
@@ -179,6 +215,9 @@ export default function Inquiries() {
     ['replied', 'Replied'],
     ['recovered', 'Recovered'],
     ['lost', 'Lost'],
+    // Batch 5: the unassigned queue — rows no available agent picked
+    // up. Admins see them here; reps/managers never do (scope rules).
+    ['unassigned', 'Unassigned'],
   ]
 
   const selectedLabel =
@@ -195,7 +234,10 @@ export default function Inquiries() {
       (item.service || '').toLowerCase().includes(query)
 
     const matchesStatus =
-      statusFilter === 'all' || item.status === statusFilter
+      statusFilter === 'all' ||
+      (statusFilter === 'unassigned'
+        ? (item.assignedTo || '') === ''
+        : item.status === statusFilter)
 
     return matchesSearch && matchesStatus
   })
@@ -203,6 +245,10 @@ export default function Inquiries() {
   const displayed = sortByScore
     ? rankByWinback(filtered).map(r => r.inquiry)
     : filtered
+
+  // Batch 5: render cap (see visibleCount). The full filtered count
+  // still shows in the toolbar; only rendering is paged.
+  const visible = displayed.slice(0, visibleCount)
 
   return (
     <div className="inquiries-page">
@@ -215,6 +261,7 @@ export default function Inquiries() {
             <p>Track every opportunity from first inquiry to recovery.</p>
           </div>
 
+          <div className="inquiries-header-actions">
           {workspace?.role !== 'sales_rep' && (
             <button
               type="button"
@@ -224,6 +271,16 @@ export default function Inquiries() {
               <IconPlus width={13} height={13} /> Add inquiry
             </button>
           )}
+          {(workspace?.role === 'owner' || workspace?.role === 'admin') && (
+            <button
+              type="button"
+              className="ghost-button"
+              onClick={() => setShowCsvImport(true)}
+            >
+              Import CSV
+            </button>
+          )}
+          </div>
         </header>
 
         <section className="inquiries-panel">
@@ -301,7 +358,7 @@ export default function Inquiries() {
           </div>
 
           <div className="inquiry-list">
-            {displayed.map(item => (
+            {visible.map(item => (
               <div className="inquiry-page-row" key={item.id}>
 
                 <button
@@ -338,6 +395,14 @@ export default function Inquiries() {
               </div>
             )}
           </div>
+          {displayed.length > visible.length && (
+            <div className="inquiries-show-more">
+              <p>Showing {visible.length} of {displayed.length} inquiries.</p>
+              <button type="button" className="ghost-button" onClick={() => setVisibleCount(c => c + 200)}>
+                Show more
+              </button>
+            </div>
+          )}
           </div>
 
         </section>
@@ -345,6 +410,14 @@ export default function Inquiries() {
         {canManageTeam(workspace?.role) && (
           <OwnerBookings onAddInquiry={handleBookingAsInquiry} />
         )}
+
+        <CsvImport
+          open={showCsvImport}
+          onClose={() => setShowCsvImport(false)}
+          workspace={workspace}
+          existingItems={items}
+          onImported={rows => setItems(current => [...rows, ...current])}
+        />
 
         <Modal open={showAddInquiry} onClose={() => setShowAddInquiry(false)}>
           <div className="modal-header">

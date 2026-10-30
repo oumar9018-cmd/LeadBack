@@ -123,6 +123,24 @@ a {
   font-weight: 600;
 }
 
+/* Batch 5: routing availability toggle under the role badge. */
+.workspace-availability {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  color: #334155;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.workspace-availability input {
+  width: 16px;
+  height: 16px;
+  accent-color: #2563eb;
+}
+
 .side-nav {
   display: grid;
   gap: 4px;
@@ -2260,6 +2278,23 @@ a {
   font-size: 14px;
 }
 
+/* Batch 5: routing availability toggles on member rows. */
+.team-availability {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #334155;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.team-availability input {
+  width: 16px;
+  height: 16px;
+  accent-color: #2563eb;
+}
+
 .team-row button {
   min-height: 40px;
   padding: 0 14px;
@@ -3205,6 +3240,57 @@ a {
   justify-content: space-between;
   gap: 24px;
   margin-bottom: 28px;
+}
+
+.inquiries-header-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.inquiries-header-actions .ghost-button {
+  padding: 11px 18px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #fff;
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.inquiries-header-actions .ghost-button:hover {
+  border-color: #cbd5e1;
+}
+
+.inquiries-show-more {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 4px 4px;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.inquiries-show-more p {
+  margin: 0;
+}
+
+.inquiries-show-more .ghost-button {
+  padding: 10px 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #fff;
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.inquiries-show-more .ghost-button:hover {
+  border-color: #cbd5e1;
 }
 
 .inquiries-header h1 {

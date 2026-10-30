@@ -142,6 +142,13 @@ service cloud.firestore {
           get(/databases/$(database)/documents/users/$(userId)/invites/$(request.auth.token.email)).data.status == 'pending' &&
           get(/databases/$(database)/documents/users/$(userId)/invites/$(request.auth.token.email)).data.role == request.resource.data.role;
         allow update: if isOwner(userId) || isWorkspaceAdmin(userId);
+        // Batch 5 — a member may toggle ONLY their own routing
+        // availability (and, for admins, whether they take routed
+        // leads). Role, branch, assignedCount and every other field
+        // stay owner/admin-only, so nobody can self-promote or pad
+        // their own load count.
+        allow update: if request.auth.uid == memberId &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['available', 'takesLeads']);
         allow delete: if isOwner(userId) || isWorkspaceAdmin(userId);
       }
 
