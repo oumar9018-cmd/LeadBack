@@ -44,6 +44,14 @@ import {
   defaultCurrencyForBrowser,
 } from './utils/money.js'
 import { logAudit } from './utils/audit.js'
+import {
+  canCreateOffers,
+  canDelete,
+  canManageTeam,
+  inScope,
+} from './utils/workspace.js'
+import { WorkspaceProvider, useWorkspace } from './components/WorkspaceContext.jsx'
+import AcceptInvite from './components/AcceptInvite.jsx'
 import LossIntelligence from './components/LossIntelligence.jsx'
 import StreakWidget from './components/StreakWidget.jsx'
 import OfferBuilder from './components/OfferBuilder.jsx'
@@ -163,6 +171,12 @@ function EmptyArt({ compact = false }) {
 function Dashboard() {
   const navigate = useNavigate()
   const location = useLocation()
+  // Batch 4 (enterprise Phase 2): the workspace (owner uid + role +
+  // branch) resolves once in WorkspaceProvider. Solo owners get
+  // ownerUid = own uid, role 'owner' — exactly today's behaviour.
+  // Members get the owner's uid, so every load/write below lands in
+  // the owner's workspace with their role applied.
+  const { workspace, loading: wsLoading } = useWorkspace()
   // Detail-only mode: on /app/inquiry the page sections below are gated
   // off (see the {!detailOnly && ...} wrapper around the return body), so
   // no Overview content ever renders on this route — only the modals.
@@ -184,33 +198,43 @@ function Dashboard() {
   // Team members of this workspace (batch 3). Empty for solo owners —
   // the assign dropdown below renders only when members exist.
   const [members, setMembers] = useState([])
+  // Branches of this workspace (batch 4). The detail-modal branch
+  // select below draws from this list (owner/admin only).
+  const [branches, setBranches] = useState([])
   const [googleReviewLink, setGoogleReviewLink] = useState('')
 
+  // Workspace settings + members + branches, loaded from the workspace
+  // owner's data root (not the signed-in uid) so members see the
+  // owner's business name, currency, review link and team.
   useEffect(() => {
-    const auth = window.firebase?.auth?.()
+    if (wsLoading) return undefined
     const db = window.firebase?.firestore?.()
+    const auth = window.firebase?.auth?.()
+    if (!workspace || !db) {
+      setBusinessName('')
+      setProfileName('')
+      setGoogleReviewLink('')
+      setMembers([])
+      setBranches([])
+      return undefined
+    }
 
-    if (!auth || !db) return
+    setProfileName(
+      typeof auth?.currentUser?.displayName === 'string'
+        ? auth.currentUser.displayName.trim()
+        : ''
+    )
 
-    const unsubscribe = auth.onAuthStateChanged(async user => {
-      if (!user) {
-        setBusinessName('')
-        setProfileName('')
-        setGoogleReviewLink('')
-        return
-      }
-
-      setProfileName(
-        typeof user.displayName === 'string' ? user.displayName.trim() : ''
-      )
-
+    let cancelled = false
+    ;(async () => {
       try {
         const snapshot = await db
           .collection('users')
-          .doc(user.uid)
+          .doc(workspace.ownerUid)
           .collection('settings')
           .doc('workspace')
           .get()
+        if (cancelled) return
 
         const data = snapshot.exists ? snapshot.data() : {}
         const savedName = data?.businessName
@@ -230,31 +254,53 @@ function Dashboard() {
         setGoogleReviewLink(
           typeof savedReviewLink === 'string' ? savedReviewLink.trim() : ''
         )
+      } catch (error) {
+        console.error('Workspace settings load failed:', error)
+        if (!cancelled) {
+          setBusinessName('')
+          setGoogleReviewLink('')
+        }
+      }
 
       try {
         const membersSnap = await db
           .collection('users')
-          .doc(user.uid)
+          .doc(workspace.ownerUid)
           .collection('members')
           .get()
-        setMembers(
-          membersSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }))
-        )
+        if (!cancelled) {
+          setMembers(
+            membersSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+          )
+        }
       } catch (error) {
-        // Members collection needs the batch-3 rules deployed; until then
-        // this fails quietly and the workspace stays solo.
+        // Members list is owner/admin-only in the rules; staff get [].
         console.error('Members load failed:', error)
-        setMembers([])
+        if (!cancelled) setMembers([])
       }
-      } catch (error) {
-        console.error('Workspace settings load failed:', error)
-        setBusinessName('')
-        setGoogleReviewLink('')
-      }
-    })
 
-    return unsubscribe
-  }, [])
+      try {
+        const branchesSnap = await db
+          .collection('users')
+          .doc(workspace.ownerUid)
+          .collection('settings')
+          .doc('branches')
+          .get()
+        if (!cancelled) {
+          setBranches(
+            branchesSnap.exists ? branchesSnap.data()?.branches || [] : []
+          )
+        }
+      } catch (error) {
+        console.error('Branches load failed:', error)
+        if (!cancelled) setBranches([])
+      }
+    })()
+
+    return () => {
+      cancelled = true
+    }
+  }, [wsLoading, workspace])
 
   useEffect(() => {
     const firebaseAuth = window.firebase?.auth?.()
@@ -274,62 +320,68 @@ function Dashboard() {
   const [inquiriesLoading, setInquiriesLoading] = useState(true)
   const [inquiriesError, setInquiriesError] = useState('')
 
+  // Inquiries load from the workspace owner's data root, filtered to
+  // the member's scope (owner/admins see all; managers their branch;
+  // reps their assigned rows). The rules filter server-side too; the
+  // client filter keeps aggregates (revenue, counts) consistent with
+  // the rows actually shown.
   useEffect(() => {
-    const auth = window.firebase?.auth?.()
+    if (wsLoading) return undefined
     const db = window.firebase?.firestore?.()
-
-    if (!auth || !db) return
-
-    const unsubscribe = auth.onAuthStateChanged(async user => {
-      if (!user) {
-        setItems([])
-        setInquiriesLoaded(false)
-        setInquiriesLoading(false)
-        setInquiriesError('')
-        return
-      }
-
-      setInquiriesLoading(true)
+    if (!workspace || !db) {
+      setItems([])
+      setInquiriesLoaded(false)
+      setInquiriesLoading(false)
       setInquiriesError('')
+      return undefined
+    }
 
+    let cancelled = false
+    setInquiriesLoading(true)
+    setInquiriesError('')
+    ;(async () => {
       try {
         const snapshot = await db
           .collection('users')
-          .doc(user.uid)
+          .doc(workspace.ownerUid)
           .collection('inquiries')
           .orderBy('createdAt', 'desc')
           .get()
-
+        if (cancelled) return
+        const uid = window.firebase?.auth?.().currentUser?.uid
         const remoteItems = snapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data(),
         }))
-
-        setItems(remoteItems)
+        setItems(remoteItems.filter(item => inScope(item, workspace, uid)))
       } catch (error) {
         console.error('Inquiry load failed:', error)
-        setItems([])
-        setInquiriesError('Unable to load inquiries. Please try again.')
+        if (!cancelled) {
+          setItems([])
+          setInquiriesError('Unable to load inquiries. Please try again.')
+        }
       } finally {
-        setInquiriesLoading(false)
-        setInquiriesLoaded(true)
+        if (!cancelled) {
+          setInquiriesLoading(false)
+          setInquiriesLoaded(true)
+        }
       }
-    })
+    })()
 
-    return unsubscribe
-  }, [])
+    return () => {
+      cancelled = true
+    }
+  }, [wsLoading, workspace])
 
   useEffect(() => {
-    if (!inquiriesLoaded) return
+    if (!inquiriesLoaded || !workspace) return
 
-    const auth = window.firebase?.auth?.()
     const db = window.firebase?.firestore?.()
-    const user = auth?.currentUser
 
-    if (!user || !db) return
+    if (!db) return
 
     const batch = db.batch()
-    const userRef = db.collection('users').doc(user.uid)
+    const userRef = db.collection('users').doc(workspace.ownerUid)
 
     items.forEach(item => {
       const inquiryRef = userRef.collection('inquiries').doc(String(item.id))
@@ -341,7 +393,7 @@ function Dashboard() {
         console.error('Inquiry save failed:', error)
       })
     }
-  }, [items, inquiriesLoaded])
+  }, [items, inquiriesLoaded, workspace])
 
   const [filter, setFilter] = useState('all')
   const [search, setSearch] = useState('')
@@ -392,13 +444,11 @@ function Dashboard() {
     if (detailOnly) navigate('/app/inquiries')
     setItems(prev => prev.filter(item => String(item.id) !== String(id)))
     try {
-      const auth = window.firebase?.auth?.()
       const db = window.firebase?.firestore?.()
-      const user = auth?.currentUser
-      if (user && db) {
+      if (workspace && db) {
         await db
           .collection('users')
-          .doc(user.uid)
+          .doc(workspace.ownerUid)
           .collection('inquiries')
           .doc(String(id))
           .delete()
@@ -474,8 +524,7 @@ function Dashboard() {
       current.map(item => (item.id === id ? { ...item, status } : item))
     )
     if (prev && prev.status !== status) {
-      const ownerUid = window.firebase?.auth?.().currentUser?.uid
-      logAudit(ownerUid, {
+      logAudit(workspace?.ownerUid, {
         action: 'status_changed',
         inquiryId: id,
         detail: `${prev.status || ''} -> ${status}`,
@@ -501,8 +550,7 @@ function Dashboard() {
         : current
     )
     logActivity(id, 'Marked recovered')
-    const ownerUid = window.firebase?.auth?.().currentUser?.uid
-    logAudit(ownerUid, {
+    logAudit(workspace?.ownerUid, {
       action: 'status_changed',
       inquiryId: id,
       detail: '-> recovered',
@@ -525,8 +573,7 @@ function Dashboard() {
         : current
     )
     logActivity(id, `Marked lost (${LOSS_REASON_LABELS[reason] || reason})`)
-    const ownerUid = window.firebase?.auth?.().currentUser?.uid
-    logAudit(ownerUid, {
+    logAudit(workspace?.ownerUid, {
       action: 'status_changed',
       inquiryId: id,
       detail: `-> lost (${LOSS_REASON_LABELS[reason] || reason})`,
@@ -637,7 +684,9 @@ function Dashboard() {
       date: 'Just now',
       createdAt: Date.now(),
       assignedTo: '',
-      branchId: '',
+      // Managers create rows in their own branch (rules require it);
+      // owners/admins create unbranched rows (admin-visible only).
+      branchId: workspace?.role === 'branch_manager' ? workspace.branchId || '' : '',
     }
 
     setItems(current => [newInquiry, ...current])
@@ -676,20 +725,28 @@ function Dashboard() {
         </div>
 
         <div className="header-actions">
-          <button
-            className="primary-action"
-            type="button"
-            onClick={() => setShowAddInquiry(true)}
-          >
-            <IconPlus width={13} height={13} /> Add inquiry
-          </button>
+          {/* Sales Reps cannot create inquiries (rules deny it), so the
+              button is hidden for them instead of failing on save. */}
+          {workspace?.role !== 'sales_rep' && (
+            <button
+              className="primary-action"
+              type="button"
+              onClick={() => setShowAddInquiry(true)}
+            >
+              <IconPlus width={13} height={13} /> Add inquiry
+            </button>
+          )}
         </div>
       </div>
 
       <GraveyardCounter items={items} currency={currency} />
 
-      <OwnerBookings
-        onAddInquiry={(booking) => {
+      {/* Booking requests are an owner/admin view: the bookings query
+          is keyed by the workspace owner, and staff never convert
+          booking requests into inquiries. */}
+      {canManageTeam(workspace?.role) && (
+        <OwnerBookings
+          onAddInquiry={(booking) => {
           const newInquiry = {
             id: Date.now(),
             name: booking.customerName,
@@ -705,6 +762,7 @@ function Dashboard() {
           setItems(current => [newInquiry, ...current])
         }}
       />
+      )}
 
       <section className="stats-grid">
         <div className="stat-card stat-hero">
@@ -1114,7 +1172,10 @@ function Dashboard() {
                 <strong>{detailInquiry.date}</strong>
               </div>
 
-              {members.length > 0 && (
+              {/* Assignment is owner/admin-only: managers and reps
+                  cannot reassign (rules deny it), so the control is
+                  hidden for them instead of failing on save. */}
+              {canManageTeam(workspace?.role) && members.length > 0 && (
                 <div className="detail-card">
                   <span>Assigned to</span>
                   <select
@@ -1138,6 +1199,38 @@ function Dashboard() {
                       <option key={member.id} value={member.id}>
                         {member.email || member.id}
                         {member.role ? ` (${member.role})` : ''}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* Branch is owner/admin-only: moving a row to another
+                  branch is denied for managers, and reps never see
+                  rows outside their assignment. */}
+              {canManageTeam(workspace?.role) && branches.length > 0 && (
+                <div className="detail-card">
+                  <span>Branch</span>
+                  <select
+                    value={detailInquiry.branchId || ''}
+                    onChange={e => {
+                      const branchId = e.target.value
+                      setItems(current =>
+                        current.map(item =>
+                          item.id === detailInquiry.id
+                            ? { ...item, branchId }
+                            : item
+                        )
+                      )
+                      setSelectedInquiry(current =>
+                        current ? { ...current, branchId } : current
+                      )
+                    }}
+                  >
+                    <option value="">No branch (owner/admin only)</option>
+                    {branches.map(branch => (
+                      <option key={branch.id} value={branch.name}>
+                        {branch.name}
                       </option>
                     ))}
                   </select>
@@ -1404,7 +1497,9 @@ function Dashboard() {
                 </button>
               )}
 
-              {['new', 'followup', 'replied'].includes(detailInquiry.status) && (
+              {/* Offers are owner-created (rules require the offer's
+                  ownerUid to equal the creator's uid). */}
+              {canCreateOffers(workspace?.role) && ['new', 'followup', 'replied'].includes(detailInquiry.status) && (
                 <button
                   type="button"
                   className="offer-action-button"
@@ -1432,7 +1527,9 @@ function Dashboard() {
                 Close
               </button>
 
-              {deleteConfirmId === detailInquiry.id ? (
+              {/* Delete is owner/admin-only (rules deny it for staff),
+                  so the button is hidden rather than failing. */}
+              {canDelete(workspace?.role) && (deleteConfirmId === detailInquiry.id ? (
                 <>
                   <span className="delete-confirm-text">
                     Delete this inquiry permanently?
@@ -1460,7 +1557,7 @@ function Dashboard() {
                 >
                   Delete inquiry
                 </button>
-              )}
+              ))}
             </div>
       </Modal>
       )}
@@ -1634,6 +1731,14 @@ function App() {
         {/* Auth pages */}
         <Route path="/login" element={<Login />} />
         <Route
+          path="/accept"
+          element={
+            <RequireAuth>
+              <AcceptInvite />
+            </RequireAuth>
+          }
+        />
+        <Route
           path="/ceo"
           element={
             <RequireCEO>
@@ -1642,11 +1747,15 @@ function App() {
           }
         />
 
-        {/* Authenticated workspace — all wrapped in AppLayout (with sidebar) */}
+        {/* Authenticated workspace — all wrapped in AppLayout (with sidebar).
+            WorkspaceProvider resolves the member's workspace once so every
+            /app/* page reads the owner's data root with the role applied. */}
         <Route
           element={
             <RequireAuth>
-              <AppLayout />
+              <WorkspaceProvider>
+                <AppLayout />
+              </WorkspaceProvider>
             </RequireAuth>
           }
         >

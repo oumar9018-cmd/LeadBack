@@ -5,6 +5,8 @@ import {
   defaultCurrencyForBrowser,
   formatMoney,
 } from './utils/money.js'
+import { useWorkspace } from './components/WorkspaceContext.jsx'
+import { inScope } from './utils/workspace.js'
 
 const statusLabels = {
   new: 'New',
@@ -16,68 +18,73 @@ const statusLabels = {
 
 export default function Customers() {
   const navigate = useNavigate()
+  // Batch 4: workspace root + role (solo owners: own uid, role 'owner').
+  const { workspace, loading: wsLoading } = useWorkspace()
 
   const [items, setItems] = useState([])
   const [currency, setCurrency] = useState(() => defaultCurrencyForBrowser())
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState('')
 
+  // Loads from the workspace owner's data root and filters to the
+  // member's scope (rules filter server-side too).
   useEffect(() => {
-    const auth = window.firebase?.auth?.()
-    const db = window.firebase?.firestore?.()
-
-    if (!auth || !db) return
-
-    const unsubscribe = auth.onAuthStateChanged(async user => {
-      if (!user) {
+    if (wsLoading || !workspace) {
+      if (!wsLoading) {
         setItems([])
         setLoading(false)
         setLoadError('')
-        return
       }
-
-      setLoading(true)
-      setLoadError('')
-
+      return undefined
+    }
+    const db = window.firebase?.firestore?.()
+    if (!db) return undefined
+    let cancelled = false
+    setLoading(true)
+    setLoadError('')
+    ;(async () => {
       try {
         const snapshot = await db
           .collection('users')
-          .doc(user.uid)
+          .doc(workspace.ownerUid)
           .collection('inquiries')
           .get()
-
+        if (cancelled) return
+        const uid = window.firebase?.auth?.().currentUser?.uid
         setItems(
-          snapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data(),
-          }))
+          snapshot.docs
+            .map(doc => ({ id: doc.id, ...doc.data() }))
+            .filter(item => inScope(item, workspace, uid))
         )
       } catch (error) {
         console.error('Customers load failed:', error)
-        setItems([])
+        if (!cancelled) {
+          setItems([])
+          setLoadError('Unable to load customers. Please try again.')
+        }
+      }
 
       try {
         const settingsSnap = await db
           .collection('users')
-          .doc(user.uid)
+          .doc(workspace.ownerUid)
           .collection('settings')
           .doc('workspace')
           .get()
         const savedCurrency = settingsSnap.exists
           ? settingsSnap.data()?.currency
           : undefined
-        if (CURRENCY_CODES.includes(savedCurrency)) setCurrency(savedCurrency)
+        if (!cancelled && CURRENCY_CODES.includes(savedCurrency)) setCurrency(savedCurrency)
       } catch (error) {
         console.error('Customers currency load failed:', error)
-      }
-        setLoadError('Unable to load customers. Please try again.')
       } finally {
-        setLoading(false)
+        if (!cancelled) setLoading(false)
       }
-    })
-
-    return unsubscribe
-  }, [])
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [wsLoading, workspace])
 
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')

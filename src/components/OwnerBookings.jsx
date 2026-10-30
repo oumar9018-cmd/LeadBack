@@ -14,32 +14,40 @@ export default function OwnerBookings({ onAddInquiry }) {
   const [bookings, setBookings] = useState([])
   const [businessId, setBusinessId] = useState(null)
   const [loading, setLoading] = useState(true)
+  // Batch 4: bookings belong to the workspace owner, not the viewer.
+  const { workspace, loading: wsLoading } = useWorkspace()
 
   useEffect(() => {
-    const auth = window.firebase?.auth?.()
     const db = window.firebase?.firestore?.()
-    if (!auth || !db) { setLoading(false); return }
-
-    const unsubscribe = auth.onAuthStateChanged(async user => {
-      if (!user) { setBookings([]); setBusinessId(null); setLoading(false); return }
+    if (!db) { setLoading(false); return undefined }
+    if (wsLoading || !workspace) {
+      if (!wsLoading) { setBookings([]); setBusinessId(null); setLoading(false) }
+      return undefined
+    }
+    let cancelled = false
+    setLoading(true)
+    ;(async () => {
       try {
         const snap = await db.collection('businesses')
-          .where('ownerUid', '==', user.uid).limit(1).get()
+          .where('ownerUid', '==', workspace.ownerUid).limit(1).get()
+        if (cancelled) return
         if (snap.empty) { setBookings([]); setBusinessId(null); return }
         const doc = snap.docs[0]
         setBusinessId(doc.id)
         const books = await db.collection('businesses').doc(doc.id)
           .collection('bookings').orderBy('createdAt', 'desc').get()
-        setBookings(books.docs.map(d => ({ id: d.id, ...d.data() })))
+        if (!cancelled) setBookings(books.docs.map(d => ({ id: d.id, ...d.data() })))
       } catch (error) {
         console.error('Owner bookings load failed:', error)
-        setBookings([])
+        if (!cancelled) setBookings([])
       } finally {
-        setLoading(false)
+        if (!cancelled) setLoading(false)
       }
-    })
-    return unsubscribe
-  }, [])
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [wsLoading, workspace])
 
   async function markAdded(booking) {
     onAddInquiry?.(booking)

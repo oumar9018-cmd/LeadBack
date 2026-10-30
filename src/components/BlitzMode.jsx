@@ -10,6 +10,8 @@ import {
   formatMoney,
 } from '../utils/money.js'
 import './BlitzMode.css'
+import { useWorkspace } from './WorkspaceContext.jsx'
+import { inScope } from '../utils/workspace.js'
 
 /**
  * Blitz Mode — one-click re-engagement campaigns.
@@ -21,6 +23,8 @@ import './BlitzMode.css'
  */
 export default function BlitzMode() {
   const navigate = useNavigate()
+  // Batch 4: workspace root + role.
+  const { workspace, loading: wsLoading } = useWorkspace()
 
   const [items, setItems] = useState([])
   const [businessName, setBusinessName] = useState('')
@@ -37,18 +41,25 @@ export default function BlitzMode() {
 
   const occasion = useMemo(() => upcomingOccasion(), [])
 
+  // Loads from the workspace owner's data root, filtered to scope.
   useEffect(() => {
-    const auth = window.firebase?.auth?.()
     const db = window.firebase?.firestore?.()
-    if (!auth || !db) { setLoading(false); return }
+    if (!db) { setLoading(false); return }
+    if (wsLoading || !workspace) {
+      if (!wsLoading) setItems([])
+      setLoading(false)
+      return undefined
+    }
 
-    const unsubscribe = auth.onAuthStateChanged(async user => {
-      if (!user) { setItems([]); setLoading(false); return }
+    let cancelled = false
+    ;(async () => {
       try {
-        const snap = await db.collection('users').doc(user.uid).collection('inquiries').get()
-        setItems(snap.docs.map(d => ({ id: d.id, ...d.data() })))
+        const snap = await db.collection('users').doc(workspace.ownerUid).collection('inquiries').get()
+        if (cancelled) return
+        const uid = window.firebase?.auth?.().currentUser?.uid
+        setItems(snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(item => inScope(item, workspace, uid)))
 
-        const settings = await db.collection('users').doc(user.uid).collection('settings').doc('workspace').get()
+        const settings = await db.collection('users').doc(workspace.ownerUid).collection('settings').doc('workspace').get()
         const data = settings.data() || {}
         setBusinessName(data.businessName || '')
         setBusinessSlug(data.businessSlug || data.slug || '')
@@ -56,11 +67,13 @@ export default function BlitzMode() {
       } catch (e) {
         console.error('Blitz load failed:', e)
       } finally {
-        setLoading(false)
+        if (!cancelled) setLoading(false)
       }
-    })
-    return unsubscribe
-  }, [])
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [wsLoading, workspace])
 
   const ranked = useMemo(() => rankByWinback(items), [items])
   const selectedCount = Object.values(selected).filter(Boolean).length
@@ -89,11 +102,9 @@ export default function BlitzMode() {
 
   async function logActivity(inquiryId, text) {
     try {
-      const auth = window.firebase?.auth?.()
       const db = window.firebase?.firestore?.()
-      const user = auth?.currentUser
-      if (!user || !db) return
-      const ref = db.collection('users').doc(user.uid).collection('inquiries').doc(String(inquiryId))
+      if (!workspace || !db) return
+      const ref = db.collection('users').doc(workspace.ownerUid).collection('inquiries').doc(String(inquiryId))
       const snap = await ref.get()
       const history = snap.data()?.followupHistory || []
       history.push({

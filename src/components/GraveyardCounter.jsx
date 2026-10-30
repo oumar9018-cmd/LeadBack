@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { computeGraveyard } from '../utils/graveyard.js'
 import { formatMoney, formatMoneyCompact } from '../utils/money.js'
+import { useWorkspace } from './WorkspaceContext.jsx'
+import { inScope } from '../utils/workspace.js'
 import { IconAlert, IconTrendingDown, IconZap } from './icons.jsx'
 import './GraveyardCounter.css'
 
@@ -90,32 +92,38 @@ export function GraveyardCounter({ items, currency = 'INR' }) {
  */
 export function useGraveyardValue() {
   const [value, setValue] = useState(null)
+  // Batch 4: count the WORKSPACE's graveyard, scoped to the member.
+  const { workspace, loading: wsLoading } = useWorkspace()
 
   useEffect(() => {
-    const auth = window.firebase?.auth?.()
     const db = window.firebase?.firestore?.()
-    if (!auth || !db) return
-
-    const unsubscribe = auth.onAuthStateChanged(async user => {
-      if (!user) {
-        setValue(null)
-        return
-      }
+    if (!db) return undefined
+    if (wsLoading || !workspace) {
+      if (!wsLoading) setValue(null)
+      return undefined
+    }
+    let cancelled = false
+    ;(async () => {
       try {
         const snap = await db
           .collection('users')
-          .doc(user.uid)
+          .doc(workspace.ownerUid)
           .collection('inquiries')
           .get()
-        const items = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+        if (cancelled) return
+        const uid = window.firebase?.auth?.().currentUser?.uid
+        const items = snap.docs
+          .map(d => ({ id: d.id, ...d.data() }))
+          .filter(item => inScope(item, workspace, uid))
         setValue(computeGraveyard(items))
       } catch {
-        setValue(null)
+        if (!cancelled) setValue(null)
       }
-    })
-
-    return unsubscribe
-  }, [])
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [wsLoading, workspace])
 
   return value
 }

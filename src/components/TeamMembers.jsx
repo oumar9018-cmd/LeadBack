@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { logAudit } from '../utils/audit.js'
+import { useWorkspace } from './WorkspaceContext.jsx'
 
 /**
  * Team — unlimited free seats (batch 3 enterprise foundation).
@@ -30,6 +31,10 @@ const ROLE_LABELS = {
 }
 
 export default function TeamMembers() {
+  // Batch 4: team records live under the WORKSPACE owner, not the
+  // viewer — an admin manages the owner's team, not their own.
+  const { workspace } = useWorkspace()
+  const [branches, setBranches] = useState([])
   const [invites, setInvites] = useState([])
   const [members, setMembers] = useState([])
   const [email, setEmail] = useState('')
@@ -49,12 +54,12 @@ export default function TeamMembers() {
 
   async function reload() {
     const database = db()
-    const user = currentUser()
-    if (!database || !user) return
+    if (!database || !workspace) return
+    const ownerUid = workspace.ownerUid
     try {
       const invitesSnap = await database
         .collection('users')
-        .doc(user.uid)
+        .doc(ownerUid)
         .collection('invites')
         .get()
       setInvites(invitesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })))
@@ -64,29 +69,35 @@ export default function TeamMembers() {
     try {
       const membersSnap = await database
         .collection('users')
-        .doc(user.uid)
+        .doc(ownerUid)
         .collection('members')
         .get()
       setMembers(membersSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })))
     } catch (e) {
       console.error('Members load failed:', e)
     }
+    try {
+      const branchesSnap = await database
+        .collection('users')
+        .doc(ownerUid)
+        .collection('settings')
+        .doc('branches')
+        .get()
+      setBranches(branchesSnap.exists ? branchesSnap.data()?.branches || [] : [])
+    } catch (e) {
+      console.error('Branches load failed:', e)
+    }
   }
 
   useEffect(() => {
-    const auth = window.firebase?.auth?.()
-    if (!auth) return
-    const unsubscribe = auth.onAuthStateChanged(user => {
-      if (!user) {
-        setInvites([])
-        setMembers([])
-        return
-      }
-      reload()
-    })
-    return unsubscribe
+    if (!workspace) {
+      setInvites([])
+      setMembers([])
+      return undefined
+    }
+    reload()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [workspace?.ownerUid])
 
   function validEmail(value) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
@@ -99,7 +110,7 @@ export default function TeamMembers() {
     const database = db()
     const user = currentUser()
     const cleanEmail = email.trim().toLowerCase()
-    if (!database || !user) return
+    if (!database || !user || !workspace) return
     if (!validEmail(cleanEmail)) {
       setError('Enter a valid email address.')
       return
@@ -108,7 +119,7 @@ export default function TeamMembers() {
     try {
       await database
         .collection('users')
-        .doc(user.uid)
+        .doc(workspace.ownerUid)
         .collection('invites')
         .doc(cleanEmail)
         .set({
@@ -119,7 +130,16 @@ export default function TeamMembers() {
           createdAt: new Date().toISOString(),
           createdBy: user.uid,
         })
-      await logAudit(user.uid, {
+      // Batch 4: the index lets the invited member find this invite
+      // without knowing the owner's uid (see /accept).
+      await database
+        .collection('inviteIndex')
+        .doc(cleanEmail)
+        .set({
+          email: cleanEmail,
+          ownerUid: workspace.ownerUid,
+        })
+      await logAudit(workspace.ownerUid, {
         action: 'member_added',
         detail: `${cleanEmail} as ${role}`,
       })
@@ -141,15 +161,23 @@ export default function TeamMembers() {
   async function removeInvite(invite) {
     const database = db()
     const user = currentUser()
-    if (!database || !user) return
+    if (!database || !user || !workspace) return
     try {
       await database
         .collection('users')
-        .doc(user.uid)
+        .doc(workspace.ownerUid)
         .collection('invites')
         .doc(invite.id)
         .delete()
-      await logAudit(user.uid, {
+      try {
+        await database
+          .collection('inviteIndex')
+          .doc((invite.email || invite.id || '').toLowerCase())
+          .delete()
+      } catch (indexError) {
+        console.error('Invite index cleanup failed:', indexError)
+      }
+      await logAudit(workspace.ownerUid, {
         action: 'member_removed',
         detail: `${invite.email || invite.id} (invite)`,
       })
@@ -163,15 +191,27 @@ export default function TeamMembers() {
   async function removeMember(member) {
     const database = db()
     const user = currentUser()
-    if (!database || !user) return
+    if (!database || !user || !workspace) return
     try {
       await database
         .collection('users')
-        .doc(user.uid)
+        .doc(workspace.ownerUid)
         .collection('members')
         .doc(member.id)
         .delete()
-      await logAudit(user.uid, {
+      // Remove the member's workspace mirror too, or their app would
+      // keep resolving into a workspace whose rules now deny them.
+      try {
+        await database
+          .collection('users')
+          .doc(member.id)
+          .collection('memberships')
+          .doc(workspace.ownerUid)
+          .delete()
+      } catch (mirrorError) {
+        console.error('Membership mirror cleanup failed:', mirrorError)
+      }
+      await logAudit(workspace.ownerUid, {
         action: 'member_removed',
         detail: `${member.email || member.id}`,
       })
@@ -185,15 +225,30 @@ export default function TeamMembers() {
   async function changeMemberRole(member, nextRole) {
     const database = db()
     const user = currentUser()
-    if (!database || !user || member.role === nextRole) return
+    if (!database || !user || !workspace || member.role === nextRole) return
     try {
       await database
         .collection('users')
-        .doc(user.uid)
+        .doc(workspace.ownerUid)
         .collection('members')
         .doc(member.id)
         .update({ role: nextRole })
-      await logAudit(user.uid, {
+      // Keep the member's mirror in sync, or their app would resolve
+      // the stale role while the rules enforce the new one.
+      try {
+        await database
+          .collection('users')
+          .doc(member.id)
+          .collection('memberships')
+          .doc(workspace.ownerUid)
+          .update({ role: nextRole })
+      } catch (mirrorError) {
+        console.error('Membership mirror sync failed:', mirrorError)
+        setError('Role changed, but the member’s workspace record did not update — please change it again.')
+        reload()
+        return
+      }
+      await logAudit(workspace.ownerUid, {
         action: 'member_role_changed',
         detail: `${member.email || member.id}: ${member.role || ''} -> ${nextRole}`,
       })
@@ -246,7 +301,13 @@ export default function TeamMembers() {
               value={branchId}
               onChange={e => setBranchId(e.target.value)}
               placeholder="e.g. Andheri"
+              list="team-branch-names"
             />
+            <datalist id="team-branch-names">
+              {branches.map(branch => (
+                <option key={branch.id} value={branch.name} />
+              ))}
+            </datalist>
           </label>
         </div>
 
@@ -314,9 +375,10 @@ export default function TeamMembers() {
       )}
 
       <p>
-        Note: invited members sign in with Google using the invited email.
-        Their scoped workspace view arrives with the member-app update;
-        the permissions above are already enforced in the security rules.
+        Note: invited members sign in with Google using the invited email,
+        then open /accept to join. Their scoped workspace view is live:
+        Sales Reps see only assigned leads, Branch Managers only their
+        branch, and staff can never delete data or open settings.
       </p>
     </section>
   )

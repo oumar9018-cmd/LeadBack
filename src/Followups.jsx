@@ -6,6 +6,8 @@ import {
   defaultCurrencyForBrowser,
   formatMoney,
 } from './utils/money.js'
+import { useWorkspace } from './components/WorkspaceContext.jsx'
+import { inScope } from './utils/workspace.js'
 
 function getFollowupState(item) {
   if (!item.followup?.date || !item.followup?.time) {
@@ -36,68 +38,73 @@ const labels = {
 
 export default function Followups() {
   const navigate = useNavigate()
+  // Batch 4: workspace root + role (solo owners: own uid, role 'owner').
+  const { workspace, loading: wsLoading } = useWorkspace()
 
   const [items, setItems] = useState([])
   const [currency, setCurrency] = useState(() => defaultCurrencyForBrowser())
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState('')
 
+  // Loads from the workspace owner's data root and filters to the
+  // member's scope (rules filter server-side too).
   useEffect(() => {
-    const auth = window.firebase?.auth?.()
-    const db = window.firebase?.firestore?.()
-
-    if (!auth || !db) return
-
-    const unsubscribe = auth.onAuthStateChanged(async user => {
-      if (!user) {
+    if (wsLoading || !workspace) {
+      if (!wsLoading) {
         setItems([])
         setLoading(false)
         setLoadError('')
-        return
       }
-
-      setLoading(true)
-      setLoadError('')
-
+      return undefined
+    }
+    const db = window.firebase?.firestore?.()
+    if (!db) return undefined
+    let cancelled = false
+    setLoading(true)
+    setLoadError('')
+    ;(async () => {
       try {
         const snapshot = await db
           .collection('users')
-          .doc(user.uid)
+          .doc(workspace.ownerUid)
           .collection('inquiries')
           .get()
-
+        if (cancelled) return
+        const uid = window.firebase?.auth?.().currentUser?.uid
         setItems(
-          snapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data(),
-          }))
+          snapshot.docs
+            .map(doc => ({ id: doc.id, ...doc.data() }))
+            .filter(item => inScope(item, workspace, uid))
         )
+      } catch (error) {
+        console.error('Followups load failed:', error)
+        if (!cancelled) {
+          setItems([])
+          setLoadError('Unable to load follow-ups. Please try again.')
+        }
+      }
 
       try {
         const settingsSnap = await db
           .collection('users')
-          .doc(user.uid)
+          .doc(workspace.ownerUid)
           .collection('settings')
           .doc('workspace')
           .get()
         const savedCurrency = settingsSnap.exists
           ? settingsSnap.data()?.currency
           : undefined
-        if (CURRENCY_CODES.includes(savedCurrency)) setCurrency(savedCurrency)
+        if (!cancelled && CURRENCY_CODES.includes(savedCurrency)) setCurrency(savedCurrency)
       } catch (error) {
         console.error('Followups currency load failed:', error)
-      }
-      } catch (error) {
-        console.error('Followups load failed:', error)
-        setItems([])
-        setLoadError('Unable to load follow-ups. Please try again.')
       } finally {
-        setLoading(false)
+        if (!cancelled) setLoading(false)
       }
-    })
-
-    return unsubscribe
-  }, [])
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [wsLoading, workspace])
 
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState('all')
@@ -145,11 +152,9 @@ export default function Followups() {
       String(it.id) === String(item.id) ? { ...it, dripSteps: nextSteps } : it
     ))
     try {
-      const auth = window.firebase?.auth?.()
       const db = window.firebase?.firestore?.()
-      const user = auth?.currentUser
-      if (user && db) {
-        await db.collection('users').doc(user.uid).collection('inquiries')
+      if (workspace && db) {
+        await db.collection('users').doc(workspace.ownerUid).collection('inquiries')
           .doc(String(item.id)).set({ dripSteps: nextSteps }, { merge: true })
       }
     } catch (error) {

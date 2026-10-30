@@ -113,6 +113,16 @@ a {
   font-size: 12px;
 }
 
+/* Batch 4: member role badge under the workspace name, so a scoped
+   view is never a mystery. */
+.workspace-role {
+  display: block;
+  margin-top: 4px;
+  color: #2563EB;
+  font-size: 11px;
+  font-weight: 600;
+}
+
 .side-nav {
   display: grid;
   gap: 4px;

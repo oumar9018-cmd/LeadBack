@@ -113,11 +113,19 @@ service cloud.firestore {
 
       // Batch 3 — team invites. Doc id is the lowercased email so the
       // invited member can find it from their own Google token email.
+      // Batch 4 — the invitee may make exactly ONE change themselves:
+      // pending -> accepted, at accept time. Nothing else about the
+      // invite (role, branch) is ever writable by the invitee.
       match /invites/{inviteId} {
         allow get: if isOwner(userId) || isWorkspaceAdmin(userId) ||
           (signedIn() && resource.data.email == request.auth.token.email);
         allow list: if isOwner(userId) || isWorkspaceAdmin(userId);
         allow create, update, delete: if isOwner(userId) || isWorkspaceAdmin(userId);
+        allow update: if signedIn() &&
+          resource.data.email == request.auth.token.email &&
+          resource.data.status == 'pending' &&
+          request.resource.data.status == 'accepted' &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status']);
       }
 
       // Batch 3 — team members, keyed by member uid. Accept flow
@@ -140,15 +148,21 @@ service cloud.firestore {
       // Batch 3 — membership mirrors (member's own doc, keyed by owner).
       // Role in the mirror must always match the members doc, so a
       // member cannot forge a higher role for themselves.
+      // Batch 4 — members need to LIST their own mirrors to resolve
+      // their workspace (they do not know the owner's uid in advance);
+      // and the workspace owner/admins need to update/delete the
+      // mirror when they change a role or remove a member, so the
+      // mirror can never go stale.
       match /memberships/{workspaceOwnerId} {
         allow get: if isOwner(userId);
+        allow list: if isOwner(userId);
         allow create: if isOwner(userId) &&
           exists(/databases/$(database)/documents/users/$(workspaceOwnerId)/members/$(userId)) &&
           get(/databases/$(database)/documents/users/$(workspaceOwnerId)/members/$(userId)).data.role == request.resource.data.role;
-        allow update: if isOwner(userId) &&
+        allow update: if (isOwner(userId) || isWorkspaceAdmin(workspaceOwnerId)) &&
           exists(/databases/$(database)/documents/users/$(workspaceOwnerId)/members/$(userId)) &&
           get(/databases/$(database)/documents/users/$(workspaceOwnerId)/members/$(userId)).data.role == request.resource.data.role;
-        allow delete: if isOwner(userId);
+        allow delete: if isOwner(userId) || isWorkspaceAdmin(workspaceOwnerId);
       }
 
       // Batch 3 — audit log: append-only. Owner/admins (+CEO) read; any
@@ -161,6 +175,27 @@ service cloud.firestore {
           request.resource.data.action in ['status_changed', 'member_added', 'member_removed', 'member_role_changed', 'export'];
         allow update, delete: if false;
       }
+    }
+
+    // Batch 4 — invite index: the one narrow public lookup the accept
+    // flow needs. Invites live under the OWNER's uid, which the
+    // invited member does not know, so the owner writes one index doc
+    // per invite: inviteIndex/{emailLower} = { ownerUid, email }.
+    // Get is allowed only when the caller's token email matches the
+    // doc's email; listing is never allowed, so nobody can enumerate
+    // who was invited. Only the workspace owner/admins may write it,
+    // and the invitee may delete their own entry at accept time.
+    match /inviteIndex/{emailLower} {
+      allow get: if signedIn() &&
+        resource.data.email == request.auth.token.email;
+      allow list: if false;
+      allow create, update: if signedIn() &&
+        (request.resource.data.ownerUid == request.auth.uid ||
+          isWorkspaceAdmin(request.resource.data.ownerUid));
+      allow delete: if signedIn() &&
+        (resource.data.ownerUid == request.auth.uid ||
+          isWorkspaceAdmin(resource.data.ownerUid) ||
+          resource.data.email == request.auth.token.email);
     }
 
     // Razorpay order state is server-only. Cloud Functions Admin SDK bypasses

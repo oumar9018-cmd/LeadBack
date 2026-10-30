@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { BASE_PATH } from '../basePath.js'
 import { waLink, normalizePhone } from '../utils/whatsapp.js'
 import { IconGift, IconCopy, IconCheck, IconSend } from './icons.jsx'
+import { useWorkspace } from './WorkspaceContext.jsx'
 import './OfferBuilder.css'
 
 /**
@@ -31,6 +32,10 @@ const EXPIRY_OPTIONS = [
 ]
 
 export default function OfferBuilder({ inquiry, businessName, onClose, onCreated }) {
+  // Batch 4: offers are stamped with the WORKSPACE owner's uid (rules
+  // require ownerUid == creator uid, so only the owner ever reaches
+  // this builder — Dashboard gates the button to owners).
+  const { workspace } = useWorkspace()
   const [discountText, setDiscountText] = useState('20% off your next visit')
   const [note, setNote] = useState('')
   const [expiryHours, setExpiryHours] = useState(48)
@@ -54,7 +59,7 @@ export default function OfferBuilder({ inquiry, businessName, onClose, onCreated
     const db = window.firebase?.firestore?.()
     const user = auth?.currentUser
 
-    if (!user || !db) {
+    if (!user || !db || !workspace) {
       setError('You need to be signed in to create offers.')
       setSaving(false)
       return
@@ -71,7 +76,7 @@ export default function OfferBuilder({ inquiry, businessName, onClose, onCreated
 
     const offer = {
       code,
-      ownerUid: user.uid,
+      ownerUid: workspace.ownerUid,
       businessName: businessName || 'Wynback business',
       inquiryId: String(inquiry.id),
       customerName: inquiry.name || '',

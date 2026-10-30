@@ -4,6 +4,8 @@ import WinbackScoreBadge from './components/WinbackScore.jsx'
 import Modal from './components/Modal.jsx'
 import VoiceInput from './components/VoiceInput.jsx'
 import OwnerBookings from './components/OwnerBookings.jsx'
+import { useWorkspace } from './components/WorkspaceContext.jsx'
+import { canManageTeam, inScope } from './utils/workspace.js'
 import { IconPlus, IconX } from './components/icons.jsx'
 import { rankByWinback } from './utils/winbackScore.js'
 import {
@@ -34,59 +36,61 @@ const statusLabels = {
  */
 export default function Inquiries() {
   const navigate = useNavigate()
+  // Batch 4: workspace root + role (solo owners: own uid, role 'owner').
+  const { workspace, loading: wsLoading } = useWorkspace()
 
   const [items, setItems] = useState([])
   // Workspace currency (timezone default until Settings saves one).
   const [currency, setCurrency] = useState(() => defaultCurrencyForBrowser())
 
+  // Loads from the workspace owner's data root and filters to the
+  // member's scope (rules filter server-side too).
   useEffect(() => {
-    const auth = window.firebase?.auth?.()
+    if (wsLoading || !workspace) {
+      if (!wsLoading) setItems([])
+      return undefined
+    }
     const db = window.firebase?.firestore?.()
-
-    if (!auth || !db) return
-
-    const unsubscribe = auth.onAuthStateChanged(async user => {
-      if (!user) {
-        setItems([])
-        return
-      }
-
+    if (!db) return undefined
+    let cancelled = false
+    ;(async () => {
       try {
         const snapshot = await db
           .collection('users')
-          .doc(user.uid)
+          .doc(workspace.ownerUid)
           .collection('inquiries')
           .get()
-
+        if (cancelled) return
+        const uid = window.firebase?.auth?.().currentUser?.uid
         setItems(
-          snapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data(),
-          }))
+          snapshot.docs
+            .map(doc => ({ id: doc.id, ...doc.data() }))
+            .filter(item => inScope(item, workspace, uid))
         )
       } catch (error) {
         console.error('Inquiries load failed:', error)
-        setItems([])
+        if (!cancelled) setItems([])
       }
 
       try {
         const settingsSnap = await db
           .collection('users')
-          .doc(user.uid)
+          .doc(workspace.ownerUid)
           .collection('settings')
           .doc('workspace')
           .get()
         const savedCurrency = settingsSnap.exists
           ? settingsSnap.data()?.currency
           : undefined
-        if (CURRENCY_CODES.includes(savedCurrency)) setCurrency(savedCurrency)
+        if (!cancelled && CURRENCY_CODES.includes(savedCurrency)) setCurrency(savedCurrency)
       } catch (error) {
         console.error('Inquiries currency load failed:', error)
       }
-    })
-
-    return unsubscribe
-  }, [])
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [wsLoading, workspace])
 
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
@@ -105,13 +109,11 @@ export default function Inquiries() {
 
   // Direct Firestore write (this page has no whole-list sync effect).
   async function addInquiryDoc(doc) {
-    const auth = window.firebase?.auth?.()
     const db = window.firebase?.firestore?.()
-    const user = auth?.currentUser
-    if (!user || !db) return null
+    if (!workspace || !db) return null
     const ref = await db
       .collection('users')
-      .doc(user.uid)
+      .doc(workspace.ownerUid)
       .collection('inquiries')
       .add(doc)
     setItems(current => [{ id: ref.id, ...doc }, ...current])
@@ -141,7 +143,7 @@ export default function Inquiries() {
         date: 'Just now',
         createdAt: Date.now(),
         assignedTo: '',
-        branchId: '',
+        branchId: workspace?.role === 'branch_manager' ? workspace.branchId || '' : '',
       })
       setForm({ name: '', phone: '', service: '', value: '', status: 'new' })
       setFormError('')
@@ -163,7 +165,7 @@ export default function Inquiries() {
         date: 'Just now',
         createdAt: Date.now(),
         assignedTo: '',
-        branchId: '',
+        branchId: workspace?.role === 'branch_manager' ? workspace.branchId || '' : '',
       })
     } catch (error) {
       console.error('Add booking as inquiry failed:', error)
@@ -213,13 +215,15 @@ export default function Inquiries() {
             <p>Track every opportunity from first inquiry to recovery.</p>
           </div>
 
-          <button
-            type="button"
-            className="primary-button"
-            onClick={() => setShowAddInquiry(true)}
-          >
-            <IconPlus width={13} height={13} /> Add inquiry
-          </button>
+          {workspace?.role !== 'sales_rep' && (
+            <button
+              type="button"
+              className="primary-button"
+              onClick={() => setShowAddInquiry(true)}
+            >
+              <IconPlus width={13} height={13} /> Add inquiry
+            </button>
+          )}
         </header>
 
         <section className="inquiries-panel">
@@ -338,7 +342,9 @@ export default function Inquiries() {
 
         </section>
 
-        <OwnerBookings onAddInquiry={handleBookingAsInquiry} />
+        {canManageTeam(workspace?.role) && (
+          <OwnerBookings onAddInquiry={handleBookingAsInquiry} />
+        )}
 
         <Modal open={showAddInquiry} onClose={() => setShowAddInquiry(false)}>
           <div className="modal-header">

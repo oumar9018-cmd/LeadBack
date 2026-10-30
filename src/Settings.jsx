@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import TeamMembers from './components/TeamMembers.jsx'
+import BranchesCard from './components/BranchesCard.jsx'
+import AuditLog from './components/AuditLog.jsx'
+import { useWorkspace } from './components/WorkspaceContext.jsx'
+import { canManageTeam, canViewSettings, canWriteSettings } from './utils/workspace.js'
 import { CURRENCIES, defaultCurrencyForBrowser } from './utils/money.js'
 
 const defaultSettings = {
@@ -28,31 +32,33 @@ function slugify(name) {
 
 export default function Settings() {
   const navigate = useNavigate()
+  // Batch 4: workspace root + role. Reps get no settings page at all;
+  // managers read but never write; owner/admins get the full page.
+  const { workspace, loading: wsLoading } = useWorkspace()
 
   const [settings, setSettings] = useState(defaultSettings)
   const [settingsLoaded, setSettingsLoaded] = useState(false)
 
   useEffect(() => {
-    const auth = window.firebase?.auth?.()
-    const db = window.firebase?.firestore?.()
-
-    if (!auth || !db) return
-
-    const unsubscribe = auth.onAuthStateChanged(async user => {
-      if (!user) {
+    if (wsLoading || !workspace) {
+      if (!wsLoading) {
         setSettings(defaultSettings)
         setSettingsLoaded(false)
-        return
       }
-
+      return undefined
+    }
+    const db = window.firebase?.firestore?.()
+    if (!db) return undefined
+    let cancelled = false
+    ;(async () => {
       try {
         const snapshot = await db
           .collection('users')
-          .doc(user.uid)
+          .doc(workspace.ownerUid)
           .collection('settings')
           .doc('workspace')
           .get()
-
+        if (cancelled) return
         if (snapshot.exists) {
           setSettings({
             ...defaultSettings,
@@ -63,14 +69,15 @@ export default function Settings() {
         }
       } catch (error) {
         console.error('Settings load failed:', error)
-        setSettings(defaultSettings)
+        if (!cancelled) setSettings(defaultSettings)
       } finally {
-        setSettingsLoaded(true)
+        if (!cancelled) setSettingsLoaded(true)
       }
-    })
-
-    return unsubscribe
-  }, [])
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [wsLoading, workspace])
 
   const [saved, setSaved] = useState(false)
 
@@ -85,18 +92,16 @@ export default function Settings() {
   async function saveSettings(event) {
     event.preventDefault()
 
-    const auth = window.firebase?.auth?.()
     const db = window.firebase?.firestore?.()
-    const user = auth?.currentUser
 
-    if (!user || !db || !settingsLoaded) {
+    if (!workspace || !db || !settingsLoaded || !canWriteSettings(workspace.role)) {
       return
     }
 
     try {
       await db
         .collection('users')
-        .doc(user.uid)
+        .doc(workspace.ownerUid)
         .collection('settings')
         .doc('workspace')
         .set(settings, { merge: true })
@@ -110,8 +115,8 @@ export default function Settings() {
       const slug = slugify(settings.businessName)
       if (slug) {
         try {
-          await db.collection('businesses').doc(user.uid).set({
-            ownerUid: user.uid,
+          await db.collection('businesses').doc(workspace.ownerUid).set({
+            ownerUid: workspace.ownerUid,
             slug,
             name: settings.businessName.trim(),
             services: (settings.services || '').trim(),
@@ -127,6 +132,32 @@ export default function Settings() {
     } catch (error) {
       console.error('Settings save failed:', error)
     }
+  }
+
+  // Managers see the form but cannot change anything (the fieldset
+  // below disables every control); reps never reach the form at all.
+  const readOnly = Boolean(workspace && !canWriteSettings(workspace.role))
+
+  if (!wsLoading && workspace && !canViewSettings(workspace.role)) {
+    return (
+      <div className="settings-page">
+        <div className="settings-inner">
+          <header className="settings-header">
+            <div>
+              <span className="app-eyebrow">SETTINGS</span>
+              <h1>Business settings</h1>
+              <p>Settings are not available for your role. Your leads live on the Inquiries and Follow-ups pages.</p>
+            </div>
+            <button
+              className="primary-button"
+              onClick={() => navigate('/app/inquiries')}
+            >
+              Back to inquiries
+            </button>
+          </header>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -149,6 +180,7 @@ export default function Settings() {
         </header>
 
         <form onSubmit={saveSettings}>
+          <fieldset disabled={readOnly} style={{ border: 0, padding: 0, margin: 0 }}>
 
           <section className="settings-card">
             <div className="settings-card-header">
@@ -334,26 +366,40 @@ export default function Settings() {
             </div>
           </section>
 
-          <div className="settings-save-row">
-            {saved && (
-              <span className="settings-saved">
-                ✓ Settings saved
-              </span>
-            )}
+          </fieldset>
 
-            <button
-              type="submit"
-              className="settings-save-button"
-            >
-              Save settings
-            </button>
-          </div>
+          {readOnly ? (
+            <p>View-only for your role — only owners and admins can change settings.</p>
+          ) : (
+            <div className="settings-save-row">
+              {saved && (
+                <span className="settings-saved">
+                  ✓ Settings saved
+                </span>
+              )}
+
+              <button
+                type="submit"
+                className="settings-save-button"
+              >
+                Save settings
+              </button>
+            </div>
+          )}
 
         </form>
 
-        {/* Team seats (batch 3): managed outside the settings form
-            because invites write to their own collections. */}
-        <TeamMembers />
+        {/* Team seats (batch 3) + branches + audit log (batch 4):
+            managed outside the settings form because they write to
+            their own collections. Owner/admin-only: staff never see
+            team management or the audit log. */}
+        {canManageTeam(workspace?.role) && (
+          <>
+            <TeamMembers />
+            <BranchesCard />
+            <AuditLog />
+          </>
+        )}
 
       </div>
     </div>

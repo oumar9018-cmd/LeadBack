@@ -5,6 +5,7 @@ import { formatMoney } from './utils/money.js'
 import { waLink, normalizePhone } from './utils/whatsapp.js'
 import { IconGift, IconCopy, IconCheck, IconSend, IconTimer, IconTrash } from './components/icons.jsx'
 import './Offers.css'
+import { useWorkspace } from './components/WorkspaceContext.jsx'
 
 /**
  * Owner's second-chance offers: sent -> viewed -> redeemed tracking,
@@ -26,38 +27,44 @@ function offerStatus(offer) {
 
 export default function Offers() {
   const navigate = useNavigate()
+  // Batch 4: offers are owner-only — the rules let only the uid that
+  // owns an offer list it, so staff see a notice, never a broken list.
+  const { workspace, loading: wsLoading } = useWorkspace()
   const [offers, setOffers] = useState([])
   const [loading, setLoading] = useState(true)
   const [copiedId, setCopiedId] = useState(null)
 
   useEffect(() => {
-    const auth = window.firebase?.auth?.()
-    const db = window.firebase?.firestore?.()
-    if (!auth || !db) {
-      setLoading(false)
-      return
-    }
-
-    const unsubscribe = auth.onAuthStateChanged(user => {
-      if (!user) {
+    if (wsLoading || !workspace || workspace.role !== 'owner') {
+      if (!wsLoading) {
         setOffers([])
         setLoading(false)
-        return
       }
-      db.collection('offers')
-        .where('ownerUid', '==', user.uid)
-        .get()
-        .then(snap => {
-          const list = snap.docs.map(d => ({ id: d.id, ...d.data() }))
-          list.sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))
-          setOffers(list)
-          setLoading(false)
-        })
-        .catch(() => setLoading(false))
-    })
-
-    return unsubscribe
-  }, [])
+      return undefined
+    }
+    const db = window.firebase?.firestore?.()
+    if (!db) {
+      setLoading(false)
+      return undefined
+    }
+    let cancelled = false
+    db.collection('offers')
+      .where('ownerUid', '==', workspace.ownerUid)
+      .get()
+      .then(snap => {
+        if (cancelled) return
+        const list = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+        list.sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))
+        setOffers(list)
+        setLoading(false)
+      })
+      .catch(() => {
+        if (!cancelled) setLoading(false)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [wsLoading, workspace])
 
   function offerUrl(offer) {
     return `${window.location.origin}${BASE_PATH}/o/${offer.code}`
@@ -82,10 +89,8 @@ export default function Offers() {
   }
 
   async function handleMarkRecovered(offer) {
-    const auth = window.firebase?.auth?.()
     const db = window.firebase?.firestore?.()
-    const user = auth?.currentUser
-    if (!user || !db || !offer.inquiryId) return
+    if (!workspace || !db || !offer.inquiryId) return
 
     const valueStr = window.prompt(
       `How much revenue did ${offer.customerName || 'this customer'} bring back?`,
@@ -101,7 +106,7 @@ export default function Offers() {
     try {
       await db
         .collection('users')
-        .doc(user.uid)
+        .doc(workspace.ownerUid)
         .collection('inquiries')
         .doc(String(offer.inquiryId))
         .update({
@@ -120,6 +125,24 @@ export default function Offers() {
 
   const claimed = offers.filter(o => offerStatus(o) === 'redeemed')
   const attributed = claimed.reduce((s, o) => s + (Number(o.recoveredValue) || 0), 0)
+
+  // Staff never see offer data: the rules let only the owning uid list
+  // offers, so a scoped list would be empty-or-denied, not scoped.
+  if (!wsLoading && workspace && workspace.role !== 'owner') {
+    return (
+      <div className="offers-page">
+        <div className="offers-inner">
+          <header className="offers-header">
+            <div>
+              <span className="app-eyebrow">SECOND-CHANCE OFFERS</span>
+              <h1>Win-back offers</h1>
+              <p>Offers are managed by the workspace owner. Your role works leads from the Inquiries and Follow-ups pages.</p>
+            </div>
+          </header>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="offers-page">

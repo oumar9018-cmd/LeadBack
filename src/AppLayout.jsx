@@ -6,6 +6,8 @@ import {
   CURRENCY_CODES,
   defaultCurrencyForBrowser,
 } from './utils/money.js'
+import { roleLabel } from './utils/workspace.js'
+import { useWorkspace } from './components/WorkspaceContext.jsx'
 import {
   IconMessage,
   IconClock,
@@ -39,61 +41,56 @@ export default function AppLayout() {
   const [profileName, setProfileName] = useState('')
   const drawerRef = useRef(null)
   const menuButtonRef = useRef(null)
+  // Batch 4: the workspace owner's settings + the member's role.
+  const { workspace, loading: wsLoading } = useWorkspace()
 
   useEffect(() => {
-    const auth = window.firebase?.auth?.()
+    if (wsLoading || !workspace) return
     const db = window.firebase?.firestore?.()
-
-    if (!auth) {
-      setAuthUser(null)
-      return
-    }
-
-    setAuthUser(auth.currentUser)
-
-    const unsubscribe = auth.onAuthStateChanged(async user => {
-      setAuthUser(user)
-
-      if (!user) {
-        setBusinessName('')
-        setProfileName('')
-        return
-      }
-
-      setProfileName(
-        typeof user.displayName === 'string'
-          ? user.displayName.trim()
-          : ''
-      )
-
-      if (!db) return
-
-      try {
-        const snapshot = await db
-          .collection('users')
-          .doc(user.uid)
-          .collection('settings')
-          .doc('workspace')
-          .get()
-
+    if (!db) return
+    let cancelled = false
+    db.collection('users')
+      .doc(workspace.ownerUid)
+      .collection('settings')
+      .doc('workspace')
+      .get()
+      .then(snapshot => {
+        if (cancelled) return
         const data = snapshot.exists ? snapshot.data() : {}
         const savedName = data?.businessName
-
         setBusinessName(
-          typeof savedName === 'string'
-            ? savedName.trim()
-            : ''
+          typeof savedName === 'string' ? savedName.trim() : ''
         )
-
         if (CURRENCY_CODES.includes(data?.currency)) {
           setCurrency(data.currency)
         }
-      } catch (error) {
+      })
+      .catch(error => {
         console.error('Workspace settings load failed:', error)
-        setBusinessName('')
+        if (!cancelled) setBusinessName('')
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [wsLoading, workspace])
+
+  useEffect(() => {
+    const auth = window.firebase?.auth?.()
+    if (!auth) {
+      setAuthUser(null)
+      return undefined
+    }
+    setAuthUser(auth.currentUser)
+    const unsubscribe = auth.onAuthStateChanged(user => {
+      setAuthUser(user)
+      if (user) {
+        setProfileName(
+          typeof user.displayName === 'string' ? user.displayName.trim() : ''
+        )
+      } else {
+        setProfileName('')
       }
     })
-
     return unsubscribe
   }, [])
 
@@ -174,6 +171,14 @@ export default function AppLayout() {
         <div className="workspace">
           <span className="workspace-label">WORKSPACE</span>
           <strong>{displayName}</strong>
+          {/* Members see their role here, so a scoped view is never a
+              mystery ("why can't I see everything?"). */}
+          {workspace?.isMember && (
+            <span className="workspace-role">
+              {roleLabel(workspace.role)}
+              {workspace.branchId ? ` · ${workspace.branchId}` : ''}
+            </span>
+          )}
         </div>
 
         <nav className="side-nav">
@@ -183,7 +188,10 @@ export default function AppLayout() {
           <NavLink to="/app/blitz" onClick={closeSidebar}>Blitz Mode</NavLink>
           <NavLink to="/app/offers" onClick={closeSidebar}>Offers</NavLink>
           <NavLink to="/app/revenue" onClick={closeSidebar}>Revenue</NavLink>
-          <NavLink to="/app/settings" onClick={closeSidebar}>Settings</NavLink>
+          {/* Sales Reps get no settings page at all (rules deny it). */}
+          {workspace?.role !== 'sales_rep' && (
+            <NavLink to="/app/settings" onClick={closeSidebar}>Settings</NavLink>
+          )}
           <NavLink to="/app/profile" onClick={closeSidebar}>Profile</NavLink>
         </nav>
 
@@ -268,7 +276,9 @@ export default function AppLayout() {
 
                 <div className="profile-menu-divider" />
 
-                <Link to="/app/settings" onClick={() => setProfileOpen(false)}>Settings</Link>
+                {workspace?.role !== 'sales_rep' && (
+                  <Link to="/app/settings" onClick={() => setProfileOpen(false)}>Settings</Link>
+                )}
 
                 <button type="button" onClick={handleSignOut}>
                   Sign out
