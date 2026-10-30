@@ -1,14 +1,7 @@
 import { recoveryForecast } from '../utils/forecast.js'
+import { formatMoney } from '../utils/money.js'
 import { IconTrendUp } from './icons.jsx'
 import './ForecastWidget.css'
-
-function money(value) {
-  return new Intl.NumberFormat('en-IN', {
-    style: 'currency',
-    currency: 'INR',
-    maximumFractionDigits: 0,
-  }).format(value)
-}
 
 /**
  * Recovery Forecast — "what will I recover?" widget.
@@ -17,7 +10,7 @@ function money(value) {
  * conversion rate. Shows a range, never a fake precise number. When there
  * isn't enough history yet, it says so and explains what to do.
  */
-export default function ForecastWidget({ inquiries }) {
+export default function ForecastWidget({ inquiries, currency = 'INR' }) {
   const f = recoveryForecast(inquiries)
 
   return (
@@ -33,7 +26,7 @@ export default function ForecastWidget({ inquiries }) {
       {f.ready ? (
         <>
           <div className="forecast-range">
-            <strong>{money(f.mid)}</strong>
+            <strong>{formatMoney(f.mid, currency)}</strong>
             <span>likely recovery from your open pipeline</span>
           </div>
           <div className="forecast-bar" aria-hidden="true">
@@ -42,12 +35,12 @@ export default function ForecastWidget({ inquiries }) {
             <span className="forecast-high" style={{ width: `${((f.high - f.mid) / f.pipelineValue) * 100}%` }} />
           </div>
           <div className="forecast-labels">
-            <span>{money(f.low)}</span>
-            <span>{money(f.high)}</span>
+            <span>{formatMoney(f.low, currency)}</span>
+            <span>{formatMoney(f.high, currency)}</span>
           </div>
           <p className="forecast-basis">{f.basis}</p>
           <p className="forecast-pipeline">
-            Open pipeline: <strong>{money(f.pipelineValue)}</strong>
+            Open pipeline: <strong>{formatMoney(f.pipelineValue, currency)}</strong>
           </p>
         </>
       ) : (
@@ -59,7 +52,7 @@ export default function ForecastWidget({ inquiries }) {
           <p className="forecast-basis">{f.basis}</p>
           {f.pipelineValue > 0 && (
             <p className="forecast-pipeline">
-              Open pipeline: <strong>{money(f.pipelineValue)}</strong>
+              Open pipeline: <strong>{formatMoney(f.pipelineValue, currency)}</strong>
             </p>
           )}
         </>

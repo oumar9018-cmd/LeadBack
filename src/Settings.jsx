@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import TeamMembers from './components/TeamMembers.jsx'
+import { CURRENCIES, defaultCurrencyForBrowser } from './utils/money.js'
 
 const defaultSettings = {
   businessName: '',
   phone: '',
   email: '',
-  currency: 'INR',
+  // New workspaces default to the browser-timezone currency; a saved
+  // currency always wins when the settings doc loads.
+  currency: defaultCurrencyForBrowser(),
   timezone: 'Asia/Kolkata',
   followupReminder: '1',
   services: '',
@@ -284,10 +288,9 @@ export default function Settings() {
                     update('currency', e.target.value)
                   }
                 >
-                  <option value="INR">INR — Indian Rupee</option>
-                  <option value="USD">USD — US Dollar</option>
-                  <option value="GBP">GBP — British Pound</option>
-                  <option value="EUR">EUR — Euro</option>
+                  {CURRENCIES.map(c => (
+                    <option key={c.code} value={c.code}>{c.label}</option>
+                  ))}
                 </select>
               </label>
 
@@ -347,6 +350,10 @@ export default function Settings() {
           </div>
 
         </form>
+
+        {/* Team seats (batch 3): managed outside the settings form
+            because invites write to their own collections. */}
+        <TeamMembers />
 
       </div>
     </div>

@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import {
+  CURRENCY_CODES,
+  defaultCurrencyForBrowser,
+  formatMoney,
+} from './utils/money.js'
 
 const statusLabels = {
   new: 'New',
@@ -9,18 +14,11 @@ const statusLabels = {
   lost: 'Lost',
 }
 
-function money(value) {
-  return new Intl.NumberFormat('en-IN', {
-    style: 'currency',
-    currency: 'INR',
-    maximumFractionDigits: 0,
-  }).format(value)
-}
-
 export default function Customers() {
   const navigate = useNavigate()
 
   const [items, setItems] = useState([])
+  const [currency, setCurrency] = useState(() => defaultCurrencyForBrowser())
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState('')
 
@@ -57,6 +55,21 @@ export default function Customers() {
       } catch (error) {
         console.error('Customers load failed:', error)
         setItems([])
+
+      try {
+        const settingsSnap = await db
+          .collection('users')
+          .doc(user.uid)
+          .collection('settings')
+          .doc('workspace')
+          .get()
+        const savedCurrency = settingsSnap.exists
+          ? settingsSnap.data()?.currency
+          : undefined
+        if (CURRENCY_CODES.includes(savedCurrency)) setCurrency(savedCurrency)
+      } catch (error) {
+        console.error('Customers currency load failed:', error)
+      }
         setLoadError('Unable to load customers. Please try again.')
       } finally {
         setLoading(false)
@@ -189,7 +202,7 @@ export default function Customers() {
 
                 <div className="customer-service">
                   <span>{item.service}</span>
-                  <strong>{money(item.value)}</strong>
+                  <strong>{formatMoney(item.value, currency)}</strong>
                 </div>
 
                 <span className={`status status-${item.status}`}>

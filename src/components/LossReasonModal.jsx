@@ -59,7 +59,7 @@ export default function LossReasonModal({ inquiry, onConfirm, onCancel }) {
           <textarea
             value={note}
             onChange={e => setNote(e.target.value)}
-            placeholder="e.g. Wanted it under ₹400, competitor quoted ₹350"
+            placeholder="e.g. Wanted it under budget, competitor quoted less"
             rows={2}
           />
         </label>

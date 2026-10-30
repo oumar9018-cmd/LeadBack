@@ -15,6 +15,36 @@ service cloud.firestore {
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'ceo';
     }
 
+    // Batch 3 — workspace membership. Members are keyed by their Firebase
+    // uid under the OWNER's doc so rules can enforce permissions with a
+    // single get() (rules cannot query). Every member rule starts with
+    // exists() because get() on a missing doc fails closed.
+    function isWorkspaceMember(ownerId) {
+      return signedIn() &&
+        exists(/databases/$(database)/documents/users/$(ownerId)/members/$(request.auth.uid));
+    }
+
+    function memberRole(ownerId) {
+      return get(/databases/$(database)/documents/users/$(ownerId)/members/$(request.auth.uid)).data.role;
+    }
+
+    function memberBranch(ownerId) {
+      return get(/databases/$(database)/documents/users/$(ownerId)/members/$(request.auth.uid)).data.branchId;
+    }
+
+    function isWorkspaceAdmin(ownerId) {
+      return isOwner(ownerId) ||
+        (isWorkspaceMember(ownerId) && memberRole(ownerId) == 'admin');
+    }
+
+    function isBranchManager(ownerId) {
+      return isWorkspaceMember(ownerId) && memberRole(ownerId) == 'branch_manager';
+    }
+
+    function isSalesRep(ownerId) {
+      return isWorkspaceMember(ownerId) && memberRole(ownerId) == 'sales_rep';
+    }
+
     function subscriptionFields() {
       return [
         'subscriptionStatus',
@@ -50,12 +80,86 @@ service cloud.firestore {
         ]);
       allow delete: if false;
 
+      // Batch 3 — role-scoped inquiry access. Owner + admins: everything.
+      // Branch managers: only rows in their branch, and they cannot move
+      // a row to another branch or reassign it. Sales reps: only rows
+      // assigned to them, and they cannot reassign. Delete: owner/admins.
+      // Unassigned / unbranched rows are visible to admins only (safe
+      // default — old inquiries have empty assignedTo/branchId).
       match /inquiries/{inquiryId} {
-        allow read, write: if isOwner(userId);
+        allow read: if isOwner(userId) || isWorkspaceAdmin(userId) ||
+          (isBranchManager(userId) &&
+            resource.data.get('branchId', '') == memberBranch(userId)) ||
+          (isSalesRep(userId) &&
+            resource.data.get('assignedTo', '') == request.auth.uid);
+        allow create: if isOwner(userId) || isWorkspaceAdmin(userId) ||
+          (isBranchManager(userId) &&
+            request.resource.data.get('branchId', '') == memberBranch(userId));
+        allow update: if isOwner(userId) || isWorkspaceAdmin(userId) ||
+          (isBranchManager(userId) &&
+            resource.data.get('branchId', '') == memberBranch(userId) &&
+            request.resource.data.get('branchId', '') == resource.data.get('branchId', '')) ||
+          (isSalesRep(userId) &&
+            resource.data.get('assignedTo', '') == request.auth.uid &&
+            request.resource.data.get('assignedTo', '') == resource.data.get('assignedTo', ''));
+        allow delete: if isOwner(userId) || isWorkspaceAdmin(userId);
       }
 
       match /settings/{settingId} {
-        allow read, write: if isOwner(userId);
+        allow read: if isOwner(userId) || isWorkspaceAdmin(userId) ||
+          isBranchManager(userId);
+        allow write: if isOwner(userId) || isWorkspaceAdmin(userId);
+      }
+
+      // Batch 3 — team invites. Doc id is the lowercased email so the
+      // invited member can find it from their own Google token email.
+      match /invites/{inviteId} {
+        allow get: if isOwner(userId) || isWorkspaceAdmin(userId) ||
+          (signedIn() && resource.data.email == request.auth.token.email);
+        allow list: if isOwner(userId) || isWorkspaceAdmin(userId);
+        allow create, update, delete: if isOwner(userId) || isWorkspaceAdmin(userId);
+      }
+
+      // Batch 3 — team members, keyed by member uid. Accept flow
+      // (phase 2): the member creates their own record only when a
+      // pending invite exists for their token email with the same role.
+      // Owners never hand-write member docs, and members can never
+      // grant themselves a role.
+      match /members/{memberId} {
+        allow get: if isOwner(userId) || isWorkspaceAdmin(userId) ||
+          request.auth.uid == memberId || isCeo();
+        allow list: if isOwner(userId) || isWorkspaceAdmin(userId) || isCeo();
+        allow create: if signedIn() && request.auth.uid == memberId &&
+          exists(/databases/$(database)/documents/users/$(userId)/invites/$(request.auth.token.email)) &&
+          get(/databases/$(database)/documents/users/$(userId)/invites/$(request.auth.token.email)).data.status == 'pending' &&
+          get(/databases/$(database)/documents/users/$(userId)/invites/$(request.auth.token.email)).data.role == request.resource.data.role;
+        allow update: if isOwner(userId) || isWorkspaceAdmin(userId);
+        allow delete: if isOwner(userId) || isWorkspaceAdmin(userId);
+      }
+
+      // Batch 3 — membership mirrors (member's own doc, keyed by owner).
+      // Role in the mirror must always match the members doc, so a
+      // member cannot forge a higher role for themselves.
+      match /memberships/{workspaceOwnerId} {
+        allow get: if isOwner(userId);
+        allow create: if isOwner(userId) &&
+          exists(/databases/$(database)/documents/users/$(workspaceOwnerId)/members/$(userId)) &&
+          get(/databases/$(database)/documents/users/$(workspaceOwnerId)/members/$(userId)).data.role == request.resource.data.role;
+        allow update: if isOwner(userId) &&
+          exists(/databases/$(database)/documents/users/$(workspaceOwnerId)/members/$(userId)) &&
+          get(/databases/$(database)/documents/users/$(workspaceOwnerId)/members/$(userId)).data.role == request.resource.data.role;
+        allow delete: if isOwner(userId);
+      }
+
+      // Batch 3 — audit log: append-only. Owner/admins (+CEO) read; any
+      // workspace actor may append their own actions; NOBODY may update
+      // or delete a record, not even the owner.
+      match /audit/{auditId} {
+        allow get, list: if isOwner(userId) || isWorkspaceAdmin(userId) || isCeo();
+        allow create: if (isOwner(userId) || isWorkspaceMember(userId)) &&
+          request.resource.data.actorUid == request.auth.uid &&
+          request.resource.data.action in ['status_changed', 'member_added', 'member_removed', 'member_role_changed', 'export'];
+        allow update, delete: if false;
       }
     }
 

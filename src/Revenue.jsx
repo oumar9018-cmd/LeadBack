@@ -1,24 +1,22 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import ForecastWidget from './components/ForecastWidget.jsx'
+import {
+  CURRENCY_CODES,
+  defaultCurrencyForBrowser,
+  formatMoney,
+} from './utils/money.js'
 
 const statusLabels = {
   recovered: 'Recovered',
   lost: 'Lost',
 }
 
-function money(value) {
-  return new Intl.NumberFormat('en-IN', {
-    style: 'currency',
-    currency: 'INR',
-    maximumFractionDigits: 0,
-  }).format(value)
-}
-
 export default function Revenue() {
   const navigate = useNavigate()
 
   const [items, setItems] = useState([])
+  const [currency, setCurrency] = useState(() => defaultCurrencyForBrowser())
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState('')
 
@@ -56,6 +54,21 @@ export default function Revenue() {
         console.error('Revenue load failed:', error)
         setItems([])
         setLoadError('Unable to load revenue records. Please try again.')
+      }
+
+      try {
+        const settingsSnap = await db
+          .collection('users')
+          .doc(user.uid)
+          .collection('settings')
+          .doc('workspace')
+          .get()
+        const savedCurrency = settingsSnap.exists
+          ? settingsSnap.data()?.currency
+          : undefined
+        if (CURRENCY_CODES.includes(savedCurrency)) setCurrency(savedCurrency)
+      } catch (error) {
+        console.error('Revenue currency load failed:', error)
       } finally {
         setLoading(false)
       }
@@ -155,7 +168,7 @@ export default function Revenue() {
 
           <div className="revenue-stat featured">
             <span>Total recovered</span>
-            <strong>{money(recoveredRevenue)}</strong>
+            <strong>{formatMoney(recoveredRevenue, currency)}</strong>
             <small>Revenue from recovered inquiries</small>
           </div>
 
@@ -167,7 +180,7 @@ export default function Revenue() {
 
           <div className="revenue-stat">
             <span>Average recovery</span>
-            <strong>{money(averageRecovery)}</strong>
+            <strong>{formatMoney(averageRecovery, currency)}</strong>
             <small>Average value per recovery</small>
           </div>
 
@@ -180,7 +193,7 @@ export default function Revenue() {
         </section>
 
         <section className="revenue-forecast-wrap">
-          <ForecastWidget inquiries={items} />
+          <ForecastWidget inquiries={items} currency={currency} />
         </section>
 
         <section className="revenue-overview">
@@ -188,19 +201,19 @@ export default function Revenue() {
           <div className="revenue-overview-card">
             <div>
               <span className="revenue-label">OPPORTUNITY VALUE</span>
-              <h2>{money(totalValue)}</h2>
+              <h2>{formatMoney(totalValue, currency)}</h2>
               <p>Total value across all tracked inquiries.</p>
             </div>
 
             <div className="revenue-opportunity">
               <div>
                 <span>Recovered</span>
-                <strong>{money(recoveredRevenue)}</strong>
+                <strong>{formatMoney(recoveredRevenue, currency)}</strong>
               </div>
 
               <div>
                 <span>Lost</span>
-                <strong>{money(lostRevenue)}</strong>
+                <strong>{formatMoney(lostRevenue, currency)}</strong>
               </div>
             </div>
           </div>
@@ -219,7 +232,7 @@ export default function Revenue() {
                     <div className="service-row" key={service}>
                       <div>
                         <span>{service}</span>
-                        <strong>{money(value)}</strong>
+                        <strong>{formatMoney(value, currency)}</strong>
                       </div>
 
                       <div className="service-bar">
@@ -318,7 +331,7 @@ export default function Revenue() {
                 </span>
 
                 <strong className="revenue-row-value">
-                  {money(item.value)}
+                  {formatMoney(item.value, currency)}
                 </strong>
               </button>
             ))}

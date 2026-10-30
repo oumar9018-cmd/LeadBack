@@ -1,3 +1,4 @@
+import { currencySymbol } from './money.js'
 /**
  * Wynback Smart Composer engine.
  *
@@ -48,11 +49,12 @@ function attemptCount(inquiry) {
   ).length
 }
 
-function moneyShort(value) {
+function moneyShort(value, currency) {
   const n = Number(value) || 0
-  if (n >= 100000) return `₹${(n / 100000).toFixed(n % 100000 ? 1 : 0)}L`
-  if (n >= 1000) return `₹${(n / 1000).toFixed(n % 1000 ? 1 : 0)}k`
-  return n > 0 ? `₹${n}` : ''
+  const symbol = currencySymbol(currency)
+  if (n >= 100000) return `${symbol}${(n / 100000).toFixed(n % 100000 ? 1 : 0)}L`
+  if (n >= 1000) return `${symbol}${(n / 1000).toFixed(n % 1000 ? 1 : 0)}k`
+  return n > 0 ? `${symbol}${n}` : ''
 }
 
 /**
@@ -70,7 +72,7 @@ export function composeMessage(inquiry = {}, opts = {}) {
   const age = daysSince(inquiry.createdAt || inquiry.date)
   const attempts = attemptCount(inquiry)
   const status = inquiry.status || 'new'
-  const valueStr = moneyShort(inquiry.value)
+  const valueStr = moneyShort(inquiry.value, opts.currency)
   const link = opts.bookingLink || ''
   const occasion = opts.occasion || ''
 

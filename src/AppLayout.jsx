@@ -3,9 +3,14 @@ import { NavLink, Link, Outlet } from 'react-router-dom'
 import { url } from './basePath.js'
 import { GraveyardPill } from './components/GraveyardCounter.jsx'
 import {
+  CURRENCY_CODES,
+  defaultCurrencyForBrowser,
+} from './utils/money.js'
+import {
   IconMessage,
   IconClock,
   IconZap,
+  IconChartBar,
 } from './components/icons.jsx'
 
 /**
@@ -19,6 +24,9 @@ import {
  * + More opening the drawer). At >=900px the sidebar rail returns
  * and the tab bar + hamburger hide (see App.css MOBILE-FIRST SHELL).
  *
+ * Batch 3 (2026-10-30): Overview is back as the post-login landing
+ * page on the owner's order (Revenue summary panel removed from it in
+ * App.jsx) — Overview is the first sidebar entry and first tab again.
  * Batch 2 (2026-10-30): the Overview dashboard page was removed, so
  * Inquiries is the first sidebar entry and the first tab.
  */
@@ -27,6 +35,7 @@ export default function AppLayout() {
   const [profileOpen, setProfileOpen] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [businessName, setBusinessName] = useState('')
+  const [currency, setCurrency] = useState(() => defaultCurrencyForBrowser())
   const [profileName, setProfileName] = useState('')
   const drawerRef = useRef(null)
   const menuButtonRef = useRef(null)
@@ -75,6 +84,10 @@ export default function AppLayout() {
             ? savedName.trim()
             : ''
         )
+
+        if (CURRENCY_CODES.includes(data?.currency)) {
+          setCurrency(data.currency)
+        }
       } catch (error) {
         console.error('Workspace settings load failed:', error)
         setBusinessName('')
@@ -164,6 +177,7 @@ export default function AppLayout() {
         </div>
 
         <nav className="side-nav">
+          <NavLink to="/app" end onClick={closeSidebar}>Overview</NavLink>
           <NavLink to="/app/inquiries" onClick={closeSidebar}>Inquiries</NavLink>
           <NavLink to="/app/followups" onClick={closeSidebar}>Follow-ups</NavLink>
           <NavLink to="/app/blitz" onClick={closeSidebar}>Blitz Mode</NavLink>
@@ -204,7 +218,7 @@ export default function AppLayout() {
           </div>
 
           <div className="topbar-right">
-            <GraveyardPill />
+            <GraveyardPill currency={currency} />
             <button
               type="button"
               className="profile-button"
@@ -273,6 +287,10 @@ export default function AppLayout() {
       </main>
 
       <nav className="bottom-tabbar" aria-label="Primary navigation">
+        <NavLink to="/app" end>
+          <IconChartBar />
+          <span>Overview</span>
+        </NavLink>
         <NavLink to="/app/inquiries">
           <IconMessage />
           <span>Inquiries</span>

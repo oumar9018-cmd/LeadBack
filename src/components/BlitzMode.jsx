@@ -4,15 +4,12 @@ import { rankByWinback } from '../utils/winbackScore.js'
 import { composeMessage, upcomingOccasion } from '../utils/smartComposer.js'
 import { waLink, normalizePhone, bookingLinkFor } from '../utils/whatsapp.js'
 import { IconMessage, IconCheck, IconZap } from './icons.jsx'
+import {
+  CURRENCY_CODES,
+  defaultCurrencyForBrowser,
+  formatMoney,
+} from '../utils/money.js'
 import './BlitzMode.css'
-
-function money(value) {
-  return new Intl.NumberFormat('en-IN', {
-    style: 'currency',
-    currency: 'INR',
-    maximumFractionDigits: 0,
-  }).format(value)
-}
 
 /**
  * Blitz Mode — one-click re-engagement campaigns.
@@ -28,6 +25,7 @@ export default function BlitzMode() {
   const [items, setItems] = useState([])
   const [businessName, setBusinessName] = useState('')
   const [businessSlug, setBusinessSlug] = useState('')
+  const [currency, setCurrency] = useState(() => defaultCurrencyForBrowser())
   const [loading, setLoading] = useState(true)
 
   const [selected, setSelected] = useState({}) // id -> true
@@ -54,6 +52,7 @@ export default function BlitzMode() {
         const data = settings.data() || {}
         setBusinessName(data.businessName || '')
         setBusinessSlug(data.businessSlug || data.slug || '')
+        if (CURRENCY_CODES.includes(data.currency)) setCurrency(data.currency)
       } catch (e) {
         console.error('Blitz load failed:', e)
       } finally {
@@ -116,6 +115,7 @@ export default function BlitzMode() {
       businessName,
       bookingLink: bookingLinkFor(businessSlug),
       occasion,
+      currency,
     })
     const link = waLink(current.phone, text)
     if (link) window.open(link, '_blank', 'noopener')
@@ -183,7 +183,7 @@ export default function BlitzMode() {
                     />
                     <span className="blitz-who">
                       <strong>{inquiry.name}</strong>
-                      <span>{inquiry.service} · {money(Number(inquiry.value) || 0)}</span>
+                      <span>{inquiry.service} · {formatMoney(Number(inquiry.value) || 0, currency)}</span>
                     </span>
                     <span className={`wb-mini wb-${band}`}>{score}</span>
                     <span className={`status status-${inquiry.status}`}>{inquiry.status}</span>
@@ -209,7 +209,7 @@ export default function BlitzMode() {
           <p>You contacted <strong>{done.length}</strong> customer{done.length === 1 ? '' : 's'} ({skipped.length} skipped).</p>
           <div className="blitz-summary-value">
             <span>Pipeline value touched</span>
-            <strong>{money(totalValue)}</strong>
+            <strong>{formatMoney(totalValue, currency)}</strong>
           </div>
           <div className="blitz-summary-actions">
             <button type="button" className="primary-button" onClick={() => { setStarted(false); setSelected({}) }}>
@@ -230,6 +230,7 @@ export default function BlitzMode() {
     businessName,
     bookingLink: bookingLinkFor(businessSlug),
     occasion,
+    currency,
   })
 
   return (
@@ -243,7 +244,7 @@ export default function BlitzMode() {
         <div className="blitz-card">
           <span className="app-eyebrow">NOW CONTACTING</span>
           <h2>{current.name}</h2>
-          <p className="blitz-meta">{current.service} · {money(Number(current.value) || 0)} · {current.phone}</p>
+          <p className="blitz-meta">{current.service} · {formatMoney(Number(current.value) || 0, currency)} · {current.phone}</p>
 
           <div className="sc-preview">
             <span className="sc-preview-label">Personalized message</span>

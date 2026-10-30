@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { TEMPLATES, waLink, fillTemplate } from './utils/whatsapp.js'
-
-function money(value) {
-  return new Intl.NumberFormat('en-IN', {
-    style: 'currency',
-    currency: 'INR',
-    maximumFractionDigits: 0,
-  }).format(value)
-}
+import {
+  CURRENCY_CODES,
+  defaultCurrencyForBrowser,
+  formatMoney,
+} from './utils/money.js'
 
 function getFollowupState(item) {
   if (!item.followup?.date || !item.followup?.time) {
@@ -41,6 +38,7 @@ export default function Followups() {
   const navigate = useNavigate()
 
   const [items, setItems] = useState([])
+  const [currency, setCurrency] = useState(() => defaultCurrencyForBrowser())
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState('')
 
@@ -74,6 +72,21 @@ export default function Followups() {
             ...doc.data(),
           }))
         )
+
+      try {
+        const settingsSnap = await db
+          .collection('users')
+          .doc(user.uid)
+          .collection('settings')
+          .doc('workspace')
+          .get()
+        const savedCurrency = settingsSnap.exists
+          ? settingsSnap.data()?.currency
+          : undefined
+        if (CURRENCY_CODES.includes(savedCurrency)) setCurrency(savedCurrency)
+      } catch (error) {
+        console.error('Followups currency load failed:', error)
+      }
       } catch (error) {
         console.error('Followups load failed:', error)
         setItems([])
@@ -346,7 +359,7 @@ export default function Followups() {
                   <span className={`queue-status queue-${item.followupState}`}>
                     {labels[item.followupState]}
                   </span>
-                  <strong>{money(item.value)}</strong>
+                  <strong>{formatMoney(item.value, currency)}</strong>
                 </div>
               </button>
             ))}

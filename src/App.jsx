@@ -38,6 +38,12 @@ import WinbackScoreBadge from './components/WinbackScore.jsx'
 import { GraveyardCounter } from './components/GraveyardCounter.jsx'
 import LossReasonModal, { LOSS_REASON_LABELS } from './components/LossReasonModal.jsx'
 import Modal from './components/Modal.jsx'
+import {
+  CURRENCY_CODES,
+  currencySymbol,
+  defaultCurrencyForBrowser,
+} from './utils/money.js'
+import { logAudit } from './utils/audit.js'
 import LossIntelligence from './components/LossIntelligence.jsx'
 import StreakWidget from './components/StreakWidget.jsx'
 import OfferBuilder from './components/OfferBuilder.jsx'
@@ -67,11 +73,20 @@ function money(value, currency = 'INR') {
     USD: 'en-US',
     GBP: 'en-GB',
     EUR: 'de-DE',
+    AED: 'en-AE',
+    AUD: 'en-AU',
+    CAD: 'en-CA',
+    SGD: 'en-SG',
+    JPY: 'ja-JP',
+    MXN: 'es-MX',
+    NZD: 'en-NZ',
   }
 
-  return new Intl.NumberFormat(locales[currency] || 'en-IN', {
+  const code = locales[currency] ? currency : 'USD'
+
+  return new Intl.NumberFormat(locales[code], {
     style: 'currency',
-    currency,
+    currency: code,
     maximumFractionDigits: 0,
   }).format(value)
 }
@@ -163,7 +178,12 @@ function Dashboard() {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
   const [profileName, setProfileName] = useState('')
-  const [currency, setCurrency] = useState('INR')
+  // New workspaces default to the browser-timezone currency (see
+  // utils/money.js); a saved workspace currency always wins below.
+  const [currency, setCurrency] = useState(() => defaultCurrencyForBrowser())
+  // Team members of this workspace (batch 3). Empty for solo owners —
+  // the assign dropdown below renders only when members exist.
+  const [members, setMembers] = useState([])
   const [googleReviewLink, setGoogleReviewLink] = useState('')
 
   useEffect(() => {
@@ -202,14 +222,30 @@ function Dashboard() {
         )
 
         setCurrency(
-          ['INR', 'USD', 'GBP', 'EUR'].includes(savedCurrency)
+          CURRENCY_CODES.includes(savedCurrency)
             ? savedCurrency
-            : 'INR'
+            : defaultCurrencyForBrowser()
         )
 
         setGoogleReviewLink(
           typeof savedReviewLink === 'string' ? savedReviewLink.trim() : ''
         )
+
+      try {
+        const membersSnap = await db
+          .collection('users')
+          .doc(user.uid)
+          .collection('members')
+          .get()
+        setMembers(
+          membersSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+        )
+      } catch (error) {
+        // Members collection needs the batch-3 rules deployed; until then
+        // this fails quietly and the workspace stays solo.
+        console.error('Members load failed:', error)
+        setMembers([])
+      }
       } catch (error) {
         console.error('Workspace settings load failed:', error)
         setBusinessName('')
@@ -433,9 +469,18 @@ function Dashboard() {
   })
 
   function updateStatus(id, status) {
+    const prev = items.find(item => item.id === id)
     setItems(current =>
       current.map(item => (item.id === id ? { ...item, status } : item))
     )
+    if (prev && prev.status !== status) {
+      const ownerUid = window.firebase?.auth?.().currentUser?.uid
+      logAudit(ownerUid, {
+        action: 'status_changed',
+        inquiryId: id,
+        detail: `${prev.status || ''} -> ${status}`,
+      })
+    }
   }
 
   function todayKey() {
@@ -456,6 +501,12 @@ function Dashboard() {
         : current
     )
     logActivity(id, 'Marked recovered')
+    const ownerUid = window.firebase?.auth?.().currentUser?.uid
+    logAudit(ownerUid, {
+      action: 'status_changed',
+      inquiryId: id,
+      detail: '-> recovered',
+    })
   }
 
   /** Mark lost — stamps lostAt + lossReason for loss intelligence. */
@@ -474,6 +525,12 @@ function Dashboard() {
         : current
     )
     logActivity(id, `Marked lost (${LOSS_REASON_LABELS[reason] || reason})`)
+    const ownerUid = window.firebase?.auth?.().currentUser?.uid
+    logAudit(ownerUid, {
+      action: 'status_changed',
+      inquiryId: id,
+      detail: `-> lost (${LOSS_REASON_LABELS[reason] || reason})`,
+    })
     setLossTarget(null)
   }
 
@@ -579,6 +636,8 @@ function Dashboard() {
       status: form.status,
       date: 'Just now',
       createdAt: Date.now(),
+      assignedTo: '',
+      branchId: '',
     }
 
     setItems(current => [newInquiry, ...current])
@@ -640,6 +699,8 @@ function Dashboard() {
             status: 'new',
             date: 'Just now',
             createdAt: Date.now(),
+            assignedTo: '',
+            branchId: '',
           }
           setItems(current => [newInquiry, ...current])
         }}
@@ -691,7 +752,7 @@ function Dashboard() {
       </section>
 
       <section className="dashboard-insights">
-        <ForecastWidget inquiries={items} />
+        <ForecastWidget inquiries={items} currency={currency} />
         <div className="blitz-promo">
           <span className="app-eyebrow">BLITZ MODE</span>
           <h3>Win back customers in one session</h3>
@@ -893,34 +954,6 @@ function Dashboard() {
             </div>
           )}
         </div>
-
-        <div className="dashboard-panel compact-panel">
-          <div className="panel-header">
-            <div>
-              <h2>Revenue summary</h2>
-              <p>Recovered customer value.</p>
-            </div>
-          </div>
-
-          <div className="revenue-highlight">
-            <span>Total recovered</span>
-            <strong>{money(recoveredRevenue, currency)}</strong>
-          </div>
-
-          <div className="revenue-line">
-            <span>Recovered inquiries</span>
-            <strong>{recovered.length}</strong>
-          </div>
-
-          <div className="revenue-line">
-            <span>Average recovery</span>
-            <strong>
-              {recovered.length
-                ? money(Math.round(recoveredRevenue / recovered.length), currency)
-                : money(0, currency)}
-            </strong>
-          </div>
-        </div>
       </section>
       </>
       )}
@@ -991,7 +1024,7 @@ function Dashboard() {
                 <label>
                   Estimated value
                   <div className="money-input">
-                    <span>₹</span>
+                    <span>{currencySymbol(currency)}</span>
                     <input
                       type="number"
                       min="0"
@@ -1080,6 +1113,36 @@ function Dashboard() {
                 <span>Added</span>
                 <strong>{detailInquiry.date}</strong>
               </div>
+
+              {members.length > 0 && (
+                <div className="detail-card">
+                  <span>Assigned to</span>
+                  <select
+                    value={detailInquiry.assignedTo || ''}
+                    onChange={e => {
+                      const assignedTo = e.target.value
+                      setItems(current =>
+                        current.map(item =>
+                          item.id === detailInquiry.id
+                            ? { ...item, assignedTo }
+                            : item
+                        )
+                      )
+                      setSelectedInquiry(current =>
+                        current ? { ...current, assignedTo } : current
+                      )
+                    }}
+                  >
+                    <option value="">Unassigned</option>
+                    {members.map(member => (
+                      <option key={member.id} value={member.id}>
+                        {member.email || member.id}
+                        {member.role ? ` (${member.role})` : ''}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
 
               {detailInquiry.status === 'lost' && detailInquiry.lossReason && (
                 <div className="detail-card detail-card-loss">
@@ -1230,6 +1293,7 @@ function Dashboard() {
               inquiry={detailInquiry}
               businessName={businessName}
               businessSlug={businessSlug}
+              currency={currency}
               onAction={(type, tone) => {
                 logActivity(detailInquiry.id, `Smart message opened (${tone})`)
               }}
@@ -1511,7 +1575,7 @@ function RequireCEO({ children }) {
     )
   }
 
-  if (!allowed) return <Navigate to="/app/inquiries" replace />
+  if (!allowed) return <Navigate to="/app" replace />
 
   return children
 }
@@ -1586,11 +1650,12 @@ function App() {
             </RequireAuth>
           }
         >
-          {/* Batch 2 (2026-10-30): the Overview dashboard page was removed
-              on the owner's order — /app lands directly on Inquiries.
-              /app/inquiry keeps the Dashboard component alive as the
-              inquiry-detail host only (see detailOnly in Dashboard). */}
-          <Route path="/app" element={<Navigate to="/app/inquiries" replace />} />
+          {/* Batch 3 (2026-10-30): Overview is back as the post-login
+              landing page on the owner's order — but WITHOUT the Revenue
+              summary panel (removed from the Dashboard below). /app/inquiry
+              keeps the Dashboard component alive as the inquiry-detail
+              host only (see detailOnly in Dashboard). */}
+          <Route path="/app" element={<Dashboard />} />
           <Route path="/app/inquiry" element={<Dashboard />} />
           <Route path="/app/inquiries" element={<Inquiries />} />
           <Route path="/app/followups" element={<Followups />} />

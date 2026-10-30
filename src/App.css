@@ -2223,6 +2223,51 @@ a {
   font-size: 14px;
 }
 
+/* Team rows (batch 3): invite/member list inside the Settings Team card. */
+.team-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  border-top: 1px solid #edf0f4;
+}
+
+.team-row > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.team-row > div span {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.team-row select {
+  min-height: 40px;
+  font-size: 14px;
+}
+
+.team-row button {
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #fff;
+  color: #b42318;
+  font-weight: 600;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+@media (max-width: 620px) {
+  .team-row {
+    flex-wrap: wrap;
+  }
+}
+
 .settings-card {
   position: relative;
   margin-bottom: 18px;

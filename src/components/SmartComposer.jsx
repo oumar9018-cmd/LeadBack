@@ -12,7 +12,7 @@ import './SmartComposer.css'
  * status. Every variable used is listed transparently below the preview.
  * One tap opens WhatsApp with the message ready.
  */
-export default function SmartComposer({ inquiry, businessName, businessSlug, onAction }) {
+export default function SmartComposer({ inquiry, businessName, businessSlug, currency = 'INR', onAction }) {
   const [tone, setTone] = useState('friendly')
   const [copied, setCopied] = useState(false)
 
@@ -25,8 +25,9 @@ export default function SmartComposer({ inquiry, businessName, businessSlug, onA
         businessName,
         bookingLink: bookingLinkFor(businessSlug),
         occasion,
+        currency,
       }),
-    [inquiry, tone, businessName, businessSlug, occasion]
+    [inquiry, tone, businessName, businessSlug, occasion, currency]
   )
 
   if (!inquiry) return null

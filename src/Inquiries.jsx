@@ -6,6 +6,12 @@ import VoiceInput from './components/VoiceInput.jsx'
 import OwnerBookings from './components/OwnerBookings.jsx'
 import { IconPlus, IconX } from './components/icons.jsx'
 import { rankByWinback } from './utils/winbackScore.js'
+import {
+  CURRENCY_CODES,
+  currencySymbol,
+  defaultCurrencyForBrowser,
+  formatMoney,
+} from './utils/money.js'
 
 const statusLabels = {
   new: 'New',
@@ -15,20 +21,10 @@ const statusLabels = {
   lost: 'Lost',
 }
 
-function money(value) {
-  return new Intl.NumberFormat('en-IN', {
-    style: 'currency',
-    currency: 'INR',
-    maximumFractionDigits: 0,
-  }).format(value)
-}
-
 /**
- * Inquiries — the post-login landing view since batch 2 (2026-10-30),
- * when the Overview dashboard page was removed on the owner's order.
- *
- * It also hosts the two write paths that used to live on the Overview
- * page, so removing that page loses no functionality:
+ * Inquiries — the work list. Batch 3 (2026-10-30) restored Overview as
+ * the post-login landing page, but Inquiries keeps the two write paths
+ * that moved here in batch 2, so nothing is lost:
  * - Add inquiry (modal below; writes straight to Firestore, unlike the
  *   old Dashboard path which went through the whole-list sync effect).
  * - Booking requests (OwnerBookings section below the panel; same
@@ -40,6 +36,8 @@ export default function Inquiries() {
   const navigate = useNavigate()
 
   const [items, setItems] = useState([])
+  // Workspace currency (timezone default until Settings saves one).
+  const [currency, setCurrency] = useState(() => defaultCurrencyForBrowser())
 
   useEffect(() => {
     const auth = window.firebase?.auth?.()
@@ -69,6 +67,21 @@ export default function Inquiries() {
       } catch (error) {
         console.error('Inquiries load failed:', error)
         setItems([])
+      }
+
+      try {
+        const settingsSnap = await db
+          .collection('users')
+          .doc(user.uid)
+          .collection('settings')
+          .doc('workspace')
+          .get()
+        const savedCurrency = settingsSnap.exists
+          ? settingsSnap.data()?.currency
+          : undefined
+        if (CURRENCY_CODES.includes(savedCurrency)) setCurrency(savedCurrency)
+      } catch (error) {
+        console.error('Inquiries currency load failed:', error)
       }
     })
 
@@ -127,6 +140,8 @@ export default function Inquiries() {
         status: form.status,
         date: 'Just now',
         createdAt: Date.now(),
+        assignedTo: '',
+        branchId: '',
       })
       setForm({ name: '', phone: '', service: '', value: '', status: 'new' })
       setFormError('')
@@ -147,6 +162,8 @@ export default function Inquiries() {
         status: 'new',
         date: 'Just now',
         createdAt: Date.now(),
+        assignedTo: '',
+        branchId: '',
       })
     } catch (error) {
       console.error('Add booking as inquiry failed:', error)
@@ -299,7 +316,7 @@ export default function Inquiries() {
                 </div>
 
                 <strong className="inquiry-page-value">
-                  {money(item.value)}
+                  {formatMoney(item.value, currency)}
                 </strong>
 
                 <WinbackScoreBadge inquiry={item} />
@@ -388,7 +405,7 @@ export default function Inquiries() {
               <label>
                 Estimated value
                 <div className="money-input">
-                  <span>₹</span>
+                  <span>{currencySymbol(currency)}</span>
                   <input
                     type="number"
                     min="0"

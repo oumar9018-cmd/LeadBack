@@ -97,7 +97,7 @@ const industries = [
 ]
 
 const stats = [
-  { value: '₹0', label: 'Every feature free — no paid plan, ever' },
+  { value: 'Free', label: 'Every feature free — no paid plan, ever' },
   { value: '10s', label: 'To send a follow-up' },
   { value: '24/7', label: 'Inquiry capture, zero effort' },
   { value: '1 tap', label: 'WhatsApp message or voice note' },
@@ -150,7 +150,7 @@ function App() {
         if (account?.role === 'ceo') {
           window.location.href = url('/ceo')
         } else {
-          window.location.href = url('/app/inquiries')
+          window.location.href = url('/app')
         }
       } catch (error) {
         console.error('Homepage session check failed:', error)
