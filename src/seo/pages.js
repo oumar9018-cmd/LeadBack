@@ -895,7 +895,7 @@ const salons = {
     },
     {
       q: 'How do I win back clients who stopped coming?',
-      a: 'Import your lapsed-client list into Wynback and work it like new enquiries: a personal message, a reason to return, a clear next step. Most salons are surprised how many "lost" clients just needed one nudge.',
+      a: 'Add your lapsed clients to Wynback and work them like new enquiries: a personal message, a reason to return, a clear next step. Most salons are surprised how many "lost" clients just needed one nudge.',
     },
     {
       q: 'Do I need to connect my Instagram or phone?',
@@ -1039,7 +1039,7 @@ const clinics = {
     },
     {
       q: 'Does it work for multi-practitioner clinics?',
-      a: 'Yes. The shared queue means any team member can see what is due and pick it up, so cover during leave is automatic.',
+      a: 'Yes. Your queue is yours to work through in one place, so cover during leave is simple: everything due is visible, with the next step already written.',
     },
   ],
 }
@@ -1231,7 +1231,7 @@ const freelancers = {
     {
       icon: 'shield',
       title: 'Your data, portable',
-      text: 'Export everything any time. Your client history is yours, whatever tools you use next.',
+      text: 'Your client history stays yours, in your own workspace — no lock-in, whatever tools you use next.',
     },
   ],
   faq: [
