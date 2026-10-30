@@ -3294,6 +3294,17 @@ a {
   gap: 20px;
 }
 
+/* The table's fixed columns need ~780px; narrower content columns scroll
+   inside the panel instead of cutting the table off at the page edge. */
+.inquiry-table-wrap {
+  overflow-x: auto;
+}
+
+.inquiry-table-wrap .inquiry-table-head,
+.inquiry-table-wrap .inquiry-page-row {
+  min-width: 780px;
+}
+
 .inquiry-table-head {
   padding: 13px 24px;
   background: #fafbfd;
@@ -3416,6 +3427,14 @@ a {
 }
 
 @media (max-width: 620px) {
+  .inquiry-table-wrap {
+    overflow-x: visible;
+  }
+
+  .inquiry-table-wrap .inquiry-page-row {
+    min-width: 0;
+  }
+
   .inquiry-table-head {
     display: none;
   }

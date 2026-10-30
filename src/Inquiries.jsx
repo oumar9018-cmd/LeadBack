@@ -211,8 +211,7 @@ export default function Inquiries() {
             <div>
               <h2>All inquiries</h2>
               <p>
-                {filtered.length} inquiry
-                {filtered.length === 1 ? '' : 'ies'}
+                {filtered.length} {filtered.length === 1 ? 'inquiry' : 'inquiries'}
               </p>
             </div>
 
@@ -262,6 +261,7 @@ export default function Inquiries() {
             </div>
           </div>
 
+          <div className="inquiry-table-wrap">
           <div className="inquiry-table-head">
             <span>Customer</span>
             <span>Service</span>
@@ -316,6 +316,7 @@ export default function Inquiries() {
                 No inquiries found.
               </div>
             )}
+          </div>
           </div>
 
         </section>
