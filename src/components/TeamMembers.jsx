@@ -400,10 +400,16 @@ export default function TeamMembers() {
         </div>
       </form>
 
-      {invites.length > 0 && (
+      {/* Pending invites: filter to status pending. Accept flips the
+          doc to 'accepted' (it does NOT delete it), so without this
+          filter an accepted invite lingered here forever after the
+          member had already joined — exactly the stale row seen in
+          the 31 Oct fairness run. Docs without a status (legacy)
+          still count as pending. */}
+      {invites.filter(invite => (invite.status || 'pending') === 'pending').length > 0 && (
         <div>
           <h3>Pending invites</h3>
-          {invites.map(invite => (
+          {invites.filter(invite => (invite.status || 'pending') === 'pending').map(invite => (
             <div key={invite.id} className="team-row">
               <div>
                 <strong>{invite.email || invite.id}</strong>
