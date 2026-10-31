@@ -190,6 +190,7 @@ const integrations = {
     { value: '0', label: 'Extra cost' },
     { value: 'Free', label: 'Forever' },
   ],
+  stepsHeading: 'Three steps to connect.',
   steps: [
     {
       title: 'Pick a source',

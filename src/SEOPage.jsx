@@ -318,7 +318,10 @@ function Steps({ page }) {
     <section className="seo-block">
       <div className="seo-block-heading reveal">
         <span className="seo-kicker">THE WORKFLOW</span>
-        <h2>Four steps, repeated daily.</h2>
+        {/* The old hardcoded heading promised four steps; pages with a
+            different step count (e.g. Integrations has three) set their
+            own heading instead of showing a wrong count. */}
+        <h2>{page.stepsHeading || 'Four steps, repeated daily.'}</h2>
       </div>
 
       <ol className="seo-steps">
