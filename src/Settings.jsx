@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useWorkspace } from './components/WorkspaceContext.jsx'
 import { url } from './basePath.js'
 import { canViewSettings, canWriteSettings } from './utils/workspace.js'
+import CustomFieldsCard from './components/CustomFieldsCard.jsx'
 import { CURRENCIES, defaultCurrencyForBrowser } from './utils/money.js'
 
 const defaultSettings = {
@@ -355,6 +356,9 @@ export default function Settings() {
 
             </div>
           </section>
+
+          {/* #13 — Custom fields: own card, same settings-doc pattern as branches. */}
+          <CustomFieldsCard />
 
           <section className="settings-card settings-account-card">
             <div>

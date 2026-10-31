@@ -13,6 +13,11 @@ import { IconPlus, IconX } from './components/icons.jsx'
 import { rankByWinback } from './utils/winbackScore.js'
 import { findOpenDuplicates } from './utils/detectors.js'
 import { toCsv, downloadCsv } from './utils/csv.js'
+import CustomFieldInputs from './components/CustomFieldInputs.jsx'
+import {
+  loadCustomFieldDefinitions,
+  normalizeCustomValue,
+} from './utils/customFields.js'
 import {
   CURRENCY_CODES,
   currencySymbol,
@@ -134,6 +139,24 @@ export default function Inquiries() {
   // #18 — open rows sharing the typed phone, shown as a warning (not a
   // block: a returning customer is legitimate, so "Save anyway" proceeds).
   const [dupWarning, setDupWarning] = useState([])
+  // #13 — custom field definitions for this workspace + the add form's
+  // values for them. Definitions load once per mount (same pattern as
+  // branches); values live on the inquiry doc under `custom`.
+  const [customFields, setCustomFields] = useState([])
+  const [customValues, setCustomValues] = useState({})
+
+  useEffect(() => {
+    if (wsLoading || !workspace) return undefined
+    const db = window.firebase?.firestore?.()
+    if (!db) return undefined
+    let cancelled = false
+    loadCustomFieldDefinitions(db, workspace.ownerUid).then(list => {
+      if (!cancelled) setCustomFields(list)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [wsLoading, workspace])
 
   // Direct Firestore write (this page has no whole-list sync effect).
   async function addInquiryDoc(doc) {
@@ -179,6 +202,15 @@ export default function Inquiries() {
       const db = window.firebase?.firestore?.()
       const branchId = workspace?.role === 'branch_manager' ? workspace.branchId || '' : ''
       const route = await assignNext(db, workspace?.ownerUid, { branchId })
+      // #13 — normalize defined custom values; empty values are dropped
+      // so old and new inquiries keep the same clean shape.
+      const custom = {}
+      for (const field of customFields) {
+        const value = normalizeCustomValue(field.type, customValues[field.id])
+        if (value !== '' && value !== null && value !== undefined) {
+          custom[field.id] = value
+        }
+      }
       const ref = await addInquiryDoc({
         name: form.name.trim(),
         phone: form.phone.trim(),
@@ -192,6 +224,7 @@ export default function Inquiries() {
         assignedBy: route.assignedBy,
         source: 'manual',
         branchId,
+        custom,
       })
       if (route.assignedTo && ref) {
         logAudit(workspace.ownerUid, {
@@ -203,6 +236,7 @@ export default function Inquiries() {
       setForm({ name: '', phone: '', service: '', value: '', status: 'new' })
       setFormError('')
       setDupWarning([])
+      setCustomValues({})
       setShowAddInquiry(false)
     } catch (error) {
       console.error('Add inquiry failed:', error)
@@ -213,6 +247,7 @@ export default function Inquiries() {
   // #140 — CSV export of exactly the filtered list on screen (search +
   // status filter applied, render cap ignored). Scoped by construction:
   // `filtered` only ever contains rows this user can already see.
+  // #13 — custom columns ride along when fields are defined.
   function handleExportCsv() {
     const columns = [
       { key: 'name', label: 'Name' },
@@ -230,6 +265,11 @@ export default function Inquiries() {
             ? new Date(row.createdAt).toISOString().slice(0, 10)
             : row.date || '',
       },
+      ...customFields.map(field => ({
+        key: `custom_${field.id}`,
+        label: field.label,
+        get: row => row.custom?.[field.id] ?? '',
+      })),
     ]
     downloadCsv('wynback-inquiries.csv', toCsv(columns, filtered))
   }
@@ -678,6 +718,16 @@ export default function Inquiries() {
                   <option value="replied">Replied</option>
                 </select>
               </label>
+
+              {/* #13 — custom fields defined in Settings. Nothing renders
+                  when none are defined. */}
+              <CustomFieldInputs
+                fields={customFields}
+                values={customValues}
+                onChange={(id, value) =>
+                  setCustomValues(prev => ({ ...prev, [id]: value }))
+                }
+              />
             </div>
 
             {dupWarning.length > 0 && (

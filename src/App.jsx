@@ -40,6 +40,10 @@ import Offers from './Offers.jsx'
 import WinbackScoreBadge from './components/WinbackScore.jsx'
 import { GraveyardCounter } from './components/GraveyardCounter.jsx'
 import UnassignedRevenue from './components/UnassignedRevenue.jsx'
+import {
+  loadCustomFieldDefinitions,
+  normalizeCustomValue,
+} from './utils/customFields.js'
 import LossReasonModal, { LOSS_REASON_LABELS } from './components/LossReasonModal.jsx'
 import Modal from './components/Modal.jsx'
 import {
@@ -207,6 +211,27 @@ function Dashboard() {
   // Branches of this workspace (batch 4). The detail-modal branch
   // select below draws from this list (owner/admin only).
   const [branches, setBranches] = useState([])
+  // #13 — custom field definitions for this workspace. The detail modal
+  // below renders one editable card per field.
+  const [customFields, setCustomFields] = useState([])
+
+  // #13 — definitions load once per workspace (same get-once pattern
+  // as branches); the detail modal renders one card per field.
+  useEffect(() => {
+    if (wsLoading || !workspace) {
+      if (!wsLoading) setCustomFields([])
+      return undefined
+    }
+    const db = window.firebase?.firestore?.()
+    if (!db) return undefined
+    let cancelled = false
+    loadCustomFieldDefinitions(db, workspace.ownerUid).then(list => {
+      if (!cancelled) setCustomFields(list)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [wsLoading, workspace])
   const [googleReviewLink, setGoogleReviewLink] = useState('')
 
   // Workspace settings + members + branches, loaded from the workspace
@@ -444,6 +469,29 @@ function Dashboard() {
     setSelectedInquiry(null)
     setDeleteConfirmId(null)
     if (detailOnly) navigate('/app/inquiries')
+  }
+
+  // #13 — edit one custom value on the open inquiry. Local state first
+  // (instant UI), then the whole-list sync effect persists the merged
+  // doc — the same pattern as the assignment/branch selects above.
+  // Empty values drop the key so docs stay clean.
+  function updateCustomValue(field, raw) {
+    const value = normalizeCustomValue(field.type, raw)
+    const apply = item => {
+      const next = { ...(item.custom || {}) }
+      if (value === '') {
+        delete next[field.id]
+      } else {
+        next[field.id] = value
+      }
+      return { ...item, custom: next }
+    }
+    setItems(current =>
+      current.map(item =>
+        item.id === detailInquiry.id ? apply(item) : item
+      )
+    )
+    setSelectedInquiry(current => (current ? apply(current) : current))
   }
 
   // Review requests (batch 2): the saved Google review link, or '' when
@@ -1257,6 +1305,40 @@ function Dashboard() {
                 <span>Added</span>
                 <strong>{detailInquiry.date}</strong>
               </div>
+
+              {/* #13 — custom fields: one editable card per defined
+                  field. Values persist through the whole-list sync
+                  effect, like assignment/branch above. */}
+              {customFields.map(field => (
+                <div className="detail-card" key={field.id}>
+                  <span>{field.label}</span>
+                  {field.type === 'select' ? (
+                    <select
+                      value={detailInquiry.custom?.[field.id] ?? ''}
+                      onChange={e => updateCustomValue(field, e.target.value)}
+                    >
+                      <option value="">—</option>
+                      {field.options.map(option => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input
+                      type={
+                        field.type === 'number'
+                          ? 'number'
+                          : field.type === 'date'
+                            ? 'date'
+                            : 'text'
+                      }
+                      value={detailInquiry.custom?.[field.id] ?? ''}
+                      onChange={e => updateCustomValue(field, e.target.value)}
+                    />
+                  )}
+                </div>
+              ))}
 
               {/* Assignment is owner/admin-only: managers and reps
                   cannot reassign (rules deny it), so the control is
