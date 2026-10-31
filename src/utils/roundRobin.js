@@ -30,10 +30,21 @@
 /**
  * Route one new inquiry. Returns routing fields to store on the doc.
  * Never throws: on any failure it returns the unassigned shape.
+ *
+ * Round-2: the returned object also carries a `routing` marker so
+ * callers that REPORT outcomes can tell the two unassigned causes
+ * apart (creation call sites only read the assignedTo/assignedAt/
+ * assignedBy/assignedEmail fields and are unaffected):
+ * - 'no-candidates': the transaction ran and found no available agent.
+ * - 'error' (+ `routingError`): the transaction threw. The old code
+ *   collapsed this into the same shape as no-candidates, so the UI
+ *   blamed every stayed row on "no available agent".
  */
 export async function assignNext(db, ownerUid, { branchId = '' } = {}) {
   const fallback = { assignedTo: '', assignedAt: '', assignedBy: '', assignedEmail: '' }
-  if (!db || !ownerUid) return fallback
+  if (!db || !ownerUid) {
+    return { ...fallback, routing: 'error', routingError: 'routing unavailable' }
+  }
   try {
     const pickedId = await db.runTransaction(async tx => {
       const settingsRef = db
@@ -90,7 +101,7 @@ export async function assignNext(db, ownerUid, { branchId = '' } = {}) {
       return pickId
     })
 
-    if (!pickedId) return fallback
+    if (!pickedId) return { ...fallback, routing: 'no-candidates' }
     // Email for the audit line ("assigned to <email>"). Read outside
     // the transaction; a failed read never blocks the assignment.
     let assignedEmail = ''
@@ -113,6 +124,6 @@ export async function assignNext(db, ownerUid, { branchId = '' } = {}) {
     }
   } catch (error) {
     console.error('Round-robin assignment failed, leaving unassigned:', error)
-    return fallback
+    return { ...fallback, routing: 'error', routingError: error?.message || String(error) }
   }
 }

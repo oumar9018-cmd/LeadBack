@@ -7,6 +7,7 @@ import {
   defaultCurrencyForBrowser,
 } from './utils/money.js'
 import { roleLabel } from './utils/workspace.js'
+import { logAudit } from './utils/audit.js'
 import { useWorkspace } from './components/WorkspaceContext.jsx'
 import {
   IconMessage,
@@ -118,6 +119,17 @@ export default function AppLayout() {
         .collection('members')
         .doc(uid)
         .update({ [field]: value })
+      // Round-2 Gate 8 fix: the member's OWN toggle lives here
+      // (members cannot open Settings), and it used to persist with
+      // no audit record at all — the owner-path logAudit call in
+      // TeamMembers never runs for self-toggles. This one call covers
+      // both the 'available' path and the admin 'takesLeads' path.
+      // logAudit is fire-and-forget, so a failed audit write never
+      // reverts the toggle.
+      await logAudit(workspace.ownerUid, {
+        action: 'member_availability_changed',
+        detail: `${authUser?.email || uid}: ${field} -> ${value}`,
+      })
     } catch (error) {
       console.error('Availability toggle failed:', error)
       if (field === 'available') setMyAvailable(previous)

@@ -225,9 +225,9 @@ export default function Inquiries() {
 
   // Gate 6 backfill (owner/admin only): run the round-robin router
   // over every currently-unassigned row and report how many routed
-  // vs stayed unassigned. Routing only — this never sends a message,
-  // never touches Blitz, and never re-deals rows that already have
-  // an assignee.
+  // vs stayed unassigned vs errored. Routing only — this never sends
+  // a message, never touches Blitz, and never re-deals rows that
+  // already have an assignee.
   async function handleRouteUnassigned() {
     if (!workspace || routing) return
     const db = window.firebase?.firestore?.()
@@ -236,12 +236,23 @@ export default function Inquiries() {
     setRouteReport('')
     const unassigned = items.filter(item => (item.assignedTo || '') === '')
     let routed = 0
+    let errored = 0
+    let firstError = ''
     const updates = []
     for (const item of unassigned) {
       const route = await assignNext(db, workspace.ownerUid, {
         branchId: item.branchId || '',
       })
-      if (!route.assignedTo) continue
+      if (!route.assignedTo) {
+        // Round-2: a thrown transaction is NOT "no available agent".
+        // assignNext marks it routing: 'error'; only a genuine
+        // zero-candidates result ('no-candidates') keeps that wording.
+        if (route.routing === 'error') {
+          errored += 1
+          if (!firstError) firstError = route.routingError || 'routing failed'
+        }
+        continue
+      }
       try {
         await db
           .collection('users')
@@ -261,9 +272,11 @@ export default function Inquiries() {
           assignedBy: route.assignedBy,
         })
       } catch (error) {
-        // assignNext already bumped the pick's count; the row simply
-        // stays unassigned and is counted as such below.
+        // assignNext already bumped the pick's count; the row stays
+        // unassigned, but this is a write error, not "no agent".
         console.error('Route unassigned update failed:', error)
+        errored += 1
+        if (!firstError) firstError = error?.message || 'update failed'
       }
     }
     if (updates.length > 0) {
@@ -275,12 +288,21 @@ export default function Inquiries() {
       )
     }
     setRouting(false)
-    const stayed = unassigned.length - routed
-    setRouteReport(
-      unassigned.length === 0
-        ? 'No unassigned inquiries.'
-        : `Routed ${routed} of ${unassigned.length} unassigned ${unassigned.length === 1 ? 'inquiry' : 'inquiries'}; ${stayed} stayed unassigned (no available agent).`
-    )
+    const stayed = unassigned.length - routed - errored
+    if (unassigned.length === 0) {
+      setRouteReport('No unassigned inquiries.')
+    } else {
+      const parts = [
+        `Routed ${routed} of ${unassigned.length} unassigned ${unassigned.length === 1 ? 'inquiry' : 'inquiries'}.`,
+      ]
+      if (stayed > 0) {
+        parts.push(`${stayed} stayed unassigned (no available agent).`)
+      }
+      if (errored > 0) {
+        parts.push(`${errored} could not be routed (error: ${String(firstError).slice(0, 200)}).`)
+      }
+      setRouteReport(parts.join(' '))
+    }
   }
 
   const options = [

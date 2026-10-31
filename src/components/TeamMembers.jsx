@@ -43,6 +43,9 @@ export default function TeamMembers() {
   const [notice, setNotice] = useState('')
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
+  // Round-2 Gate 8 fix: per-row toggle in-flight flags, keyed
+  // `${memberId}:${field}` (see toggleMemberField).
+  const [toggling, setToggling] = useState({})
 
   function db() {
     return window.firebase?.firestore?.()
@@ -251,6 +254,20 @@ export default function TeamMembers() {
     const database = db()
     const user = currentUser()
     if (!database || !user || !workspace) return
+    const key = `${member.id}:${field}`
+    // Round-2 Gate 8 fix (duplicated toggles): the checkbox used to
+    // keep showing its OLD value until reload() returned, so a fast
+    // operator re-clicked and fired a second identical update +
+    // audit record. Show the new value immediately (optimistic) and
+    // disable this row's checkbox while its toggle is in flight, so
+    // a second click cannot fire. The logAudit call below still runs
+    // exactly once per toggle.
+    if (toggling[key]) return
+    const previous = member[field]
+    setMembers(current =>
+      current.map(m => (m.id === member.id ? { ...m, [field]: value } : m))
+    )
+    setToggling(current => ({ ...current, [key]: true }))
     try {
       await database
         .collection('users')
@@ -269,7 +286,18 @@ export default function TeamMembers() {
       reload()
     } catch (e) {
       console.error('Member availability toggle failed:', e)
+      // Roll the optimistic value back; the server still holds the
+      // old value, so the checkbox must show it again.
+      setMembers(current =>
+        current.map(m => (m.id === member.id ? { ...m, [field]: previous } : m))
+      )
       setError('Could not update availability — please try again.')
+    } finally {
+      setToggling(current => {
+        const next = { ...current }
+        delete next[key]
+        return next
+      })
     }
   }
 
@@ -418,6 +446,7 @@ export default function TeamMembers() {
                   <input
                     type="checkbox"
                     checked={member.available === true}
+                    disabled={toggling[`${member.id}:available`] === true}
                     onChange={e => toggleMemberField(member, 'available', e.target.checked)}
                   />
                   Available for new leads
@@ -428,6 +457,7 @@ export default function TeamMembers() {
                   <input
                     type="checkbox"
                     checked={member.takesLeads === true}
+                    disabled={toggling[`${member.id}:takesLeads`] === true}
                     onChange={e => toggleMemberField(member, 'takesLeads', e.target.checked)}
                   />
                   Takes routed leads
