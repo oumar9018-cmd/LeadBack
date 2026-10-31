@@ -4819,6 +4819,15 @@ a {
   display: flex;
   flex-direction: column;
   gap: 3px;
+  /* Drawer fix: the nav grew to 13 links and overflowed the fixed
+     sidebar on phones — lower links (API & Webhooks) were clipped
+     and unreachable, while brand + Sign out stayed visible. The list
+     now scrolls inside the sidebar; brand and bottom stay pinned. */
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
 .side-nav a {
