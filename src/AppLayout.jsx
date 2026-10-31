@@ -47,6 +47,7 @@ export default function AppLayout() {
   const [profileName, setProfileName] = useState('')
   const drawerRef = useRef(null)
   const menuButtonRef = useRef(null)
+  const profileButtonRef = useRef(null)
   // Batch 4: the workspace owner's settings + the member's role.
   const { workspace, loading: wsLoading } = useWorkspace()
 
@@ -195,6 +196,20 @@ export default function AppLayout() {
     }
   }, [sidebarOpen])
 
+  // Profile menu: Escape closes it and returns focus to the button
+  // (the drawer already had this; the menu did not, per audit).
+  useEffect(() => {
+    if (!profileOpen) return undefined
+    function handleKeyDown(event) {
+      if (event.key === 'Escape') {
+        setProfileOpen(false)
+        profileButtonRef.current?.focus()
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [profileOpen])
+
   async function handleSignOut() {
     try {
       await window.firebase?.auth?.()?.signOut()
@@ -273,12 +288,16 @@ export default function AppLayout() {
           <NavLink to="/app/blitz" onClick={closeSidebar}>Blitz Mode</NavLink>
           <NavLink to="/app/offers" onClick={closeSidebar}>Offers</NavLink>
           <NavLink to="/app/revenue" onClick={closeSidebar}>Revenue</NavLink>
+          {/* Customers existed as a route but had no nav entry (audit). */}
+          <NavLink to="/app/customers" onClick={closeSidebar}>Customers</NavLink>
           {/* Sales Reps get no settings page at all (rules deny it). */}
-          {workspace?.role !== 'sales_rep' && (
+          {/* Role-gated links wait for the workspace so they never flicker
+              in and out on first load (audit: API link briefly missing). */}
+          {!wsLoading && workspace?.role !== 'sales_rep' && (
             <NavLink to="/app/settings" onClick={closeSidebar}>Settings</NavLink>
           )}
           {/* API & Webhooks is its own section, owner/admin only. */}
-          {canManageTeam(workspace?.role) && (
+          {!wsLoading && canManageTeam(workspace?.role) && (
             <NavLink to="/app/api" onClick={closeSidebar}>API &amp; Webhooks</NavLink>
           )}
           <NavLink to="/app/profile" onClick={closeSidebar}>Profile</NavLink>
@@ -319,6 +338,7 @@ export default function AppLayout() {
             <button
               type="button"
               className="profile-button"
+              ref={profileButtonRef}
               aria-expanded={profileOpen}
               aria-haspopup="true"
               onClick={() => setProfileOpen(value => !value)}

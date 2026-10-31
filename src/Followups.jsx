@@ -193,7 +193,7 @@ export default function Followups() {
         <header className="followups-header">
           <div>
             <span className="app-eyebrow">FOLLOW-UPS</span>
-            <h1>Follow-up queue</h1>
+            <h1>Follow-ups</h1>
             <p>Stay on top of every customer you still need to contact.</p>
           </div>
 

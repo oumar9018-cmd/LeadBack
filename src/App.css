@@ -510,6 +510,37 @@ a {
   font-size: 11px;
 }
 
+/* Empty-state radar art had no size (audit: 300px browser default
+   dominated the Overview). Cap it; compact variant is smaller. */
+.empty-art {
+  display: block;
+  width: 180px;
+  height: auto;
+  margin: 0 auto 12px;
+}
+
+.empty-art-compact {
+  width: 120px;
+}
+
+/* Win-back sort header had no styles at all (audit: raw default
+   button next to plain headers). Plain header-button look. */
+.score-sort {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
+.score-sort.active {
+  color: #2563EB;
+}
+
 /* ==============================
    BOTTOM PANELS
 ============================== */
@@ -520,6 +551,13 @@ a {
   display: grid;
   grid-template-columns: 1.15fr .85fr;
   gap: 20px;
+}
+
+/* The grid has a single panel on Overview (audit: blank second column).
+   A lone panel spans the full width; a future second panel restores
+   the two-column layout automatically. */
+.bottom-grid > :only-child {
+  grid-column: 1 / -1;
 }
 
 .compact-panel {
@@ -2271,6 +2309,10 @@ a {
 .team-row > div span {
   font-size: 13px;
   color: #64748b;
+  /* Audit rows carry long unbroken strings (emails, lead IDs) that
+     overflowed narrow screens — wrap them anywhere. */
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .team-row select {
@@ -4542,6 +4584,31 @@ a {
 .sidebar-bottom a:hover {
   background: #f4f7fb;
   color: #2563EB;
+}
+
+/* Sidebar Sign out was a raw default button (audit) — style it like a
+   nav row, red to mark it as a destructive action. */
+.sidebar-bottom button {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 40px;
+  margin-top: 6px;
+  padding: 0 12px;
+  border: 1px solid #fee2e2;
+  border-radius: 9px;
+  background: #fff;
+  color: #b42318;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: background 160ms ease;
+}
+
+.sidebar-bottom button:hover {
+  background: #fef2f2;
 }
 
 .sidebar-bottom span {

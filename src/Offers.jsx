@@ -175,7 +175,7 @@ export default function Offers() {
           <div className="offers-stat">
             <span>Claimed</span>
             <strong>{claimed.length}</strong>
-            <small>{offers.length ? `${Math.round((claimed.length / offers.length) * 100)}% claim rate` : '—'}</small>
+            {offers.length > 0 && <small>{`${Math.round((claimed.length / offers.length) * 100)}% claim rate`}</small>}
           </div>
           <div className="offers-stat">
             <span>Revenue attributed</span>
