@@ -2,6 +2,7 @@ import { createElement, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { NAV_LINKS, FOOTER_GROUPS, getSeoPage } from './seo/pages.js'
 import { useSEO } from './seo/useSEO.js'
+import { LogoMark } from './components/icons.jsx'
 import './SEOPage.gold.css'
 
 /**
@@ -159,8 +160,13 @@ function Icon({ name, className }) {
  * Scroll-reveal: elements with .reveal fade/rise into view once.
  * Runs only in the browser (effects never execute during the
  * build-time static render), so the prerendered markup stays identical.
+ *
+ * Re-runs when the page type changes: every SEO page renders the SAME
+ * <SEOPage> component, so React keeps the instance across navigation
+ * and a mount-only effect never observes the new page's sections —
+ * they stayed opacity:0 forever (the blank-middle bug on SEO pages).
  */
-function useReveal() {
+function useReveal(type) {
   useEffect(() => {
     const els = Array.from(document.querySelectorAll('.seo-shell .reveal'))
     if (els.length === 0) return undefined
@@ -181,7 +187,7 @@ function useReveal() {
     )
     els.forEach((el) => io.observe(el))
     return () => io.disconnect()
-  }, [])
+  }, [type])
 }
 
 /* ------------------------------------------------------------------ */
@@ -192,7 +198,7 @@ function SeoHeader() {
   return (
     <header className="seo-nav">
       <Link className="seo-brand" to="/" aria-label="Wynback home">
-        <span className="seo-brand-mark">W</span>
+        <LogoMark width={34} height={34} className="seo-brand-logo" />
         <span>Wynback</span>
       </Link>
 
@@ -222,7 +228,7 @@ function SeoFooter() {
       <div className="seo-footer-top">
         <div className="seo-footer-brand">
           <Link className="seo-brand" to="/">
-            <span className="seo-brand-mark">W</span>
+            <LogoMark width={34} height={34} className="seo-brand-logo" />
             <span>Wynback</span>
           </Link>
           <p>Turn missed inquiries into customers.</p>
@@ -446,7 +452,7 @@ function Plans({ page }) {
       </div>
 
       <p className="seo-plan-note">
-        All prices in INR. No setup fees, no per-seat charges, cancel anytime.
+        Every feature is free — no paid plans, no per-seat charges, no setup fees.
       </p>
     </section>
   )
@@ -538,7 +544,7 @@ export default function SEOPage({ type }) {
   const page = getSeoPage(type)
 
   useSEO(page)
-  useReveal()
+  useReveal(type)
 
   if (!page) return null
 

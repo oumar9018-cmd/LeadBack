@@ -63,17 +63,17 @@ const features = {
   navLabel: 'Features',
   title: 'Wynback Features — One-Tap WhatsApp Follow-ups & Voice Notes',
   description:
-    'Explore Wynback features: one-tap WhatsApp follow-ups, personal voice-note win-backs, drip sequences, public booking links, and recovery analytics.',
+    'Explore Wynback features: one-tap WhatsApp follow-ups, personal voice-note win-backs, drip sequences, public booking links, recovery analytics, unlimited team seats, and webhooks & API.',
   keywords:
-    'WhatsApp follow up tool, voice note follow up, missed call recovery, drip sequence software, booking link generator, customer win back features',
+    'WhatsApp follow up tool, voice note follow up, missed call recovery, drip sequence software, booking link generator, customer win back features, unlimited team seats free, role based access, round robin lead routing, webhooks api, bulk csv import, activity log',
   eyebrow: 'FEATURES',
   heading: 'Every feature has one job: getting the customer back.',
   intro:
-    'Wynback is deliberately narrow. It does the four things that decide whether an interested customer becomes a paying one — and it leaves the rest alone.',
+    'Wynback is deliberately narrow. It does the work that decides whether an interested customer becomes a paying one — and it leaves the rest alone.',
   stats: [
-    { value: '4', label: 'Core workflows' },
+    { value: '14', label: 'Features included' },
     { value: '0', label: 'Spreadsheets required' },
-    { value: 'Free', label: 'To start' },
+    { value: 'Free', label: 'Forever' },
   ],
   sections: [
     {
@@ -116,6 +116,36 @@ const features = {
       title: 'Fast to set up',
       text: 'Sign in with Google and start logging inquiries in the same afternoon. There is no implementation phase.',
     },
+    {
+      icon: 'users',
+      title: 'Team seats, unlimited and free',
+      text: 'Invite your whole staff at no extra cost. Everyone works from the same inquiry queue, and seats are free forever — no per-seat charges, ever.',
+    },
+    {
+      icon: 'shield',
+      title: 'Roles that protect your data',
+      text: 'Owners, admins, branch managers and sales reps each see only what their role allows. Reps see only their assigned leads, and staff can never delete data.',
+    },
+    {
+      icon: 'refresh',
+      title: 'Round-robin lead routing',
+      text: 'New inquiries are shared fairly across available reps, least-loaded first, so no lead waits on one person’s day off and no rep gets overloaded.',
+    },
+    {
+      icon: 'grid',
+      title: 'Webhooks & API',
+      text: 'Connect Shopify, Meta leads, IndiaMART or any website form. New leads land in your inbox automatically, with one bearer token per website.',
+    },
+    {
+      icon: 'file',
+      title: 'Bulk CSV import',
+      text: 'Bring thousands of dead leads back in one import — map columns, preview what is valid, and blitz the good ones in a single pass.',
+    },
+    {
+      icon: 'check',
+      title: 'Activity log',
+      text: 'Every invite, role change, assignment and removal is time-stamped with who did it, so the business always has a clear record.',
+    },
   ],
   faq: [
     {
@@ -124,7 +154,7 @@ const features = {
     },
     {
       q: 'Can more than one person use Wynback?',
-      a: 'Not yet. Wynback is built for a solo owner right now: one workspace, one follow-up queue, so nothing depends on memory. Team seats are not available yet — if your business grows into a team, that goes on the roadmap.',
+      a: 'Yes — Wynback includes unlimited team seats, free. Invite staff by email with a role: owner, admin, branch manager or sales rep. Branch managers see only their branch, sales reps see only their assigned leads, and staff can never delete data.',
     },
     {
       q: 'How is Wynback different from a CRM?',
@@ -368,7 +398,7 @@ const followUpManagement = {
     },
     {
       q: 'Can my team share follow-ups?',
-      a: 'Not yet — Wynback is a solo-owner workspace today, so there are no team seats to share. Follow-ups do live on the customer record rather than in a phone or inbox, so the history is never trapped in one device.',
+      a: 'Yes. Invite your team by email — seats are unlimited and free. Everyone shares the same inquiry queue, reps see only their assigned leads, and every follow-up still lives on the customer record, never in someone’s phone or inbox.',
     },
     {
       q: 'Is Wynback an automation tool?',

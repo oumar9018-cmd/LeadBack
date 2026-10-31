@@ -185,6 +185,13 @@
   box-shadow: 0 6px 16px rgba(37, 99, 235, 0.28);
 }
 
+/* Website symbol in the SEO header/footer brand row (replaces the
+   plain "W" letter mark, same LogoMark as the app and home page). */
+.seo-brand-logo {
+  flex: 0 0 auto;
+  display: block;
+}
+
 .seo-nav-links {
   display: flex;
   align-items: center;
