@@ -6,7 +6,7 @@ import {
   CURRENCY_CODES,
   defaultCurrencyForBrowser,
 } from './utils/money.js'
-import { roleLabel } from './utils/workspace.js'
+import { canManageTeam, roleLabel } from './utils/workspace.js'
 import { logAudit } from './utils/audit.js'
 import { useWorkspace } from './components/WorkspaceContext.jsx'
 import {
@@ -276,6 +276,10 @@ export default function AppLayout() {
           {/* Sales Reps get no settings page at all (rules deny it). */}
           {workspace?.role !== 'sales_rep' && (
             <NavLink to="/app/settings" onClick={closeSidebar}>Settings</NavLink>
+          )}
+          {/* API & Webhooks is its own section, owner/admin only. */}
+          {canManageTeam(workspace?.role) && (
+            <NavLink to="/app/api" onClick={closeSidebar}>API &amp; Webhooks</NavLink>
           )}
           <NavLink to="/app/profile" onClick={closeSidebar}>Profile</NavLink>
         </nav>

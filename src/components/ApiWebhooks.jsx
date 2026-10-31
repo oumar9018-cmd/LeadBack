@@ -1,9 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { useWorkspace } from './WorkspaceContext.jsx'
+import './ApiWebhooks.css'
 
 /**
- * API & Webhooks (Settings card, owner/admin only — rendered under the
- * same canManageTeam gate as TeamMembers).
+ * API & Webhooks — its OWN section (/app/api, owner/admin only under the
+ * same canManageTeam gate as TeamMembers). Moved out of Settings
+ * 2026-10-31: it is a product surface, not a setting.
  *
  * The ingestion service itself lives OUTSIDE the SPA (Render) and
  * holds every secret server-side. This card only shows the public
@@ -187,21 +189,23 @@ export default function ApiWebhooks() {
   if (!workspace) return null
 
   return (
-    <section className="settings-card">
-      <div className="settings-card-header">
+    <section className="api-card">
+      <div className="api-card-header">
         <div>
-          <span className="settings-label">API &amp; WEBHOOKS</span>
+          <span className="api-eyebrow">ENDPOINTS</span>
           <h2>Connect Shopify, Meta, IndiaMART or your website</h2>
           <p>Leads from these sources land in your Inquiries automatically. Secrets stay on the API service — nothing secret is stored in this app.</p>
         </div>
       </div>
 
-      <div className="settings-grid">
+      <div>
         {ENDPOINTS.map(endpoint => (
-          <div key={endpoint.name} className="settings-full">
-            <p>
-              <strong>{endpoint.name}:</strong>{' '}
-              <code>{endpoint.url}</code>{' '}
+          <div key={endpoint.name} className="api-endpoint">
+            <p className="api-endpoint-name">
+              <strong>{endpoint.name}</strong>
+            </p>
+            <div className="api-url-row">
+              <code className="api-url">{endpoint.url}</code>
               <button
                 type="button"
                 className="primary-button"
@@ -209,74 +213,74 @@ export default function ApiWebhooks() {
               >
                 {copied === endpoint.name ? 'Copied' : 'Copy URL'}
               </button>
-            </p>
-            <p>{endpoint.note}</p>
+            </div>
+            <p className="api-note">{endpoint.note}</p>
           </div>
         ))}
       </div>
 
-      <div className="settings-card-header" style={{ marginTop: 16 }}>
+      <div className="api-card-header" style={{ marginTop: 28 }}>
         <div>
-          <span className="settings-label">WEBSITE TOKENS</span>
+          <span className="api-eyebrow">WEBSITE TOKENS</span>
           <h2>Website bearer tokens</h2>
           <p>Mint one token per website. A token is shown once — copy it into your form, it is never shown again.</p>
         </div>
       </div>
 
-      {serviceNote && <p>{serviceNote}</p>}
-      {error && <p>{error}</p>}
+      {serviceNote && <p className="api-notice">{serviceNote}</p>}
+      {error && <p className="api-error">{error}</p>}
 
-      <form onSubmit={mintToken}>
-        <div className="settings-grid">
-          <label>
-            <span>Token label</span>
-            <input
-              value={label}
-              onChange={e => setLabel(e.target.value)}
-              placeholder="e.g. Main website form"
-              maxLength={80}
-            />
-          </label>
-          <div>
-            <button type="submit" className="primary-button" disabled={minting}>
-              {minting ? 'Minting…' : 'Mint token'}
-            </button>
-          </div>
-        </div>
+      <form className="api-mint-form" onSubmit={mintToken}>
+        <label className="api-field">
+          <span>Token label</span>
+          <input
+            value={label}
+            onChange={e => setLabel(e.target.value)}
+            placeholder="e.g. Main website form"
+            maxLength={80}
+          />
+        </label>
+        <button type="submit" className="primary-button" disabled={minting}>
+          {minting ? 'Minting…' : 'Mint token'}
+        </button>
       </form>
 
       {minted && (
-        <div className="settings-full">
+        <div className="api-minted">
           <p>
             <strong>New token for “{minted.label}” — copy it now, it will never be shown again:</strong>
           </p>
-          <p>
-            <code>{minted.token}</code>{' '}
+          <div className="api-url-row">
+            <code className="api-url">{minted.token}</code>
             <button
               type="button"
               className="primary-button"
               onClick={() => copyText(minted.token, ok => setCopied(ok ? 'minted' : ''))}
             >
               {copied === 'minted' ? 'Copied' : 'Copy token'}
-            </button>{' '}
-            <button type="button" onClick={() => setMinted(null)}>Dismiss</button>
-          </p>
+            </button>
+            <button type="button" className="settings-link-button" onClick={() => setMinted(null)}>Dismiss</button>
+          </div>
         </div>
       )}
 
       {loading ? (
-        <p>Loading tokens…</p>
+        <p className="api-empty">Loading tokens…</p>
       ) : tokens.length === 0 ? (
-        <p>No website tokens yet.</p>
+        <p className="api-empty">No website tokens yet.</p>
       ) : (
-        <ul>
+        <ul className="api-token-list">
           {tokens.map(token => (
-            <li key={token.id}>
-              <strong>{token.label}</strong>
-              {token.createdAt ? ` — created ${new Date(token.createdAt).toLocaleString()}` : ''}
-              {token.revoked ? ' — revoked' : ''}{' '}
+            <li key={token.id} className="api-token-row">
+              <div className="api-token-main">
+                <strong>{token.label}</strong>
+                <span className="api-token-meta">
+                  {token.createdAt ? `created ${new Date(token.createdAt).toLocaleString()}` : 'created'}
+                  {token.revoked && <span className="api-token-revoked"> • revoked</span>}
+                </span>
+              </div>
               {!token.revoked && (
-                <button type="button" onClick={() => revokeToken(token.id)}>
+                <button type="button" className="api-revoke-button" onClick={() => revokeToken(token.id)}>
                   {confirmingId === token.id ? 'Confirm revoke?' : 'Revoke'}
                 </button>
               )}

@@ -1,0 +1,341 @@
+/* API & Webhooks — own section (moved out of Settings, 2026-10-31).
+   Same light professional theme as the rest of the app (#2563EB primary,
+   #172033 headings, #788496 muted text, #e5eaf0 borders), but with its
+   own classes so the section no longer depends on Settings styles.
+   Mobile rules live at the bottom: long URLs and bearer tokens wrap
+   instead of overflowing, and every button becomes full-width thumb
+   sized on narrow screens. */
+
+.api-card {
+  position: relative;
+  margin-bottom: 18px;
+  padding: 26px;
+  border: 1px solid #e5eaf0;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 5px 18px rgba(23, 32, 51, 0.035);
+  overflow: hidden;
+}
+
+.api-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 130px;
+  height: 130px;
+  background: radial-gradient(
+    circle,
+    rgba(37, 99, 235, 0.055),
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+.api-card-header {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 24px;
+}
+
+.api-eyebrow {
+  display: block;
+  margin-bottom: 7px;
+  color: #8a96a8;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+.api-card h2 {
+  margin: 0 0 5px;
+  color: #172033;
+  font-size: 18px;
+  letter-spacing: -0.25px;
+}
+
+.api-card-header p {
+  margin: 0;
+  color: #788496;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+/* Endpoint rows: name, wrapping URL block, copy button, note. */
+.api-endpoint {
+  position: relative;
+  z-index: 1;
+  padding: 16px 0;
+  border-top: 1px solid #eef2f6;
+}
+
+.api-endpoint:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.api-endpoint:last-child {
+  padding-bottom: 0;
+}
+
+.api-endpoint-name {
+  margin: 0 0 10px;
+  color: #172033;
+  font-size: 14px;
+}
+
+.api-url-row {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+  min-width: 0;
+}
+
+.api-url {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 11px 13px;
+  border: 1px solid #e5eaf0;
+  border-radius: 10px;
+  background: #f8fafc;
+  color: #172033;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12.5px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  word-break: break-all;
+}
+
+.api-url-row .primary-button {
+  flex: 0 0 auto;
+  min-height: 44px;
+  align-self: center;
+  white-space: nowrap;
+}
+
+.api-note {
+  margin: 10px 0 0;
+  color: #788496;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+/* Notices: service state + errors, as boxes instead of bare text. */
+.api-notice,
+.api-error {
+  position: relative;
+  z-index: 1;
+  margin: 16px 0 0;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.api-notice {
+  border: 1px solid #e5eaf0;
+  background: #f8fafc;
+  color: #3c4859;
+}
+
+.api-error {
+  border: 1px solid #fecaca;
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+/* Mint form: label field + button. */
+.api-mint-form {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.api-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.api-field > span {
+  color: #3c4859;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.api-field input {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 13px;
+  border: 1px solid #dfe5ec;
+  border-radius: 10px;
+  outline: none;
+  background: #fff;
+  color: #172033;
+  font: inherit;
+  font-size: 13px;
+}
+
+.api-field input::placeholder {
+  color: #a3adba;
+}
+
+.api-field input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px #eff6ff;
+}
+
+.api-mint-form .primary-button {
+  min-height: 44px;
+  white-space: nowrap;
+}
+
+/* Minted token: highlighted box, token wraps, buttons wrap. */
+.api-minted {
+  position: relative;
+  z-index: 1;
+  margin-top: 16px;
+  padding: 16px;
+  border: 1px solid #bfdbfe;
+  border-radius: 12px;
+  background: #eff6ff;
+}
+
+.api-minted p {
+  margin: 0 0 12px;
+  color: #172033;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.api-minted p:last-child {
+  margin-bottom: 0;
+}
+
+.api-minted .api-url {
+  border-color: #bfdbfe;
+  background: #fff;
+}
+
+/* Token list: styled rows, not bare bullets. */
+.api-token-list {
+  position: relative;
+  z-index: 1;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.api-token-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 13px 0;
+  border-top: 1px solid #eef2f6;
+}
+
+.api-token-row:last-child {
+  padding-bottom: 0;
+}
+
+.api-token-main {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.api-token-main strong {
+  color: #172033;
+  font-size: 13.5px;
+  overflow-wrap: anywhere;
+}
+
+.api-token-meta {
+  color: #788496;
+  font-size: 12.5px;
+}
+
+.api-token-revoked {
+  color: #8a96a8;
+  font-weight: 700;
+}
+
+.api-revoke-button {
+  flex: 0 0 auto;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  background: #fff;
+  color: #b91c1c;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.api-revoke-button:hover {
+  background: #fef2f2;
+}
+
+.api-empty {
+  position: relative;
+  z-index: 1;
+  margin: 16px 0 0;
+  color: #788496;
+  font-size: 13px;
+}
+
+/* ---------- Mobile ---------- */
+@media (max-width: 700px) {
+  .api-card {
+    padding: 20px;
+    border-radius: 14px;
+  }
+
+  .api-url-row {
+    flex-direction: column;
+  }
+
+  .api-url-row .primary-button {
+    width: 100%;
+  }
+
+  .api-mint-form {
+    grid-template-columns: 1fr;
+  }
+
+  .api-mint-form .primary-button {
+    width: 100%;
+  }
+
+  .api-token-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .api-revoke-button {
+    width: 100%;
+  }
+
+  .api-minted .api-url-row .settings-link-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 390px) {
+  .api-card {
+    padding: 17px;
+  }
+
+  .api-card h2 {
+    font-size: 17px;
+  }
+}
