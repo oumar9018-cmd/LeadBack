@@ -60,7 +60,6 @@ export function useSEO(page) {
     upsertMeta('property', 'og:image', ogImageUrl())
 
     upsertMeta('name', 'twitter:card', 'summary_large_image')
-    upsertMeta('name', 'twitter:site', SITE.twitter)
     upsertMeta('name', 'twitter:title', page.title)
     upsertMeta('name', 'twitter:description', page.description)
     upsertMeta('name', 'twitter:image', ogImageUrl())

@@ -175,7 +175,6 @@ function renderHead(html, page) {
   out = upsertMeta(out, 'property', 'og:image', ogImageUrl())
 
   out = upsertMeta(out, 'name', 'twitter:card', 'summary_large_image')
-  out = upsertMeta(out, 'name', 'twitter:site', SITE.twitter)
   out = upsertMeta(out, 'name', 'twitter:title', page.title)
   out = upsertMeta(out, 'name', 'twitter:description', page.description)
   out = upsertMeta(out, 'name', 'twitter:image', ogImageUrl())
@@ -227,11 +226,13 @@ Disallow: /app/
 Disallow: /ceo
 Disallow: /trial
 Disallow: /login
+Disallow: /accept
 Disallow: /LeadBack/app
 Disallow: /LeadBack/app/
 Disallow: /LeadBack/ceo
 Disallow: /LeadBack/trial
 Disallow: /LeadBack/login
+Disallow: /LeadBack/accept
 
 Sitemap: ${SITE_ORIGIN}/sitemap.xml
 `

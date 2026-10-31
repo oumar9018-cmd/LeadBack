@@ -26,7 +26,7 @@ const home = {
   path: '/',
   title: 'Wynback — Win Back Every Customer You Almost Lost',
   description:
-    'Wynback helps local businesses win back missed calls and cold inquiries with one-tap WhatsApp follow-ups, personal voice notes, and drip sequences. Start free.',
+    'Wynback helps local businesses win back missed calls and cold inquiries with one-tap WhatsApp follow-ups, personal voice notes, and structured follow-up sequences. Start free.',
   keywords:
     'win back customers, missed call follow up, WhatsApp follow up tool, customer recovery software, voice note follow up, lead recovery, small business CRM',
   eyebrow: 'CUSTOMER WIN-BACK',
@@ -63,9 +63,9 @@ const features = {
   navLabel: 'Features',
   title: 'Wynback Features — One-Tap WhatsApp Follow-ups & Voice Notes',
   description:
-    'Explore Wynback features: one-tap WhatsApp follow-ups, personal voice-note win-backs, drip sequences, public booking links, recovery analytics, unlimited team seats, and webhooks & API.',
+    'Explore Wynback features: one-tap WhatsApp follow-ups, personal voice-note win-backs, structured follow-up sequences, public booking links, recovery analytics, unlimited team seats, and webhooks & API.',
   keywords:
-    'WhatsApp follow up tool, voice note follow up, missed call recovery, drip sequence software, booking link generator, customer win back features, unlimited team seats free, role based access, round robin lead routing, webhooks api, bulk csv import, activity log',
+    'WhatsApp follow up tool, voice note follow up, missed call recovery, follow up sequence software, booking link generator, customer win back features, unlimited team seats free, role based access, round robin lead routing, webhooks api, bulk csv import, activity log',
   eyebrow: 'FEATURES',
   heading: 'Every feature has one job: getting the customer back.',
   intro:
@@ -163,6 +163,159 @@ const features = {
     {
       q: 'Is my data exported if I cancel?',
       a: 'Your records remain yours and cancelling never deletes the history you built. Export is not available in this version yet — you can view your inquiry, follow-up and revenue records in your workspace any time.',
+    },
+  ],
+}
+
+/* ------------------------------------------------------------------ */
+/* Integrations — the public face of API & Webhooks (previously only   */
+/* visible inside the app at /app/api).                                */
+/* ------------------------------------------------------------------ */
+
+const integrations = {
+  type: 'integrations',
+  path: '/integrations',
+  navLabel: 'Integrations',
+  title: 'Wynback Integrations — Shopify, Meta Leads, IndiaMART & Website API',
+  description:
+    'Connect Shopify, Meta leads, IndiaMART or any website form to Wynback. New inquiries land in your inbox automatically — webhooks and API included free.',
+  keywords:
+    'Shopify webhook, Meta leads integration, IndiaMART leads, website form API, lead webhook software, bearer token api, automatic lead capture',
+  eyebrow: 'INTEGRATIONS',
+  heading: 'Every lead source, one inbox.',
+  intro:
+    'Connect the tools your business already uses. New inquiries land in Wynback automatically — no copy-paste, no missed leads, no extra software to learn.',
+  stats: [
+    { value: '4', label: 'Sources live' },
+    { value: '0', label: 'Extra cost' },
+    { value: 'Free', label: 'Forever' },
+  ],
+  steps: [
+    {
+      title: 'Pick a source',
+      text: 'Shopify, Meta leads, IndiaMART — or any website form of your own.',
+    },
+    {
+      title: 'Paste the URL or token',
+      text: 'Platform webhooks verify by signature. Website forms use one bearer token per site, shown once and stored only as a hash.',
+    },
+    {
+      title: 'Leads land in Inquiries',
+      text: 'New inquiries appear automatically, deduplicated, and round-robin routed to the right rep.',
+    },
+  ],
+  sections: [
+    {
+      icon: 'briefcase',
+      title: 'Shopify',
+      text: 'Orders and inquiries from your store flow straight into the follow-up queue, verified by HMAC signature.',
+    },
+    {
+      icon: 'message',
+      title: 'Meta leads',
+      text: 'Facebook lead ads arrive with signatures verified and lead details fetched server-side — no manual entry.',
+    },
+    {
+      icon: 'search',
+      title: 'IndiaMART',
+      text: 'Marketplace inquiries land in the same inbox as everything else, keyed by your IndiaMART key.',
+    },
+    {
+      icon: 'file',
+      title: 'Any website form',
+      text: 'Mint one bearer token per website and post to it. The token is shown once and never stored in plain text.',
+    },
+  ],
+  faq: [
+    {
+      q: 'Do I need a developer to connect?',
+      a: 'No. Platform webhooks are pasted URLs with signatures; website forms need one token copied into the form. If you can paste a link, you can connect a source.',
+    },
+    {
+      q: 'What happens if the same lead comes twice?',
+      a: 'Wynback deduplicates by source and external ID, so a retried webhook never creates a second inquiry.',
+    },
+    {
+      q: 'Is my data safe with webhooks?',
+      a: 'Signatures are verified on every request, bad signatures are rejected before anything is written, and website tokens are stored only as hashes — never in plain text.',
+    },
+    {
+      q: 'Does this cost extra?',
+      a: 'No. Webhooks and API are included free, like everything else in Wynback.',
+    },
+  ],
+}
+
+/* ------------------------------------------------------------------ */
+/* Pricing — free forever, stated plainly (Wynback has no paid plans). */
+/* ------------------------------------------------------------------ */
+
+const pricing = {
+  type: 'pricing',
+  path: '/pricing',
+  navLabel: 'Pricing',
+  title: 'Wynback Pricing — Free Forever, Every Feature Included',
+  description:
+    'Wynback pricing: free forever. Every feature included, unlimited team seats, no credit card, no trial, no paid plans.',
+  keywords:
+    'free CRM, free lead follow up software, free customer recovery tool, no credit card software, unlimited team seats free',
+  eyebrow: 'PRICING',
+  heading: 'Free. Forever. No catch.',
+  intro:
+    'Every feature in Wynback is free — unlimited seats, API, audit log, all of it. No credit card, no trial clock, no plan to upgrade to.',
+  stats: [
+    { value: 'Free', label: 'To start' },
+    { value: 'Free', label: 'Per seat' },
+    { value: '0', label: 'Paid plans' },
+  ],
+  sections: [
+    {
+      icon: 'check',
+      title: 'Every feature included',
+      text: 'Inbox, follow-ups, Blitz mode, offers, revenue tracking, routing, CSV import, webhooks and API — all of it, free.',
+    },
+    {
+      icon: 'users',
+      title: 'Unlimited seats',
+      text: 'Invite your whole team. No per-seat charges, ever.',
+    },
+    {
+      icon: 'shield',
+      title: 'No credit card',
+      text: 'Sign in with Google and start. Nothing to pay, nothing to cancel.',
+    },
+    {
+      icon: 'clock',
+      title: 'No trial clock',
+      text: 'Free does not expire after 14 days. It is free, full stop.',
+    },
+    {
+      icon: 'file',
+      title: 'Your data stays yours',
+      text: 'Records live in your workspace. Cancelling never deletes your history.',
+    },
+    {
+      icon: 'layers',
+      title: 'Built for small and big',
+      text: 'One owner or fifty reps — roles, branches and routing scale with you.',
+    },
+  ],
+  faq: [
+    {
+      q: 'Is Wynback really free?',
+      a: 'Yes. Every feature today is free — no card, no trial, no paid plans, no per-seat charges.',
+    },
+    {
+      q: 'Will you charge later?',
+      a: 'Any future paid option, if one ever appears, will be for something new — and will be decided only when traffic and users grow. The free core stays free.',
+    },
+    {
+      q: 'What about big businesses?',
+      a: 'Big teams use the same free core: roles, branches, round-robin routing, API and audit log. Nothing is gated by team size.',
+    },
+    {
+      q: 'How do you make money if it is free?',
+      a: 'Honest answer: right now, we do not. We would rather earn trust first — the same reason there are no ads, no resold data and no paywalls in the product.',
     },
   ],
 }
@@ -1365,6 +1518,8 @@ const manifesto = {
 export const SEO_PAGES = [
   home,
   features,
+  integrations,
+  pricing,
   useCases,
   howItWorks,
   missedInquiries,
@@ -1394,6 +1549,8 @@ export const ROUTED_SEO_PAGES = SEO_PAGES.filter((page) => page.path !== '/')
 /** Primary Header navigation, in order. */
 export const NAV_LINKS = [
   features,
+  integrations,
+  pricing,
   useCases,
   howItWorks,
   industries,
@@ -1407,6 +1564,8 @@ export const FOOTER_GROUPS = [
     title: 'Product',
     links: [
       { to: features.path, label: 'Features' },
+      { to: integrations.path, label: 'Integrations' },
+      { to: pricing.path, label: 'Pricing' },
       { to: howItWorks.path, label: 'How it works' },
       { to: resources.path, label: 'Resources' },
     ],

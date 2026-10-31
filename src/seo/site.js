@@ -17,14 +17,13 @@ export const SITE = {
   /** Fallback title/description (also the defaults baked into index.html). */
   title: 'Wynback — Win Back Every Customer You Almost Lost',
   description:
-    'Wynback helps local businesses win back missed calls and cold inquiries with one-tap WhatsApp follow-ups, personal voice notes, and drip sequences.',
+    'Wynback helps local businesses win back missed calls and cold inquiries with one-tap WhatsApp follow-ups, personal voice notes, and structured follow-up sequences.',
 
   /** Absolute path (from the site root) of the social share image. */
   ogImage: '/og-image.png',
 
-  /** Open Graph locale + Twitter handle. */
+  /** Open Graph locale. (No social handle is claimed — none is verified.) */
   locale: 'en_US',
-  twitter: '@wynback',
 
   /** Structured data shared by every page. */
   sameAs: [],
