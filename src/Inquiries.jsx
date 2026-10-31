@@ -270,6 +270,7 @@ export default function Inquiries() {
           assignedTo: route.assignedTo,
           assignedAt: route.assignedAt,
           assignedBy: route.assignedBy,
+          assignedEmail: route.assignedEmail || '',
         })
       } catch (error) {
         // assignNext already bumped the pick's count; the row stays
@@ -286,6 +287,17 @@ export default function Inquiries() {
           return update ? { ...item, ...update } : item
         })
       )
+      // Bulk-route audit: one 'inquiry_assigned' entry per routed
+      // row, matching the manual-assignment action. Previously the
+      // bulk action logged nothing, so its rows were invisible in
+      // the audit filter even though routing itself worked.
+      updates.forEach(u => {
+        logAudit(workspace.ownerUid, {
+          action: 'inquiry_assigned',
+          inquiryId: u.id,
+          detail: `assigned to ${u.assignedEmail || u.assignedTo}`,
+        })
+      })
     }
     setRouting(false)
     const stayed = unassigned.length - routed - errored
