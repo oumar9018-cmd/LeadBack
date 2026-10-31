@@ -109,7 +109,10 @@ export default function ApiWebhooks() {
       setTokens(Array.isArray(data.tokens) ? data.tokens : [])
     } catch (e) {
       console.error('API tokens load failed:', e)
-      setServiceNote('Could not reach the API service — endpoints above still work; try again in a bit.')
+      // Surface the reason: a network/CORS failure and an HTTP status
+      // look identical on screen otherwise, and the first live mint
+      // check could not tell them apart.
+      setServiceNote(`Could not reach the API service (${e.message || 'network error'}) — endpoints above still work; try again in a bit.`)
       setTokens([])
     } finally {
       setLoading(false)
@@ -150,7 +153,7 @@ export default function ApiWebhooks() {
       await loadTokens()
     } catch (e) {
       console.error('Token mint failed:', e)
-      setError('Could not mint a token — try again in a bit.')
+      setError(`Could not mint a token — ${e.message || 'network error'}.`)
     } finally {
       setMinting(false)
     }
