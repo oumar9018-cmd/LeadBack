@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { NavLink, Link, Outlet } from 'react-router-dom'
 import { url } from './basePath.js'
 import { GraveyardPill } from './components/GraveyardCounter.jsx'
+import { LogoMark } from './components/icons.jsx'
 import {
   CURRENCY_CODES,
   defaultCurrencyForBrowser,
@@ -242,7 +243,7 @@ export default function AppLayout() {
 
       <aside className="sidebar" ref={drawerRef} id="app-drawer" aria-label="Main navigation">
         <div className="sidebar-brand">
-          <div className="brand-mark">W</div>
+          <LogoMark width={30} height={30} />
           <span>Wynback</span>
         </div>
 
@@ -328,7 +329,7 @@ export default function AppLayout() {
               <span></span>
             </button>
             <span className="topbar-brand">
-              <span className="brand-mark">W</span>
+              <LogoMark width={30} height={30} />
               Wynback
             </span>
           </div>

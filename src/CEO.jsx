@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import './CEO.css'
 
 export default function CEO() {
@@ -60,7 +61,7 @@ export default function CEO() {
         <header className="ceo-header">
           <div>
             <span className="ceo-eyebrow">
-              LEADBACK CONTROL
+              WYNBACK CONTROL
             </span>
 
             <h1>CEO Dashboard</h1>
@@ -69,6 +70,12 @@ export default function CEO() {
               Business overview, customers, revenue and platform operations.
             </p>
           </div>
+
+          {/* The CEO page has no sidebar: without this link the owner
+              lands here after sign-in with no way back to the app. */}
+          <Link className="primary-button" to="/app">
+            Back to dashboard
+          </Link>
         </header>
 
         {error && (

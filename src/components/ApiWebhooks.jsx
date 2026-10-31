@@ -189,26 +189,28 @@ export default function ApiWebhooks() {
   if (!workspace) return null
 
   return (
+    <>
     <section className="api-card">
       <div className="api-card-header">
         <div>
-          <span className="api-eyebrow">ENDPOINTS</span>
-          <h2>Connect Shopify, Meta, IndiaMART or your website</h2>
-          <p>Leads from these sources land in your Inquiries automatically. Secrets stay on the API service — nothing secret is stored in this app.</p>
+          <span className="api-eyebrow">SOURCES</span>
+          <h2>Endpoints</h2>
+          <p>Paste one URL into the source. New leads land in Inquiries automatically — secrets stay on the API service, never in this app.</p>
         </div>
       </div>
 
       <div>
         {ENDPOINTS.map(endpoint => (
           <div key={endpoint.name} className="api-endpoint">
-            <p className="api-endpoint-name">
-              <strong>{endpoint.name}</strong>
-            </p>
+            <div className="api-endpoint-top">
+              <span className="api-tile" aria-hidden="true">{endpoint.name.charAt(0)}</span>
+              <strong className="api-endpoint-name">{endpoint.name}</strong>
+            </div>
             <div className="api-url-row">
               <code className="api-url">{endpoint.url}</code>
               <button
                 type="button"
-                className="primary-button"
+                className="api-quiet-button"
                 onClick={() => copyText(endpoint.url, ok => setCopied(ok ? endpoint.name : ''))}
               >
                 {copied === endpoint.name ? 'Copied' : 'Copy URL'}
@@ -218,12 +220,14 @@ export default function ApiWebhooks() {
           </div>
         ))}
       </div>
+    </section>
 
-      <div className="api-card-header" style={{ marginTop: 28 }}>
+    <section className="api-card">
+      <div className="api-card-header">
         <div>
           <span className="api-eyebrow">WEBSITE TOKENS</span>
-          <h2>Website bearer tokens</h2>
-          <p>Mint one token per website. A token is shown once — copy it into your form, it is never shown again.</p>
+          <h2>Bearer tokens</h2>
+          <p>One token per website. A token is shown once — copy it into your form, it is never shown again.</p>
         </div>
       </div>
 
@@ -259,7 +263,7 @@ export default function ApiWebhooks() {
             >
               {copied === 'minted' ? 'Copied' : 'Copy token'}
             </button>
-            <button type="button" className="settings-link-button" onClick={() => setMinted(null)}>Dismiss</button>
+            <button type="button" className="api-quiet-button" onClick={() => setMinted(null)}>Dismiss</button>
           </div>
         </div>
       )}
@@ -273,10 +277,12 @@ export default function ApiWebhooks() {
           {tokens.map(token => (
             <li key={token.id} className="api-token-row">
               <div className="api-token-main">
-                <strong>{token.label}</strong>
+                <div className="api-token-title">
+                  <strong>{token.label}</strong>
+                  {token.revoked && <span className="api-badge-revoked">Revoked</span>}
+                </div>
                 <span className="api-token-meta">
                   {token.createdAt ? `created ${new Date(token.createdAt).toLocaleString()}` : 'created'}
-                  {token.revoked && <span className="api-token-revoked"> • revoked</span>}
                 </span>
               </div>
               {!token.revoked && (
@@ -289,5 +295,6 @@ export default function ApiWebhooks() {
         </ul>
       )}
     </section>
+    </>
   )
 }

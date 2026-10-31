@@ -2363,6 +2363,62 @@ a {
   }
 }
 
+/* Invite link (TeamMembers popup + pending-row copy). The link box
+   wraps like the API URL boxes; actions sit side by side on desktop
+   and stack full-width on phones. */
+.team-row-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+.invite-link-row {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.invite-link-box {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 11px 13px;
+  border: 1px solid #e5eaf0;
+  border-radius: 10px;
+  background: #f8fafc;
+  color: #172033;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12.5px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  word-break: break-all;
+}
+
+.invite-link-note {
+  margin: 12px 0 0;
+  color: #788496;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+@media (max-width: 620px) {
+  .invite-link-row {
+    flex-direction: column;
+  }
+
+  .invite-link-row .primary-button {
+    width: 100%;
+  }
+
+  .team-row-actions {
+    width: 100%;
+  }
+
+  .team-row-actions button {
+    flex: 1;
+  }
+}
+
 .settings-card {
   position: relative;
   margin-bottom: 18px;

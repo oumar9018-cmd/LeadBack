@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { logAudit } from '../utils/audit.js'
 import { useWorkspace } from './WorkspaceContext.jsx'
+import Modal from './Modal.jsx'
+import { url } from '../basePath.js'
 
 /**
  * Team — unlimited free seats (batch 3 enterprise foundation).
@@ -43,6 +45,11 @@ export default function TeamMembers() {
   const [notice, setNotice] = useState('')
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
+  // Invite popup: the member needs a link to share, not just a notice.
+  // /accept resolves the invite from the SIGNED-IN email, so one
+  // universal link serves every invite.
+  const [invitePopup, setInvitePopup] = useState(null)
+  const [copiedKey, setCopiedKey] = useState('')
   // Round-2 Gate 8 fix: per-row toggle in-flight flags, keyed
   // `${memberId}:${field}` (see toggleMemberField).
   const [toggling, setToggling] = useState({})
@@ -106,6 +113,32 @@ export default function TeamMembers() {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
   }
 
+  function inviteLink() {
+    if (typeof window === 'undefined') return ''
+    return `${window.location.origin}${url('/accept')}`
+  }
+
+  async function copyInviteLink(key = 'popup') {
+    const link = inviteLink()
+    try {
+      await navigator.clipboard.writeText(link)
+      setCopiedKey(key)
+      return
+    } catch {
+      try {
+        const area = document.createElement('textarea')
+        area.value = link
+        document.body.appendChild(area)
+        area.select()
+        document.execCommand('copy')
+        document.body.removeChild(area)
+        setCopiedKey(key)
+      } catch {
+        setCopiedKey('')
+      }
+    }
+  }
+
   async function handleInvite(event) {
     event.preventDefault()
     setNotice('')
@@ -150,6 +183,8 @@ export default function TeamMembers() {
       setBranchId('')
       setRole('sales_rep')
       setNotice(`Invite saved for ${cleanEmail}.`)
+      setCopiedKey('')
+      setInvitePopup({ email: cleanEmail, role })
       reload()
     } catch (e) {
       console.error('Invite failed:', e)
@@ -400,6 +435,41 @@ export default function TeamMembers() {
         </div>
       </form>
 
+      {/* Invite link popup: before this, the owner only got "Invite
+          saved" and the member had no link at all — which is why
+          invites looked broken. The link is universal: /accept finds
+          the invite from the member's signed-in email. */}
+      <Modal open={Boolean(invitePopup)} onClose={() => setInvitePopup(null)}>
+        <div className="modal-header">
+          <div>
+            <span className="app-eyebrow">INVITE READY</span>
+            <h2>Share this link</h2>
+            <p>
+              Send it to {invitePopup?.email}
+              {invitePopup?.role ? ` (${ROLE_LABELS[invitePopup.role] || invitePopup.role})` : ''}.
+              They sign in with that Google account and open the link to join your workspace.
+            </p>
+          </div>
+          <button type="button" className="modal-close" aria-label="Close" onClick={() => setInvitePopup(null)}>
+            ×
+          </button>
+        </div>
+        <div className="invite-link-row">
+          <code className="invite-link-box">{inviteLink()}</code>
+          <button type="button" className="primary-button" onClick={() => copyInviteLink('popup')}>
+            {copiedKey === 'popup' ? 'Copied' : 'Copy link'}
+          </button>
+        </div>
+        <p className="invite-link-note">
+          The same link works for every invite — it finds the invite from the member&apos;s signed-in email.
+        </p>
+        <div className="settings-save-row">
+          <button type="button" className="primary-button" onClick={() => setInvitePopup(null)}>
+            Done
+          </button>
+        </div>
+      </Modal>
+
       {/* Pending invites: filter to status pending. Accept flips the
           doc to 'accepted' (it does NOT delete it), so without this
           filter an accepted invite lingered here forever after the
@@ -418,9 +488,14 @@ export default function TeamMembers() {
                   {invite.branchId ? ` · ${invite.branchId}` : ''}
                 </span>
               </div>
-              <button type="button" onClick={() => removeInvite(invite)}>
-                Remove
-              </button>
+              <div className="team-row-actions">
+                <button type="button" className="settings-link-button" onClick={() => copyInviteLink(invite.id)}>
+                  {copiedKey === invite.id ? 'Copied' : 'Copy link'}
+                </button>
+                <button type="button" onClick={() => removeInvite(invite)}>
+                  Remove
+                </button>
+              </div>
             </div>
           ))}
         </div>

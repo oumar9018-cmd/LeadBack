@@ -79,9 +79,31 @@
 }
 
 .api-endpoint-name {
-  margin: 0 0 10px;
+  margin: 0;
   color: #172033;
   font-size: 14px;
+}
+
+/* Integration tile: initial in the app blue, so rows scan as cards
+   instead of a wall of grey boxes. */
+.api-endpoint-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.api-tile {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  background: #2563eb;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
 }
 
 .api-url-row {
@@ -111,6 +133,30 @@
   min-height: 44px;
   align-self: center;
   white-space: nowrap;
+}
+
+/* Quiet button: copy/dismiss actions. Primary blue is reserved for
+   Mint — four blue Copy buttons plus Mint was button soup. */
+.api-quiet-button {
+  flex: 0 0 auto;
+  min-height: 44px;
+  align-self: center;
+  padding: 0 16px;
+  border: 1px solid #dfe5ec;
+  border-radius: 10px;
+  background: #fff;
+  color: #334155;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: border-color 160ms ease, background 160ms ease;
+}
+
+.api-quiet-button:hover {
+  border-color: #cbd5e1;
+  background: #f8fafc;
 }
 
 .api-note {
@@ -257,14 +303,25 @@
   overflow-wrap: anywhere;
 }
 
+.api-token-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.api-badge-revoked {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #f1f5f9;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 700;
+}
+
 .api-token-meta {
   color: #788496;
   font-size: 12.5px;
-}
-
-.api-token-revoked {
-  color: #8a96a8;
-  font-weight: 700;
 }
 
 .api-revoke-button {
@@ -304,7 +361,8 @@
     flex-direction: column;
   }
 
-  .api-url-row .primary-button {
+  .api-url-row .primary-button,
+  .api-url-row .api-quiet-button {
     width: 100%;
   }
 
@@ -322,10 +380,6 @@
   }
 
   .api-revoke-button {
-    width: 100%;
-  }
-
-  .api-minted .api-url-row .settings-link-button {
     width: 100%;
   }
 }

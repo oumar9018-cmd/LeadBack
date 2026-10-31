@@ -65,6 +65,7 @@ import {
   IconClock,
   IconMessage,
   IconZap,
+  LogoMark,
 } from './components/icons.jsx'
 import { bookingLinkFor, waLink, TEMPLATES, fillTemplate, normalizePhone } from './utils/whatsapp.js'
 import './App.css'
@@ -1703,7 +1704,7 @@ function RequireAuth({ children }) {
     return (
       <div className="auth-loading">
         <div className="auth-loading-card">
-          <span className="auth-logo-mark">L</span>
+          <LogoMark width={31} height={31} />
           <strong>Checking your account…</strong>
           <span>Please wait.</span>
         </div>
@@ -1757,7 +1758,7 @@ function RequireCEO({ children }) {
     return (
       <div className="auth-loading">
         <div className="auth-loading-card">
-          <span className="auth-logo-mark">L</span>
+          <LogoMark width={31} height={31} />
           <strong>Checking CEO access…</strong>
           <span>Please wait.</span>
         </div>
