@@ -13,6 +13,8 @@ import SEOPage from './SEOPage.jsx'
 import Customers from './Customers.jsx'
 import Settings from './Settings.jsx'
 import Api from './Api.jsx'
+import Team from './Team.jsx'
+import Activity from './Activity.jsx'
 import Profile from './Profile.jsx'
 import Login from './Login.jsx'
 import Inquiries from './Inquiries.jsx'
@@ -1868,6 +1870,8 @@ function App() {
           <Route path="/app/customers" element={<Customers />} />
           <Route path="/app/settings" element={<Settings />} />
           <Route path="/app/api" element={<Api />} />
+          <Route path="/app/team" element={<Team />} />
+          <Route path="/app/activity" element={<Activity />} />
           <Route path="/app/profile" element={<Profile />} />
         </Route>
 

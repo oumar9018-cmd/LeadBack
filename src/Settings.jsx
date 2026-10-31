@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import TeamMembers from './components/TeamMembers.jsx'
-import BranchesCard from './components/BranchesCard.jsx'
-import AuditLog from './components/AuditLog.jsx'
 import { useWorkspace } from './components/WorkspaceContext.jsx'
 import { url } from './basePath.js'
-import { canManageTeam, canViewSettings, canWriteSettings } from './utils/workspace.js'
+import { canViewSettings, canWriteSettings } from './utils/workspace.js'
 import { CURRENCIES, defaultCurrencyForBrowser } from './utils/money.js'
 
 const defaultSettings = {
@@ -389,19 +386,6 @@ export default function Settings() {
           )}
 
         </form>
-
-        {/* Team seats (batch 3) + branches + audit log (batch 4):
-            managed outside the settings form because they write to
-            their own collections. Owner/admin-only: staff never see
-            team management or the audit log. API &amp; Webhooks lives
-            in its own section (/app/api) under the same gate. */}
-        {canManageTeam(workspace?.role) && (
-          <>
-            <TeamMembers />
-            <BranchesCard />
-            <AuditLog />
-          </>
-        )}
 
       </div>
     </div>

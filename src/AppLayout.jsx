@@ -291,6 +291,14 @@ export default function AppLayout() {
           <NavLink to="/app/revenue" onClick={closeSidebar}>Revenue</NavLink>
           {/* Customers existed as a route but had no nav entry (audit). */}
           <NavLink to="/app/customers" onClick={closeSidebar}>Customers</NavLink>
+          {/* Team + Activity moved out of Settings (same move as API):
+              owner/admin only, same gate the cards already had. */}
+          {!wsLoading && canManageTeam(workspace?.role) && (
+            <NavLink to="/app/team" onClick={closeSidebar}>Team</NavLink>
+          )}
+          {!wsLoading && canManageTeam(workspace?.role) && (
+            <NavLink to="/app/activity" onClick={closeSidebar}>Activity</NavLink>
+          )}
           {/* Sales Reps get no settings page at all (rules deny it). */}
           {/* Role-gated links wait for the workspace so they never flicker
               in and out on first load (audit: API link briefly missing). */}
