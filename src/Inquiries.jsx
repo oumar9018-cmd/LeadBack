@@ -18,6 +18,7 @@ import {
   loadCustomFieldDefinitions,
   normalizeCustomValue,
 } from './utils/customFields.js'
+import { applyRules, loadRules } from './utils/rules.js'
 import {
   CURRENCY_CODES,
   currencySymbol,
@@ -144,6 +145,8 @@ export default function Inquiries() {
   // branches); values live on the inquiry doc under `custom`.
   const [customFields, setCustomFields] = useState([])
   const [customValues, setCustomValues] = useState({})
+  // #2 — automation rules for this workspace, loaded once per mount.
+  const [rules, setRules] = useState([])
 
   useEffect(() => {
     if (wsLoading || !workspace) return undefined
@@ -152,6 +155,9 @@ export default function Inquiries() {
     let cancelled = false
     loadCustomFieldDefinitions(db, workspace.ownerUid).then(list => {
       if (!cancelled) setCustomFields(list)
+    })
+    loadRules(db, workspace.ownerUid).then(list => {
+      if (!cancelled) setRules(list)
     })
     return () => {
       cancelled = true
@@ -211,7 +217,10 @@ export default function Inquiries() {
           custom[field.id] = value
         }
       }
-      const ref = await addInquiryDoc({
+      // #2 — automation rules run AFTER routing, so a rule assignment
+      // wins over round-robin (that is the point of routing rules).
+      // Rules never block creation: any failure skips rules entirely.
+      let doc = {
         name: form.name.trim(),
         phone: form.phone.trim(),
         service: form.service.trim(),
@@ -225,12 +234,28 @@ export default function Inquiries() {
         source: 'manual',
         branchId,
         custom,
-      })
+      }
+      let ruleNotes = []
+      try {
+        const result = applyRules(rules, doc, 'inquiry_created')
+        doc = result.inquiry
+        ruleNotes = result.taken
+      } catch (ruleError) {
+        console.error('Rules failed (creation continues without them):', ruleError)
+      }
+      const ref = await addInquiryDoc(doc)
       if (route.assignedTo && ref) {
         logAudit(workspace.ownerUid, {
           action: 'status_changed',
           inquiryId: ref.id,
           detail: `assigned to ${route.assignedEmail || route.assignedTo}`,
+        })
+      }
+      if (ruleNotes.length > 0 && ref) {
+        logAudit(workspace.ownerUid, {
+          action: 'rule_applied',
+          inquiryId: ref.id,
+          detail: ruleNotes.join('; '),
         })
       }
       setForm({ name: '', phone: '', service: '', value: '', status: 'new' })

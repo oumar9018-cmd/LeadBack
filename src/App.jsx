@@ -44,6 +44,7 @@ import {
   loadCustomFieldDefinitions,
   normalizeCustomValue,
 } from './utils/customFields.js'
+import { applyRules, loadRules } from './utils/rules.js'
 import LossReasonModal, { LOSS_REASON_LABELS } from './components/LossReasonModal.jsx'
 import Modal from './components/Modal.jsx'
 import {
@@ -214,6 +215,8 @@ function Dashboard() {
   // #13 — custom field definitions for this workspace. The detail modal
   // below renders one editable card per field.
   const [customFields, setCustomFields] = useState([])
+  // #2 — automation rules for this workspace.
+  const [rules, setRules] = useState([])
 
   // #13 — definitions load once per workspace (same get-once pattern
   // as branches); the detail modal renders one card per field.
@@ -227,6 +230,9 @@ function Dashboard() {
     let cancelled = false
     loadCustomFieldDefinitions(db, workspace.ownerUid).then(list => {
       if (!cancelled) setCustomFields(list)
+    })
+    loadRules(db, workspace.ownerUid).then(list => {
+      if (!cancelled) setRules(list)
     })
     return () => {
       cancelled = true
@@ -794,7 +800,9 @@ function Dashboard() {
     const branchId = workspace?.role === 'branch_manager' ? workspace.branchId || '' : ''
     const route = await assignNext(db, workspace?.ownerUid, { branchId })
 
-    const newInquiry = {
+    // #2 — automation rules run AFTER routing, so a rule assignment
+    // wins over round-robin. Rules never block creation.
+    let newInquiry = {
       id: Date.now(),
       name: form.name.trim(),
       phone: form.phone.trim(),
@@ -811,6 +819,14 @@ function Dashboard() {
       // owners/admins create unbranched rows (admin-visible only).
       branchId,
     }
+    let ruleNotes = []
+    try {
+      const result = applyRules(rules, newInquiry, 'inquiry_created')
+      newInquiry = result.inquiry
+      ruleNotes = result.taken
+    } catch (ruleError) {
+      console.error('Rules failed (creation continues without them):', ruleError)
+    }
 
     setItems(current => [newInquiry, ...current])
 
@@ -819,6 +835,14 @@ function Dashboard() {
         action: 'status_changed',
         inquiryId: String(newInquiry.id),
         detail: `assigned to ${route.assignedEmail || route.assignedTo}`,
+      })
+    }
+
+    if (ruleNotes.length > 0) {
+      logAudit(workspace?.ownerUid, {
+        action: 'rule_applied',
+        inquiryId: String(newInquiry.id),
+        detail: ruleNotes.join('; '),
       })
     }
 

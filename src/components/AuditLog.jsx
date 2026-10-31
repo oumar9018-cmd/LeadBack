@@ -19,6 +19,7 @@ const ACTION_LABELS = {
   member_role_changed: 'Member role changed',
   member_availability_changed: 'Member availability changed',
   inquiry_assigned: 'Inquiry assigned',
+  rule_applied: 'Rule applied',
   export: 'Data exported',
 }
 

@@ -4,6 +4,7 @@ import { useWorkspace } from './components/WorkspaceContext.jsx'
 import { url } from './basePath.js'
 import { canViewSettings, canWriteSettings } from './utils/workspace.js'
 import CustomFieldsCard from './components/CustomFieldsCard.jsx'
+import RulesCard from './components/RulesCard.jsx'
 import { CURRENCIES, defaultCurrencyForBrowser } from './utils/money.js'
 
 const defaultSettings = {
@@ -359,6 +360,9 @@ export default function Settings() {
 
           {/* #13 — Custom fields: own card, same settings-doc pattern as branches. */}
           <CustomFieldsCard />
+
+          {/* #2 — Automation rules: own card, same settings-doc pattern. */}
+          <RulesCard />
 
           <section className="settings-card settings-account-card">
             <div>
