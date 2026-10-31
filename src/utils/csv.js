@@ -1,4 +1,44 @@
 /**
+ * #140 — CSV export (the import side lives in parseCsv/guessMapping).
+ * Pure except downloadCsv, which needs the DOM. Exported rows are
+ * whatever the caller passes — the Inquiries page passes its filtered,
+ * already-scoped list, so an export never contains rows the user
+ * cannot already see.
+ */
+function csvCell(value) {
+  if (value === null || value === undefined) return ''
+  const text = String(value)
+  return /[",\n\r]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text
+}
+
+export function toCsv(columns, rows) {
+  const head = columns.map(column => csvCell(column.label)).join(',')
+  const body = (rows || []).map(row =>
+    columns
+      .map(column =>
+        csvCell(
+          typeof column.get === 'function' ? column.get(row) : row[column.key]
+        )
+      )
+      .join(',')
+  )
+  // BOM first so spreadsheet apps read non-ASCII (₹, names) correctly.
+  return [`\ufeff${head}`, ...body].join('\n')
+}
+
+export function downloadCsv(filename, text) {
+  const blob = new Blob([text], { type: 'text/csv;charset=utf-8' })
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = filename
+  document.body.appendChild(link)
+  link.click()
+  link.remove()
+  URL.revokeObjectURL(url)
+}
+
+/**
  * Hand-rolled CSV parser (batch 5, bulk CSV engine).
  *
  * package.json is React-only, so no csv library is added. Handles:

@@ -39,6 +39,7 @@ import OfferPage from './OfferPage.jsx'
 import Offers from './Offers.jsx'
 import WinbackScoreBadge from './components/WinbackScore.jsx'
 import { GraveyardCounter } from './components/GraveyardCounter.jsx'
+import UnassignedRevenue from './components/UnassignedRevenue.jsx'
 import LossReasonModal, { LOSS_REASON_LABELS } from './components/LossReasonModal.jsx'
 import Modal from './components/Modal.jsx'
 import {
@@ -822,6 +823,9 @@ function Dashboard() {
       </div>
 
       <GraveyardCounter items={items} currency={currency} />
+
+      {/* #33 — Unassigned Revenue Detector: open inquiries nobody owns. */}
+      <UnassignedRevenue items={items} currency={currency} />
 
       {/* Booking requests are an owner/admin view: the bookings query
           is keyed by the workspace owner, and staff never convert

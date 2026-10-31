@@ -11,6 +11,8 @@ import { logAudit } from './utils/audit.js'
 import CsvImport from './components/CsvImport.jsx'
 import { IconPlus, IconX } from './components/icons.jsx'
 import { rankByWinback } from './utils/winbackScore.js'
+import { findOpenDuplicates } from './utils/detectors.js'
+import { toCsv, downloadCsv } from './utils/csv.js'
 import {
   CURRENCY_CODES,
   currencySymbol,
@@ -129,6 +131,9 @@ export default function Inquiries() {
     status: 'new',
   })
   const [formError, setFormError] = useState('')
+  // #18 — open rows sharing the typed phone, shown as a warning (not a
+  // block: a returning customer is legitimate, so "Save anyway" proceeds).
+  const [dupWarning, setDupWarning] = useState([])
 
   // Direct Firestore write (this page has no whole-list sync effect).
   async function addInquiryDoc(doc) {
@@ -143,8 +148,8 @@ export default function Inquiries() {
     return ref
   }
 
-  async function handleAddInquiry(event) {
-    event.preventDefault()
+  async function handleAddInquiry(event, bypassDup = false) {
+    if (event) event.preventDefault()
 
     if (
       !form.name.trim() ||
@@ -154,6 +159,18 @@ export default function Inquiries() {
     ) {
       setFormError('Please complete all required fields.')
       return
+    }
+
+    // #18 — duplicate check on manual entry. Scoped to the rows this user
+    // can already see (items), so the check leaks nothing across scopes.
+    // Only OPEN rows count: a recovered/lost row with the same phone is
+    // a returning customer, not a duplicate.
+    if (!bypassDup) {
+      const dups = findOpenDuplicates(items, form.phone)
+      if (dups.length > 0) {
+        setDupWarning(dups)
+        return
+      }
     }
 
     try {
@@ -185,11 +202,36 @@ export default function Inquiries() {
       }
       setForm({ name: '', phone: '', service: '', value: '', status: 'new' })
       setFormError('')
+      setDupWarning([])
       setShowAddInquiry(false)
     } catch (error) {
       console.error('Add inquiry failed:', error)
       setFormError('Could not save — please try again.')
     }
+  }
+
+  // #140 — CSV export of exactly the filtered list on screen (search +
+  // status filter applied, render cap ignored). Scoped by construction:
+  // `filtered` only ever contains rows this user can already see.
+  function handleExportCsv() {
+    const columns = [
+      { key: 'name', label: 'Name' },
+      { key: 'phone', label: 'Phone' },
+      { key: 'service', label: 'Service' },
+      { key: 'value', label: 'Value' },
+      { key: 'status', label: 'Status' },
+      { key: 'source', label: 'Source' },
+      { key: 'assignedTo', label: 'Assigned To' },
+      {
+        key: 'created',
+        label: 'Created',
+        get: row =>
+          row.createdAt
+            ? new Date(row.createdAt).toISOString().slice(0, 10)
+            : row.date || '',
+      },
+    ]
+    downloadCsv('wynback-inquiries.csv', toCsv(columns, filtered))
   }
 
   async function handleBookingAsInquiry(booking) {
@@ -389,6 +431,13 @@ export default function Inquiries() {
               Import CSV
             </button>
           )}
+          <button
+            type="button"
+            className="ghost-button"
+            onClick={handleExportCsv}
+          >
+            Export CSV
+          </button>
           {canManageTeam(workspace?.role) && (
             <button
               type="button"
@@ -542,7 +591,7 @@ export default function Inquiries() {
           onImported={rows => setItems(current => [...rows, ...current])}
         />
 
-        <Modal open={showAddInquiry} onClose={() => setShowAddInquiry(false)}>
+        <Modal open={showAddInquiry} onClose={() => { setShowAddInquiry(false); setDupWarning([]) }}>
           <div className="modal-header">
             <div>
               <span className="app-eyebrow">NEW CUSTOMER</span>
@@ -553,7 +602,7 @@ export default function Inquiries() {
             <button
               type="button"
               className="modal-close"
-              onClick={() => setShowAddInquiry(false)}
+              onClick={() => { setShowAddInquiry(false); setDupWarning([]) }}
               aria-label="Close"
             >
               <IconX width={15} height={15} />
@@ -590,7 +639,7 @@ export default function Inquiries() {
                 Phone
                 <input
                   value={form.phone}
-                  onChange={e => setForm({ ...form, phone: e.target.value })}
+                  onChange={e => { setForm({ ...form, phone: e.target.value }); setDupWarning([]) }}
                   placeholder="+91 98765 43210"
                 />
               </label>
@@ -631,13 +680,37 @@ export default function Inquiries() {
               </label>
             </div>
 
+            {dupWarning.length > 0 && (
+              <div className="form-warning" role="alert">
+                <strong>Same phone already open:</strong>
+                <ul>
+                  {dupWarning.map(dup => (
+                    <li key={dup.id}>
+                      {dup.name} — {dup.service} ({statusLabels[dup.status] || dup.status})
+                    </li>
+                  ))}
+                </ul>
+                <p>
+                  This may be the same customer twice. Save anyway only if
+                  this is a genuinely new inquiry.
+                </p>
+                <button
+                  type="button"
+                  className="ghost-button"
+                  onClick={() => handleAddInquiry(null, true)}
+                >
+                  Save anyway
+                </button>
+              </div>
+            )}
+
             {formError && <div className="form-error">{formError}</div>}
 
             <div className="modal-actions">
               <button
                 type="button"
                 className="cancel-button"
-                onClick={() => setShowAddInquiry(false)}
+                onClick={() => { setShowAddInquiry(false); setDupWarning([]) }}
               >
                 Cancel
               </button>

@@ -746,6 +746,31 @@ a {
   font-weight: 700;
 }
 
+/* #18 — duplicate-phone warning: amber, not red, because saving anyway
+   is legitimate (a returning customer). */
+.form-warning {
+  margin-top: 14px;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #fde68a;
+  background: #fffbeb;
+  color: #92400e;
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-warning ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.form-warning p {
+  margin: 0;
+  color: #78350f;
+}
+
 .modal-actions {
   display: flex;
   justify-content: flex-end;
