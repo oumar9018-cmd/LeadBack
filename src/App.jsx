@@ -40,6 +40,15 @@ import BookingPage from './BookingPage.jsx'
 import OfferPage from './OfferPage.jsx'
 import Offers from './Offers.jsx'
 import WinbackScoreBadge from './components/WinbackScore.jsx'
+import { winbackScore, bandLabel } from './utils/winbackScore.js'
+import {
+  nextBestAction,
+  recoveryProbability,
+  dealRisk,
+  detectIntent,
+  analyzeLostReason,
+} from './utils/aiInsights.js'
+import PipelineHealth from './components/PipelineHealth.jsx'
 import { GraveyardCounter } from './components/GraveyardCounter.jsx'
 import UnassignedRevenue from './components/UnassignedRevenue.jsx'
 import {
@@ -957,6 +966,9 @@ function Dashboard() {
       {/* #8 + #123 — SLA Command Center + Breach Analytics. */}
       <SlaCenter items={items} firstResponseHours={slaHours} />
 
+      {/* #57 — Pipeline Health Analysis (heuristic verdict). */}
+      <PipelineHealth items={items} slaHours={slaHours} currency={currency} />
+
       {/* Booking requests are an owner/admin view: the bookings query
           is keyed by the workspace owner, and staff never convert
           booking requests into inquiries. */}
@@ -1456,6 +1468,64 @@ function Dashboard() {
                               : '')}
                         </li>
                       ))}
+                    </ul>
+                  </div>
+                )
+              })()}
+
+              {/* Wave 4 — AI Insights (heuristic, rules-based, $0 — no
+                  model calls): score breakdown (#46), next best action
+                  (#49), recovery probability (#59), deal risk (#47),
+                  intent (#48), and for lost rows the reason analyzer
+                  (#52). Read-only: it suggests, never acts. */}
+              {(() => {
+                const nba = nextBestAction(detailInquiry)
+                const prob = recoveryProbability(detailInquiry)
+                const risk = dealRisk(detailInquiry)
+                const intent = detectIntent(detailInquiry)
+                const { score, band, reasons } = winbackScore(detailInquiry)
+                const analyzer =
+                  detailInquiry.status === 'lost'
+                    ? analyzeLostReason(
+                        detailInquiry,
+                        items.filter(i => i.status === 'lost')
+                      )
+                    : null
+                return (
+                  <div className="detail-card">
+                    <span>AI Insights · heuristic</span>
+                    <ul>
+                      <li>
+                        Score: {score} ({bandLabel(band)}) —{' '}
+                        {reasons.join(' · ')}
+                      </li>
+                      <li>
+                        Next best action: {nba.action} — {nba.reason}
+                      </li>
+                      <li>
+                        Recovery probability: {prob.label} ({score}) —
+                        heuristic estimate, not a measured rate.
+                      </li>
+                      {risk.level !== 'closed' && (
+                        <li>
+                          Deal risk: {risk.level}
+                          {risk.flags.length > 0
+                            ? ` — ${risk.flags.join(', ')}`
+                            : ' — no flags'}
+                        </li>
+                      )}
+                      <li>
+                        Intent: {intent.intent} — {intent.signals.join(', ')}
+                      </li>
+                      {analyzer && (
+                        <li>
+                          Lost reason: {analyzer.reason} — {analyzer.count}{' '}
+                          of {analyzer.total} losses ({analyzer.share}%)
+                          {analyzer.topService
+                            ? `, most often for ${analyzer.topService}`
+                            : ''}
+                        </li>
+                      )}
                     </ul>
                   </div>
                 )

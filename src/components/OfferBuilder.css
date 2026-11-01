@@ -209,3 +209,18 @@
   color: #64748b;
   margin: 0 0 16px;
 }
+
+/* #38 — ladder step editor rows. */
+.offer-ladder-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.offer-ladder-days {
+  width: 70px;
+}
+
+.offer-ladder-suffix {
+  align-self: center;
+}

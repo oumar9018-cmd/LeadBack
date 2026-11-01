@@ -6,6 +6,12 @@ import { waLink, normalizePhone } from './utils/whatsapp.js'
 import { IconGift, IconCopy, IconCheck, IconSend, IconTimer, IconTrash } from './components/icons.jsx'
 import './Offers.css'
 import { useWorkspace } from './components/WorkspaceContext.jsx'
+import {
+  unansweredOffers,
+  ladderNextStep,
+  ladderSuggestedDate,
+  randomCode,
+} from './utils/offers.js'
 
 /**
  * Owner's second-chance offers: sent -> viewed -> redeemed tracking,
@@ -135,6 +141,55 @@ export default function Offers() {
   const claimed = offers.filter(o => offerStatus(o) === 'redeemed')
   const attributed = claimed.reduce((s, o) => s + (Number(o.recoveredValue) || 0), 0)
 
+  // #32 — Unanswered Quote Detector: never redeemed AND (expired OR
+  // older than 7 days). Views do not count as an answer.
+  const unanswered = unansweredOffers(offers)
+
+  // #38 — send the next ladder step by hand. Creates a plain offer for
+  // the next step's text and advances the original offer's ladder.
+  async function handleAdvance(offer) {
+    const next = ladderNextStep(offer)
+    const db = window.firebase?.firestore?.()
+    if (!next || !workspace || !db) return
+    const code = randomCode()
+    const newOffer = {
+      code,
+      ownerUid: workspace.ownerUid,
+      businessName: offer.businessName,
+      inquiryId: offer.inquiryId,
+      customerName: offer.customerName,
+      customerPhone: offer.customerPhone,
+      service: offer.service,
+      discountText: next.step.discountText,
+      note: `Ladder step ${next.index + 2} of ${next.total} (from ${offer.code})`,
+      expiresAt: new Date(Date.now() + 48 * 3600 * 1000).toISOString(),
+      status: 'sent',
+      views: 0,
+      createdAt: new Date().toISOString(),
+      ladderFrom: offer.code,
+    }
+    try {
+      await db.collection('offers').doc(code).set(newOffer)
+      await db
+        .collection('offers')
+        .doc(offer.id)
+        .update({ 'ladder.currentStep': next.index + 1 })
+      setOffers(current => [
+        ...current.map(o =>
+          o.id === offer.id
+            ? {
+                ...o,
+                ladder: { ...o.ladder, currentStep: next.index + 1 },
+              }
+            : o
+        ),
+        { ...newOffer, id: code },
+      ])
+    } catch {
+      alert('Could not send the next step. Check your connection.')
+    }
+  }
+
   // Staff never see offer data: the rules let only the owning uid list
   // offers, so a scoped list would be empty-or-denied, not scoped.
   if (!wsLoading && workspace && workspace.role !== 'owner') {
@@ -186,6 +241,24 @@ export default function Offers() {
 
         {loading && <div className="empty-state">Loading offers…</div>}
 
+        {!loading && unanswered.length > 0 && (
+          <section className="offers-unanswered">
+            <strong>{unanswered.length} unanswered offer(s)</strong>
+            <span>
+              Never claimed — expired, or no answer in 7+ days. Follow up
+              or renew them; viewing a link does not count as an answer.
+            </span>
+            <ul>
+              {unanswered.map(({ offer, reason }) => (
+                <li key={offer.id}>
+                  {offer.customerName || 'Customer'} — {offer.discountText} —{' '}
+                  {reason === 'expired' ? 'Expired, never claimed' : 'No answer in 7+ days'}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
         {!loading && offers.length === 0 && (
           <div className="offers-empty">
             <span className="offers-empty-icon"><IconGift width={36} height={36} /></span>
@@ -224,6 +297,21 @@ export default function Offers() {
                         : `Expires ${new Date(offer.expiresAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}`}
                       {' · '}{offer.views || 0} view{(offer.views || 0) === 1 ? '' : 's'}
                       {offer.recoveredValue ? ` · ${formatMoney(offer.recoveredValue)} recovered` : ''}
+                      {offer.ladder && (
+                        <>
+                          {' · '}Ladder step{' '}
+                          {(Number(offer.ladder.currentStep) || 0) + 1} of{' '}
+                          {offer.ladder.steps.length + 1}
+                          {(() => {
+                            const next = ladderNextStep(offer)
+                            if (!next) return ' — ladder complete'
+                            const suggested = ladderSuggestedDate(offer, next.index)
+                            return suggested
+                              ? ` — next “${next.step.discountText}” suggested after ${suggested.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}`
+                              : ''
+                          })()}
+                        </>
+                      )}
                     </span>
                   </div>
 
@@ -248,6 +336,16 @@ export default function Offers() {
                         title="They came back — record the revenue"
                       >
                         Mark recovered
+                      </button>
+                    )}
+                    {ladderNextStep(offer) && (
+                      <button
+                        type="button"
+                        className="offer-recovered-btn"
+                        onClick={() => handleAdvance(offer)}
+                        title="Send the next ladder step by hand"
+                      >
+                        Send next step
                       </button>
                     )}
                     {deleteConfirmId === offer.id ? (

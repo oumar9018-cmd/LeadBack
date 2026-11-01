@@ -1,0 +1,59 @@
+/* #57 — Pipeline Health. Compact verdict chip + counts, mirroring the
+ * recovery chip palette: green healthy, amber needs attention, red
+ * critical. */
+
+.pipeline-health {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px 18px;
+  background: #fff;
+  margin-bottom: 16px;
+}
+
+.pipeline-health strong {
+  font-size: 15px;
+  color: #111827;
+}
+
+.pipeline-head {
+  margin-top: 6px;
+}
+
+.pipeline-verdict {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  margin-left: 8px;
+}
+
+.pipeline-verdict-healthy {
+  background: #f0fdf4;
+  color: #15803d;
+}
+
+.pipeline-verdict-needs-attention {
+  background: #fffbeb;
+  color: #b45309;
+}
+
+.pipeline-verdict-critical {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.pipeline-health-list {
+  margin: 10px 0 0;
+  padding-left: 20px;
+}
+
+.pipeline-health-list li {
+  padding: 3px 0;
+}
+
+.pipeline-health-meta {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 8px;
+}

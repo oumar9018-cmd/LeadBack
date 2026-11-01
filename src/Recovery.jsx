@@ -15,7 +15,13 @@ import {
   rejectionByMonth,
   attribution,
   vaultTotals,
+  predictLeakage,
+  discoverOpportunities,
+  discoverPatterns,
 } from './utils/recovery.js'
+import { rankByWinback } from './utils/winbackScore.js'
+import { waLink, normalizePhone } from './utils/whatsapp.js'
+import OfferBuilder from './components/OfferBuilder.jsx'
 import './Recovery.css'
 
 /**
@@ -41,6 +47,9 @@ export default function Recovery() {
   const [offers, setOffers] = useState([])
   const [memberEmail, setMemberEmail] = useState({})
   const [currency, setCurrency] = useState('INR')
+  const [businessName, setBusinessName] = useState('')
+  // #21 — the inquiry a flash-fill offer is being built for (owner only).
+  const [flashOffer, setFlashOffer] = useState(null)
 
   useEffect(() => {
     if (wsLoading || !workspace) return undefined
@@ -114,6 +123,17 @@ export default function Recovery() {
       } catch {
         // Currency falls back to INR.
       }
+      try {
+        const userSnap = await db
+          .collection('users')
+          .doc(workspace.ownerUid)
+          .get()
+        if (!cancelled && userSnap.exists) {
+          setBusinessName(userSnap.data()?.businessName || '')
+        }
+      } catch {
+        // OfferBuilder falls back to a generic name.
+      }
     })()
     return () => {
       cancelled = true
@@ -136,6 +156,12 @@ export default function Recovery() {
   const attrib = attribution(recovered, memberEmail)
   const vault = vaultTotals(recovered, offers)
   const redeemedOffers = offers.filter(o => Number(o.recoveredValue) > 0)
+  // #21 / #58 / #62 / #63 — flash fill candidates, leakage, opportunities,
+  // patterns. All over the same scoped items; nothing leaves the list.
+  const flashRows = rankByWinback(lost).slice(0, 10)
+  const leakage = predictLeakage(items, now)
+  const opportunities = discoverOpportunities(items)
+  const discoveries = discoverPatterns(items, LOSS_REASON_LABELS)
 
   return (
     <div className="settings-page">
@@ -235,6 +261,134 @@ export default function Recovery() {
                 </li>
               ))}
             </ol>
+          )}
+        </section>
+
+        <section className="settings-card">
+          <span className="settings-label">FLASH FILL</span>
+          <h2>Fill a slot from your own lost leads</h2>
+          <p className="rec-meta">
+            Own list only — no marketplace, no public post, no per-booking
+            fee. Stage 1 is a plain slot-open message. If the slot stays
+            open, add a small incentive with a decaying offer ladder —
+            never lead with a discount.
+          </p>
+          {flashRows.length === 0 ? (
+            <p>No lost leads to fill from.</p>
+          ) : (
+            <ul className="rec-list">
+              {flashRows.map(row => {
+                const first = (row.inquiry.name || 'there').split(' ')[0]
+                const message = `Hi ${first}, a slot just opened for ${row.inquiry.service || 'your service'} — would you like it? Reply here and I'll hold it for you.`
+                const wa = normalizePhone(row.inquiry.phone)
+                  ? waLink(row.inquiry.phone, message)
+                  : null
+                return (
+                  <li key={row.inquiry.id}>
+                    {row.inquiry.name} — {row.inquiry.service} —{' '}
+                    <span className="rec-score">{row.score}</span>
+                    {wa && (
+                      <>
+                        {' '}
+                        <a
+                          href={wa}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Slot open on WhatsApp
+                        </a>
+                      </>
+                    )}
+                    {workspace?.role === 'owner' && (
+                      <>
+                        {' '}
+                        <button
+                          type="button"
+                          className="ghost-button"
+                          onClick={() => setFlashOffer(row.inquiry)}
+                        >
+                          Create offer
+                        </button>
+                      </>
+                    )}
+                  </li>
+                )
+              })}
+            </ul>
+          )}
+        </section>
+
+        <section className="settings-card">
+          <span className="settings-label">LEAKAGE PREDICTION</span>
+          <h2>Revenue likely to leak</h2>
+          <p>
+            {leakage.count} open leads at risk —{' '}
+            {money(leakage.value, currency)}
+          </p>
+          <p className="rec-meta">
+            Heuristic estimate: open leads with a cold score or quiet 30+
+            days. Not a forecast from measured conversion data.
+          </p>
+          {leakage.rows.length > 0 && (
+            <ul className="rec-list">
+              {leakage.rows.map(row => (
+                <li key={row.inquiry.id}>
+                  {row.inquiry.name} — {row.inquiry.service} —{' '}
+                  <span className="rec-score">{row.score}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+
+        <section className="settings-card">
+          <span className="settings-label">OPPORTUNITIES</span>
+          <h2>Warm leads nobody owns</h2>
+          {opportunities.length === 0 ? (
+            <p>No unassigned warm or hot leads right now.</p>
+          ) : (
+            <ul className="rec-list">
+              {opportunities.map(row => (
+                <li key={row.inquiry.id}>
+                  {row.inquiry.name} — {row.inquiry.service} —{' '}
+                  {money(row.inquiry.value, currency)} —{' '}
+                  <span className="rec-score">{row.score}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+
+        <section className="settings-card">
+          <span className="settings-label">PATTERNS</span>
+          <h2>What the pipeline is telling you</h2>
+          {discoveries.topLossReason && (
+            <p>
+              Top loss reason: {discoveries.topLossReason.label} —{' '}
+              {discoveries.topLossReason.count} losses (
+              {discoveries.topLossReason.share}%)
+            </p>
+          )}
+          {discoveries.bestSource && (
+            <p>
+              Best source (3+ closed leads): {discoveries.bestSource.label}{' '}
+              — {discoveries.bestSource.rate}% recovery over{' '}
+              {discoveries.bestSource.closed} closed leads.
+            </p>
+          )}
+          {discoveries.bySource.length > 0 && (
+            <>
+              <h3>Recovery rate by source</h3>
+              <ul className="rec-list">
+                {discoveries.bySource.map(row => (
+                  <li key={row.label}>
+                    {row.label}: {row.recovered}/{row.closed} recovered
+                    {row.rate !== null ? ` — ${row.rate}%` : ''}
+                    {row.closed < 3 ? ' (small sample)' : ''}
+                  </li>
+                ))}
+              </ul>
+            </>
           )}
         </section>
 
@@ -371,6 +525,15 @@ export default function Recovery() {
             discount amounts on offers.
           </p>
         </section>
+
+        {flashOffer && (
+          <OfferBuilder
+            inquiry={flashOffer}
+            businessName={businessName}
+            onClose={() => setFlashOffer(null)}
+            onCreated={() => setFlashOffer(null)}
+          />
+        )}
       </div>
     </div>
   )

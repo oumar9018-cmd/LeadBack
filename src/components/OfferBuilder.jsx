@@ -3,6 +3,12 @@ import { BASE_PATH } from '../basePath.js'
 import { waLink, normalizePhone } from '../utils/whatsapp.js'
 import { IconGift, IconCopy, IconCheck, IconSend } from './icons.jsx'
 import { useWorkspace } from './WorkspaceContext.jsx'
+import {
+  MAX_LADDER_STEPS,
+  validateLadderSteps,
+  ladderSuggestedDate,
+  randomCode,
+} from '../utils/offers.js'
 import './OfferBuilder.css'
 
 /**
@@ -15,15 +21,6 @@ import './OfferBuilder.css'
  * - onClose: () => void
  * - onCreated: (offer) => void — for activity logging
  */
-
-function randomCode(length = 8) {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789'
-  let code = ''
-  const rand = new Uint32Array(length)
-  window.crypto.getRandomValues(rand)
-  for (let i = 0; i < length; i++) code += chars[rand[i] % chars.length]
-  return code
-}
 
 const EXPIRY_OPTIONS = [
   { hours: 24, label: '24 hours' },
@@ -39,6 +36,12 @@ export default function OfferBuilder({ inquiry, businessName, onClose, onCreated
   const [discountText, setDiscountText] = useState('20% off your next visit')
   const [note, setNote] = useState('')
   const [expiryHours, setExpiryHours] = useState(48)
+  // #38 — decaying ladder: this offer is step 1; steps[] are follow-up
+  // offers sent later by hand from the Offers page, never automatically.
+  const [ladderEnabled, setLadderEnabled] = useState(false)
+  const [ladderSteps, setLadderSteps] = useState([
+    { discountText: '', daysAfter: 3 },
+  ])
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [created, setCreated] = useState(null)
@@ -71,6 +74,23 @@ export default function OfferBuilder({ inquiry, businessName, onClose, onCreated
       return
     }
 
+    // #38 — ladder validation; steps are stored on the offer doc and
+    // advanced by hand from the Offers page.
+    let ladder = null
+    if (ladderEnabled) {
+      const steps = ladderSteps.map(s => ({
+        discountText: s.discountText.trim(),
+        daysAfter: Number(s.daysAfter),
+      }))
+      const ladderError = validateLadderSteps(steps)
+      if (ladderError) {
+        setError(ladderError)
+        setSaving(false)
+        return
+      }
+      if (steps.length > 0) ladder = { steps, currentStep: 0 }
+    }
+
     const code = randomCode()
     const expiresAt = new Date(Date.now() + expiryHours * 3600 * 1000).toISOString()
 
@@ -88,6 +108,7 @@ export default function OfferBuilder({ inquiry, businessName, onClose, onCreated
       status: 'sent',
       views: 0,
       createdAt: new Date().toISOString(),
+      ...(ladder ? { ladder } : {}),
     }
 
     try {
@@ -171,6 +192,96 @@ export default function OfferBuilder({ inquiry, businessName, onClose, onCreated
               </div>
             </div>
 
+            <label className="offer-field">
+              <input
+                type="checkbox"
+                checked={ladderEnabled}
+                onChange={e => {
+                  setLadderEnabled(e.target.checked)
+                  if (e.target.checked && ladderSteps.length === 0)
+                    setLadderSteps([{ discountText: '', daysAfter: 3 }])
+                }}
+              />{' '}
+              Decaying ladder — follow-up offers if this one goes unanswered
+            </label>
+
+            {ladderEnabled && (
+              <div className="offer-field">
+                <span className="offer-field-label">
+                  Follow-up steps (this offer is step 1 of{' '}
+                  {ladderSteps.length + 1})
+                </span>
+                {ladderSteps.map((step, idx) => (
+                  <div key={idx} className="offer-ladder-row">
+                    <input
+                      value={step.discountText}
+                      onChange={e =>
+                        setLadderSteps(current =>
+                          current.map((s, i) =>
+                            i === idx
+                              ? { ...s, discountText: e.target.value }
+                              : s
+                          )
+                        )
+                      }
+                      placeholder={`Step ${idx + 2} offer, e.g. 30% off`}
+                      maxLength={80}
+                    />
+                    <input
+                      type="number"
+                      min={1}
+                      max={30}
+                      value={step.daysAfter}
+                      onChange={e =>
+                        setLadderSteps(current =>
+                          current.map((s, i) =>
+                            i === idx
+                              ? { ...s, daysAfter: e.target.value }
+                              : s
+                          )
+                        )
+                      }
+                      aria-label="Days after previous step"
+                      className="offer-ladder-days"
+                    />
+                    <span className="offer-ladder-suffix">days later</span>
+                    {ladderSteps.length > 1 && (
+                      <button
+                        type="button"
+                        className="cancel-button"
+                        onClick={() =>
+                          setLadderSteps(current =>
+                            current.filter((_, i) => i !== idx)
+                          )
+                        }
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                ))}
+                {ladderSteps.length < MAX_LADDER_STEPS - 1 && (
+                  <button
+                    type="button"
+                    className="cancel-button"
+                    onClick={() =>
+                      setLadderSteps(current => [
+                        ...current,
+                        { discountText: '', daysAfter: 3 },
+                      ])
+                    }
+                  >
+                    Add step
+                  </button>
+                )}
+                <p className="offer-builder-sub">
+                  Steps are sent by hand from the Offers page — never
+                  automatically. The incentive grows only if the earlier
+                  step goes unanswered.
+                </p>
+              </div>
+            )}
+
             {error && <p className="offer-error">{error}</p>}
 
             <div className="offer-builder-actions">
@@ -205,6 +316,19 @@ export default function OfferBuilder({ inquiry, businessName, onClose, onCreated
                 {copied ? 'Copied' : 'Copy'}
               </button>
             </div>
+
+            {created.ladder && (
+              <p className="offer-builder-sub">
+                Ladder: step 1 of {created.ladder.steps.length + 1}. Next
+                step “{created.ladder.steps[0].discountText}” suggested
+                after{' '}
+                {ladderSuggestedDate(created, 0)?.toLocaleDateString(
+                  'en-IN',
+                  { day: 'numeric', month: 'short' }
+                )}
+                . Send it by hand from the Offers page.
+              </p>
+            )}
 
             {waShareLink ? (
               <a

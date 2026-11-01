@@ -9,7 +9,7 @@
  */
 
 import { winbackScore, rankByWinback } from './winbackScore.js'
-import { lastActivityMs, STALE_AFTER_DAYS } from './graveyard.js'
+import { lastActivityMs, STALE_AFTER_DAYS, isStale } from './graveyard.js'
 import { OPEN_STATUSES } from './detectors.js'
 
 export const WARNING_WINDOW_DAYS = 21
@@ -214,5 +214,84 @@ export function vaultTotals(recoveredItems, offers) {
       (s, o) => s + (Number(o.recoveredValue) || 0),
       0
     ),
+  }
+}
+
+// #58 — revenue leakage prediction (heuristic): open rows likely to rot —
+// cold score OR quiet 30+ days. Counted once each; labelled an estimate
+// in the UI, not a forecast from measured conversion data.
+export function predictLeakage(items, nowMs = Date.now()) {
+  const atRisk = (items || []).filter(i => {
+    if (!['new', 'followup', 'replied'].includes(i.status)) return false
+    const { score } = winbackScore(i)
+    return score < 40 || isStale(i, nowMs)
+  })
+  return {
+    count: atRisk.length,
+    value: atRisk.reduce((sum, i) => sum + valueOf(i), 0),
+    rows: atRisk
+      .map(i => ({ inquiry: i, ...winbackScore(i) }))
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 10),
+  }
+}
+
+// #62 — revenue opportunity discovery: warm/hot open leads nobody owns.
+// Unassigned + high score is the overlooked pocket of the pipeline.
+export function discoverOpportunities(items) {
+  return (items || [])
+    .filter(i => ['new', 'followup', 'replied'].includes(i.status) && !i.assignedTo)
+    .map(i => ({ inquiry: i, ...winbackScore(i) }))
+    .filter(r => r.score >= 40)
+    .sort((a, b) => valueOf(b.inquiry) - valueOf(a.inquiry))
+    .slice(0, 10)
+}
+
+// #63 — sales pattern discovery: recovery rates by source and service,
+// plus the top loss reason. Rates over closed leads only; samples under
+// 3 closed leads are flagged small-sample in the UI.
+export function discoverPatterns(items, labels = {}) {
+  const closed = (items || []).filter(
+    i => i.status === 'recovered' || i.status === 'lost'
+  )
+  function ratesBy(keyFn) {
+    const map = {}
+    for (const item of closed) {
+      const key = keyFn(item) || 'Unknown'
+      if (!map[key]) map[key] = { label: key, total: 0, recovered: 0, closed: 0 }
+      map[key].total++
+      map[key].closed++
+      if (item.status === 'recovered') map[key].recovered++
+    }
+    return Object.values(map)
+      .map(r => ({
+        ...r,
+        rate: r.closed > 0 ? Math.round((r.recovered / r.closed) * 100) : null,
+      }))
+      .sort((a, b) => b.closed - a.closed)
+  }
+  const lost = (items || []).filter(i => i.status === 'lost')
+  const byReason = {}
+  for (const item of lost) {
+    const reason = item.lossReason || 'unknown'
+    const label = labels[reason] || reason
+    byReason[label] = (byReason[label] || 0) + 1
+  }
+  const topLoss = Object.entries(byReason).sort((a, b) => b[1] - a[1])[0]
+  const bySource = ratesBy(i => i.source)
+  const bestSource =
+    bySource.filter(r => r.closed >= 3).sort((a, b) => b.rate - a.rate)[0] ||
+    null
+  return {
+    bySource,
+    byService: ratesBy(i => i.service),
+    topLossReason: topLoss
+      ? {
+          label: topLoss[0],
+          count: topLoss[1],
+          share: lost.length > 0 ? Math.round((topLoss[1] / lost.length) * 100) : 0,
+        }
+      : null,
+    bestSource,
   }
 }
