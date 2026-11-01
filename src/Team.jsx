@@ -2,6 +2,8 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import TeamMembers from './components/TeamMembers.jsx'
 import BranchesCard from './components/BranchesCard.jsx'
+import TerritoryCard from './components/TerritoryCard.jsx'
+import RoutingCard from './components/RoutingCard.jsx'
 import { useWorkspace } from './components/WorkspaceContext.jsx'
 import { canManageTeam } from './utils/workspace.js'
 
@@ -55,6 +57,8 @@ export default function Team() {
         </header>
         <TeamMembers />
         <BranchesCard />
+        <TerritoryCard />
+        <RoutingCard />
       </div>
     </div>
   )

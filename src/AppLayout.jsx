@@ -7,7 +7,7 @@ import {
   CURRENCY_CODES,
   defaultCurrencyForBrowser,
 } from './utils/money.js'
-import { canManageTeam, roleLabel } from './utils/workspace.js'
+import { canManageTeam, canViewSettings, roleLabel } from './utils/workspace.js'
 import { logAudit } from './utils/audit.js'
 import { useWorkspace } from './components/WorkspaceContext.jsx'
 import {
@@ -286,6 +286,7 @@ export default function AppLayout() {
           <NavLink to="/app" end onClick={closeSidebar}>Overview</NavLink>
           <NavLink to="/app/inquiries" onClick={closeSidebar}>Inquiries</NavLink>
           <NavLink to="/app/followups" onClick={closeSidebar}>Follow-ups</NavLink>
+          <NavLink to="/app/recovery" onClick={closeSidebar}>Recovery</NavLink>
           <NavLink to="/app/blitz" onClick={closeSidebar}>Blitz Mode</NavLink>
           <NavLink to="/app/offers" onClick={closeSidebar}>Offers</NavLink>
           <NavLink to="/app/revenue" onClick={closeSidebar}>Revenue</NavLink>
@@ -308,6 +309,11 @@ export default function AppLayout() {
           {/* API & Webhooks is its own section, owner/admin only. */}
           {!wsLoading && canManageTeam(workspace?.role) && (
             <NavLink to="/app/api" onClick={closeSidebar}>API &amp; Webhooks</NavLink>
+          )}
+          {/* Workflows: visual rule builder. Viewable by settings roles
+              (owner/admin/branch_manager), same gate as Settings. */}
+          {!wsLoading && canViewSettings(workspace?.role) && (
+            <NavLink to="/app/workflows" onClick={closeSidebar}>Workflows</NavLink>
           )}
           <NavLink to="/app/profile" onClick={closeSidebar}>Profile</NavLink>
         </nav>

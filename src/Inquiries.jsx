@@ -20,6 +20,14 @@ import {
 } from './utils/customFields.js'
 import { applyRules, loadRules } from './utils/rules.js'
 import {
+  applyAutoFollowup,
+  loadAutomationDefaults,
+} from './utils/automation.js'
+import {
+  loadTerritories,
+  matchTerritory,
+} from './utils/territories.js'
+import {
   CURRENCY_CODES,
   currencySymbol,
   defaultCurrencyForBrowser,
@@ -147,6 +155,10 @@ export default function Inquiries() {
   const [customValues, setCustomValues] = useState({})
   // #2 — automation rules for this workspace, loaded once per mount.
   const [rules, setRules] = useState([])
+  // #3 — auto follow-up default (days, 0 = off), loaded once per mount.
+  const [autoFollowupDays, setAutoFollowupDays] = useState(0)
+  // #11 — territory rules, loaded once per mount.
+  const [territories, setTerritories] = useState([])
 
   useEffect(() => {
     if (wsLoading || !workspace) return undefined
@@ -158,6 +170,12 @@ export default function Inquiries() {
     })
     loadRules(db, workspace.ownerUid).then(list => {
       if (!cancelled) setRules(list)
+    })
+    loadAutomationDefaults(db, workspace.ownerUid).then(defaults => {
+      if (!cancelled) setAutoFollowupDays(defaults.autoFollowupDays)
+    })
+    loadTerritories(db, workspace.ownerUid).then(list => {
+      if (!cancelled) setTerritories(list)
     })
     return () => {
       cancelled = true
@@ -206,7 +224,14 @@ export default function Inquiries() {
       // Batch 5: route before writing. Routing never blocks creation —
       // assignNext falls back to unassigned on any failure.
       const db = window.firebase?.firestore?.()
-      const branchId = workspace?.role === 'branch_manager' ? workspace.branchId || '' : ''
+      // #11 — territory picks the branch BEFORE routing (a manager's
+      // own branch always wins); routing then picks a rep inside it.
+      let branchId = workspace?.role === 'branch_manager' ? workspace.branchId || '' : ''
+      let territoryBranch = ''
+      if (!branchId) {
+        territoryBranch = matchTerritory(territories, { service: form.service })
+        if (territoryBranch) branchId = territoryBranch
+      }
       const route = await assignNext(db, workspace?.ownerUid, { branchId })
       // #13 — normalize defined custom values; empty values are dropped
       // so old and new inquiries keep the same clean shape.
@@ -243,6 +268,12 @@ export default function Inquiries() {
       } catch (ruleError) {
         console.error('Rules failed (creation continues without them):', ruleError)
       }
+      // #3 — default auto follow-up, only when no rule scheduled one.
+      // Rules always win: applyAutoFollowup is a no-op if a follow-up
+      // already exists.
+      const hadFollowup = !!(doc.followup && doc.followup.date)
+      doc = applyAutoFollowup(doc, autoFollowupDays)
+      const autoApplied = !hadFollowup && !!(doc.followup && doc.followup.date)
       const ref = await addInquiryDoc(doc)
       if (route.assignedTo && ref) {
         logAudit(workspace.ownerUid, {
@@ -256,6 +287,20 @@ export default function Inquiries() {
           action: 'rule_applied',
           inquiryId: ref.id,
           detail: ruleNotes.join('; '),
+        })
+      }
+      if (autoApplied && ref) {
+        logAudit(workspace.ownerUid, {
+          action: 'task_created',
+          inquiryId: ref.id,
+          detail: `Auto follow-up scheduled in ${autoFollowupDays} days`,
+        })
+      }
+      if (territoryBranch && ref) {
+        logAudit(workspace.ownerUid, {
+          action: 'territory_applied',
+          inquiryId: ref.id,
+          detail: `Service matched territory: ${territoryBranch}`,
         })
       }
       setForm({ name: '', phone: '', service: '', value: '', status: 'new' })

@@ -15,6 +15,8 @@ import Settings from './Settings.jsx'
 import Api from './Api.jsx'
 import Team from './Team.jsx'
 import Activity from './Activity.jsx'
+import Workflows from './Workflows.jsx'
+import Recovery from './Recovery.jsx'
 import Profile from './Profile.jsx'
 import Login from './Login.jsx'
 import Inquiries from './Inquiries.jsx'
@@ -45,6 +47,16 @@ import {
   normalizeCustomValue,
 } from './utils/customFields.js'
 import { applyRules, loadRules } from './utils/rules.js'
+import {
+  applyAutoFollowup,
+  loadAutomationDefaults,
+} from './utils/automation.js'
+import {
+  loadTerritories,
+  matchTerritory,
+} from './utils/territories.js'
+import SlaCenter from './components/SlaCenter.jsx'
+import { loadSlaSettings } from './utils/sla.js'
 import LossReasonModal, { LOSS_REASON_LABELS } from './components/LossReasonModal.jsx'
 import Modal from './components/Modal.jsx'
 import {
@@ -217,6 +229,12 @@ function Dashboard() {
   const [customFields, setCustomFields] = useState([])
   // #2 — automation rules for this workspace.
   const [rules, setRules] = useState([])
+  // #3 — auto follow-up default (days, 0 = off).
+  const [autoFollowupDays, setAutoFollowupDays] = useState(0)
+  // #11 — territory rules.
+  const [territories, setTerritories] = useState([])
+  // #8 — SLA first-response target (hours, 0 = off).
+  const [slaHours, setSlaHours] = useState(24)
 
   // #13 — definitions load once per workspace (same get-once pattern
   // as branches); the detail modal renders one card per field.
@@ -233,6 +251,15 @@ function Dashboard() {
     })
     loadRules(db, workspace.ownerUid).then(list => {
       if (!cancelled) setRules(list)
+    })
+    loadAutomationDefaults(db, workspace.ownerUid).then(defaults => {
+      if (!cancelled) setAutoFollowupDays(defaults.autoFollowupDays)
+    })
+    loadTerritories(db, workspace.ownerUid).then(list => {
+      if (!cancelled) setTerritories(list)
+    })
+    loadSlaSettings(db, workspace.ownerUid).then(settings => {
+      if (!cancelled) setSlaHours(settings.firstResponseHours)
     })
     return () => {
       cancelled = true
@@ -797,7 +824,14 @@ function Dashboard() {
     // field, so the sync effect needs no change. Routing never blocks
     // creation — assignNext falls back to unassigned on any failure.
     const db = window.firebase?.firestore?.()
-    const branchId = workspace?.role === 'branch_manager' ? workspace.branchId || '' : ''
+    // #11 — territory picks the branch BEFORE routing (a manager's
+    // own branch always wins); routing then picks a rep inside it.
+    let branchId = workspace?.role === 'branch_manager' ? workspace.branchId || '' : ''
+    let territoryBranch = ''
+    if (!branchId) {
+      territoryBranch = matchTerritory(territories, { service: form.service })
+      if (territoryBranch) branchId = territoryBranch
+    }
     const route = await assignNext(db, workspace?.ownerUid, { branchId })
 
     // #2 — automation rules run AFTER routing, so a rule assignment
@@ -827,6 +861,11 @@ function Dashboard() {
     } catch (ruleError) {
       console.error('Rules failed (creation continues without them):', ruleError)
     }
+    // #3 — default auto follow-up, only when no rule scheduled one.
+    const hadFollowup = !!(newInquiry.followup && newInquiry.followup.date)
+    newInquiry = applyAutoFollowup(newInquiry, autoFollowupDays)
+    const autoApplied =
+      !hadFollowup && !!(newInquiry.followup && newInquiry.followup.date)
 
     setItems(current => [newInquiry, ...current])
 
@@ -843,6 +882,22 @@ function Dashboard() {
         action: 'rule_applied',
         inquiryId: String(newInquiry.id),
         detail: ruleNotes.join('; '),
+      })
+    }
+
+    if (autoApplied) {
+      logAudit(workspace?.ownerUid, {
+        action: 'task_created',
+        inquiryId: String(newInquiry.id),
+        detail: `Auto follow-up scheduled in ${autoFollowupDays} days`,
+      })
+    }
+
+    if (territoryBranch) {
+      logAudit(workspace?.ownerUid, {
+        action: 'territory_applied',
+        inquiryId: String(newInquiry.id),
+        detail: `Service matched territory: ${territoryBranch}`,
       })
     }
 
@@ -898,6 +953,9 @@ function Dashboard() {
 
       {/* #33 — Unassigned Revenue Detector: open inquiries nobody owns. */}
       <UnassignedRevenue items={items} currency={currency} />
+
+      {/* #8 + #123 — SLA Command Center + Breach Analytics. */}
+      <SlaCenter items={items} firstResponseHours={slaHours} />
 
       {/* Booking requests are an owner/admin view: the bookings query
           is keyed by the workspace owner, and staff never convert
@@ -1363,6 +1421,45 @@ function Dashboard() {
                   )}
                 </div>
               ))}
+
+              {/* #22 — Win-Back Memory Card: past inquiries from this
+                  same phone number (normalized, so +91/0 formats match).
+                  Renders only when history exists, so new customers see
+                  no noise. Most useful on lost rows: what happened
+                  before, at a glance. */}
+              {(() => {
+                const history = items
+                  .filter(
+                    item =>
+                      item.id !== detailInquiry.id &&
+                      normalizePhone(item.phone) ===
+                        normalizePhone(detailInquiry.phone)
+                  )
+                  .sort(
+                    (a, b) =>
+                      (Number(b.createdAt) || 0) - (Number(a.createdAt) || 0)
+                  )
+                  .slice(0, 5)
+                if (history.length === 0) return null
+                return (
+                  <div className="detail-card">
+                    <span>Customer history</span>
+                    <ul>
+                      {history.map(row => (
+                        <li key={row.id}>
+                          {row.service} — {row.status} —{' '}
+                          {row.date ||
+                            (row.createdAt
+                              ? new Date(row.createdAt)
+                                  .toISOString()
+                                  .slice(0, 10)
+                              : '')}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )
+              })()}
 
               {/* Assignment is owner/admin-only: managers and reps
                   cannot reassign (rules deny it), so the control is
@@ -1982,6 +2079,8 @@ function App() {
           <Route path="/app/api" element={<Api />} />
           <Route path="/app/team" element={<Team />} />
           <Route path="/app/activity" element={<Activity />} />
+          <Route path="/app/workflows" element={<Workflows />} />
+          <Route path="/app/recovery" element={<Recovery />} />
           <Route path="/app/profile" element={<Profile />} />
         </Route>
 

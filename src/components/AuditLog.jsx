@@ -20,6 +20,8 @@ const ACTION_LABELS = {
   member_availability_changed: 'Member availability changed',
   inquiry_assigned: 'Inquiry assigned',
   rule_applied: 'Rule applied',
+  task_created: 'Task created',
+  territory_applied: 'Territory applied',
   export: 'Data exported',
 }
 

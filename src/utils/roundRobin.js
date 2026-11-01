@@ -32,7 +32,74 @@
  * Manual assignment (detail-modal dropdown) always wins over routing
  * and never touches assignedCount — a manual move is the owner's
  * decision, not the engine's load.
+ *
+ * #12 — Workload mode (settings/routing doc, Team page card):
+ * 'balanced' (default) ranks by lifetime assignedCount; 'workload'
+ * ranks by live OPEN inquiries (status new/followup/replied) with an
+ * optional capacity cap. The open-count query reads the whole open
+ * set once per creation — fine at this app's scale; if open volume
+ * ever grows huge, replace it with a per-member counter. A failed
+ * workload query falls back to balanced ranking, never to unassigned.
  */
+
+/** Shared rank: lowest count first; ties rotate by the pointer. */
+function rankByCount(items, getCount, pointerUid) {
+  const withCount = items
+    .map(m => ({ ...m, count: getCount(m) }))
+    .sort((a, b) => a.count - b.count)
+  const ranked = []
+  for (let i = 0; i < withCount.length;) {
+    let j = i
+    while (j < withCount.length && withCount[j].count === withCount[i].count) j++
+    const group = withCount.slice(i, j).map(m => m.id).sort()
+    const after = pointerUid ? group.filter(id => id > pointerUid) : []
+    const order = after.length
+      ? [...after, ...group.filter(id => id <= pointerUid)]
+      : group
+    order.forEach(id => ranked.push(withCount.find(m => m.id === id)))
+    i = j
+  }
+  return ranked
+}
+
+/** Balanced ranking: lifetime routed count (today's behaviour). */
+export function rankBalanced(candidates, pointerUid) {
+  return rankByCount(
+    candidates,
+    m => (typeof m.assignedCount === 'number' ? m.assignedCount : 0),
+    pointerUid
+  )
+}
+
+/**
+ * Workload ranking: fewest OPEN leads first. Reps at capacity are
+ * skipped — unless every candidate is at capacity, in which case the
+ * cap is ignored (routing never strands a row while reps exist).
+ */
+export function rankByOpenLoad(candidates, openCounts, pointerUid, capacity) {
+  const cap = Number(capacity)
+  let eligible = candidates
+  if (Number.isInteger(cap) && cap > 0) {
+    const under = candidates.filter(m => (openCounts[m.id] || 0) < cap)
+    if (under.length > 0) eligible = under
+  }
+  return rankByCount(eligible, m => openCounts[m.id] || 0, pointerUid)
+}
+
+async function countOpenByAssignee(db, ownerUid) {
+  const snap = await db
+    .collection('users')
+    .doc(ownerUid)
+    .collection('inquiries')
+    .where('status', 'in', ['new', 'followup', 'replied'])
+    .get()
+  const counts = {}
+  snap.docs.forEach(d => {
+    const assignee = d.data()?.assignedTo
+    if (assignee) counts[assignee] = (counts[assignee] || 0) + 1
+  })
+  return counts
+}
 
 /**
  * Route one new inquiry. Returns routing fields to store on the doc.
@@ -66,6 +133,26 @@ export async function assignNext(db, ownerUid, { branchId = '' } = {}) {
     const pointerUid = settingsSnap.exists
       ? (settingsSnap.data()?.roundRobin?.pointerUid || '')
       : ''
+    // #12 — routing mode + capacity (settings/routing doc). Any read
+    // failure means balanced, today's behaviour.
+    let routingMode = 'balanced'
+    let routingCapacity = 0
+    try {
+      const routingSnap = await db
+        .collection('users')
+        .doc(ownerUid)
+        .collection('settings')
+        .doc('routing')
+        .get()
+      if (routingSnap.exists) {
+        const data = routingSnap.data() || {}
+        if (data.mode === 'workload') routingMode = 'workload'
+        const cap = Number(data.capacity)
+        if (Number.isInteger(cap) && cap >= 0) routingCapacity = cap
+      }
+    } catch (e) {
+      console.error('Routing settings read failed, using balanced:', e)
+    }
     const membersSnap = await membersCol.get()
     const candidates = membersSnap.docs
       .map(d => ({ id: d.id, ...d.data() }))
@@ -81,20 +168,18 @@ export async function assignNext(db, ownerUid, { branchId = '' } = {}) {
 
     // Rank: least-loaded first; ties break by the rotation pointer
     // (first member-id after the pointer, wrapping to the start).
-    const byCount = [...candidates]
-      .map(m => ({ ...m, count: typeof m.assignedCount === 'number' ? m.assignedCount : 0 }))
-      .sort((a, b) => a.count - b.count)
-    const ranked = []
-    for (let i = 0; i < byCount.length;) {
-      let j = i
-      while (j < byCount.length && byCount[j].count === byCount[i].count) j++
-      const group = byCount.slice(i, j).map(m => m.id).sort()
-      const after = pointerUid ? group.filter(id => id > pointerUid) : []
-      const order = after.length
-        ? [...after, ...group.filter(id => id <= pointerUid)]
-        : group
-      order.forEach(id => ranked.push(byCount.find(m => m.id === id)))
-      i = j
+    // Balanced = lifetime routed count; workload = live open leads.
+    let ranked
+    if (routingMode === 'workload') {
+      try {
+        const openCounts = await countOpenByAssignee(db, ownerUid)
+        ranked = rankByOpenLoad(candidates, openCounts, pointerUid, routingCapacity)
+      } catch (e) {
+        console.error('Workload counts failed, falling back to balanced:', e)
+        ranked = rankBalanced(candidates, pointerUid)
+      }
+    } else {
+      ranked = rankBalanced(candidates, pointerUid)
     }
 
     // Try candidates in rank order; each attempt is one transaction
@@ -147,6 +232,7 @@ export async function assignNext(db, ownerUid, { branchId = '' } = {}) {
       assignedAt: new Date().toISOString(),
       assignedBy: 'round-robin',
       assignedEmail,
+      routingMode,
     }
   } catch (error) {
     console.error('Round-robin assignment failed, leaving unassigned:', error)

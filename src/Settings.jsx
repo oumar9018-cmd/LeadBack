@@ -5,6 +5,8 @@ import { url } from './basePath.js'
 import { canViewSettings, canWriteSettings } from './utils/workspace.js'
 import CustomFieldsCard from './components/CustomFieldsCard.jsx'
 import RulesCard from './components/RulesCard.jsx'
+import AutomationCard from './components/AutomationCard.jsx'
+import SlaCard from './components/SlaCard.jsx'
 import { CURRENCIES, defaultCurrencyForBrowser } from './utils/money.js'
 
 const defaultSettings = {
@@ -363,6 +365,12 @@ export default function Settings() {
 
           {/* #2 — Automation rules: own card, same settings-doc pattern. */}
           <RulesCard />
+
+          {/* #3 — Automation defaults: auto follow-up for new inquiries. */}
+          <AutomationCard />
+
+          {/* #8 — SLA targets: first-response target for new inquiries. */}
+          <SlaCard />
 
           <section className="settings-card settings-account-card">
             <div>
