@@ -4,6 +4,7 @@ import {
   loadTerritories,
   validateTerritory,
 } from '../utils/territories.js'
+import './AutomationLists.css'
 
 /**
  * #11 — Territory rules card (Team page, owner/admin only — the page
@@ -117,7 +118,7 @@ export default function TerritoryCard() {
       {rules.length === 0 ? (
         <p>No territory rules yet.</p>
       ) : (
-        <ul>
+        <ul className="auto-list">
           {rules.map(rule => (
             <li key={rule.id}>
               Service contains “{rule.pattern}” → {rule.branch}

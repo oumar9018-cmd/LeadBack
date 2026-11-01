@@ -1,0 +1,92 @@
+/* #1 — Visual Workflow Builder styles.
+ *
+ * Minimal theme (matches the app direction): white cards, hairline
+ * borders, one accent color per branch — blue for IF, green for THEN,
+ * amber for ELSE. Phone-first: nodes stack, controls wrap, no
+ * horizontal scroll. Drag is a desktop extra; the ↑/↓ buttons are the
+ * primary reorder path on touch. */
+
+.wf-rail {
+  border-left: 3px solid #2563eb;
+  margin-left: 8px;
+  padding-left: 16px;
+}
+
+.wf-rail h3 {
+  margin: 24px 0 12px;
+  font-size: 15px;
+}
+
+.wf-rail h3:first-child {
+  margin-top: 0;
+}
+
+.wf-node {
+  border: 1px solid #e5e7eb;
+  border-left: 3px solid #2563eb;
+  border-radius: 12px;
+  padding: 12px;
+  background: #fff;
+  margin-bottom: 10px;
+  cursor: grab;
+}
+
+.wf-node:active {
+  cursor: grabbing;
+}
+
+.wf-node:hover {
+  border-color: #93c5fd;
+}
+
+.wf-node-then {
+  border-left-color: #059669;
+}
+
+.wf-node-else {
+  border-left-color: #d97706;
+}
+
+.wf-node-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.wf-node-controls select,
+.wf-node-controls input {
+  min-width: 0;
+  flex: 1 1 120px;
+}
+
+.wf-node-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.wf-and {
+  margin: 0 0 10px 20px;
+  font-weight: 700;
+  color: #2563eb;
+  font-size: 13px;
+}
+
+.wf-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+@media (max-width: 640px) {
+  .wf-rail {
+    margin-left: 2px;
+    padding-left: 10px;
+  }
+
+  .wf-node {
+    padding: 10px;
+  }
+}

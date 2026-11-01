@@ -10,6 +10,7 @@ import {
   RULE_STATUSES,
   validateRule,
 } from '../utils/rules.js'
+import './AutomationLists.css'
 
 /**
  * #2 — Automation Rules manager (Settings card).
@@ -362,7 +363,7 @@ export default function RulesCard() {
       </div>
 
       {rules.length === 0 && !draft && <p>No rules yet.</p>}
-      <ul>
+      <ul className="auto-list">
         {rules.map(rule => (
           <li key={rule.id}>
             <strong>{rule.name}</strong> —{' '}
@@ -371,7 +372,9 @@ export default function RulesCard() {
             {rule.conditions.length === 1 ? '' : 's'}, {rule.actions.length}{' '}
             action{rule.actions.length === 1 ? '' : 's'}
             {rule.elseActions.length > 0 ? `, ${rule.elseActions.length} else` : ''})
-            {!rule.enabled && ' [disabled]'}
+            {!rule.enabled && (
+              <span className="badge-off">Disabled</span>
+            )}
             {canWrite && (
               <>
                 <button

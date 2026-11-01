@@ -1,0 +1,75 @@
+/* Wave 3 — Recovery page styles.
+ *
+ * Lists get hairline separators (no bullets fighting the card), bands
+ * get color chips, ranked scores get pills. Colors stay restrained:
+ * hot red, warm amber, cold slate — all on tinted backgrounds, never
+ * on text alone. */
+
+.rec-list {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 0;
+}
+
+.rec-list li {
+  padding: 9px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.rec-list li:last-child {
+  border-bottom: 0;
+}
+
+.rec-ranked {
+  padding-left: 22px;
+  margin: 8px 0 0;
+}
+
+.rec-ranked li {
+  padding: 9px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.rec-ranked li:last-child {
+  border-bottom: 0;
+}
+
+.rec-chip {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.rec-chip-hot {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.rec-chip-warm {
+  background: #fffbeb;
+  color: #b45309;
+}
+
+.rec-chip-cold {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.rec-score {
+  display: inline-block;
+  min-width: 34px;
+  text-align: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.rec-meta {
+  font-size: 13px;
+  color: #64748b;
+}

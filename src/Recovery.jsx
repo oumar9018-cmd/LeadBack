@@ -16,6 +16,7 @@ import {
   attribution,
   vaultTotals,
 } from './utils/recovery.js'
+import './Recovery.css'
 
 /**
  * Wave 3 — Recovery page (/app/recovery).
@@ -158,7 +159,7 @@ export default function Recovery() {
           {warnings.length === 0 ? (
             <p>No early warnings — nothing is about to rot.</p>
           ) : (
-            <ul>
+            <ul className="rec-list">
               {warnings.map(row => (
                 <li key={row.item.id}>
                   {row.item.name} — {row.item.service} — quiet {row.quietDays}{' '}
@@ -175,7 +176,7 @@ export default function Recovery() {
           {ghosts.length === 0 ? (
             <p>No ghosting detected.</p>
           ) : (
-            <ul>
+            <ul className="rec-list">
               {ghosts.map(row => (
                 <li key={row.item.id}>
                   {row.item.name} — {row.item.service} — silent {row.quietDays}{' '}
@@ -192,7 +193,7 @@ export default function Recovery() {
           {decay.length === 0 ? (
             <p>No open inquiries to predict.</p>
           ) : (
-            <ul>
+            <ul className="rec-list">
               {decay.map(row => (
                 <li key={row.item.id}>
                   {row.item.name} — now {row.now} → 7 days {row.in7} → 14
@@ -207,9 +208,12 @@ export default function Recovery() {
         <section className="settings-card">
           <span className="settings-label">PROBABILITY MAP</span>
           <h2>Open pipeline by win-back band</h2>
-          <ul>
+          <ul className="rec-list">
             {bands.map(band => (
               <li key={band.id}>
+                <span className={`rec-chip rec-chip-${band.id}`}>
+                  {band.id}
+                </span>{' '}
                 {band.label}: {band.count} leads — {money(band.value, currency)}
               </li>
             ))}
@@ -222,11 +226,11 @@ export default function Recovery() {
           {ranked.length === 0 ? (
             <p>Nothing to rank.</p>
           ) : (
-            <ol>
+            <ol className="rec-ranked">
               {ranked.map(row => (
                 <li key={row.inquiry.id}>
-                  {row.inquiry.name} — {row.inquiry.service} — score{' '}
-                  {row.score}
+                  {row.inquiry.name} — {row.inquiry.service} —{' '}
+                  <span className="rec-score">{row.score}</span>
                   {row.reasons[0] ? ` — ${row.reasons[0]}` : ''}
                 </li>
               ))}
@@ -241,7 +245,7 @@ export default function Recovery() {
             <p>No lost leads yet.</p>
           ) : (
             <>
-              <ul>
+              <ul className="rec-list">
                 {forensics.byReason.map(row => (
                   <li key={row.label}>
                     {row.label}: {row.count} leads — {money(row.value, currency)}
@@ -249,7 +253,7 @@ export default function Recovery() {
                 ))}
               </ul>
               <h3>Top services lost</h3>
-              <ul>
+              <ul className="rec-list">
                 {forensics.byService.map(row => (
                   <li key={row.service}>
                     {row.service}: {row.count} leads — {money(row.value, currency)}
@@ -273,7 +277,7 @@ export default function Recovery() {
                   ? ` — most recent ${new Date(competitor.latestMs).toISOString().slice(0, 10)}`
                   : ''}
               </p>
-              <ul>
+              <ul className="rec-list">
                 {competitor.services.map(row => (
                   <li key={row.service}>
                     {row.service}: {row.count}
@@ -290,7 +294,7 @@ export default function Recovery() {
           {patterns.length === 0 ? (
             <p>No lost leads yet.</p>
           ) : (
-            <ul>
+            <ul className="rec-list">
               {patterns.map(row => (
                 <li key={row.month}>
                   {row.month}:{' '}
@@ -314,7 +318,7 @@ export default function Recovery() {
           ) : (
             <>
               <h3>By source</h3>
-              <ul>
+              <ul className="rec-list">
                 {attrib.bySource.map(row => (
                   <li key={row.key}>
                     {row.key}: {row.count} — {money(row.value, currency)}
@@ -322,7 +326,7 @@ export default function Recovery() {
                 ))}
               </ul>
               <h3>By rep</h3>
-              <ul>
+              <ul className="rec-list">
                 {attrib.byRep.map(row => (
                   <li key={row.key}>
                     {row.key}: {row.count} — {money(row.value, currency)}
@@ -343,7 +347,7 @@ export default function Recovery() {
             claimed
           </p>
           {recovered.length > 0 && (
-            <ul>
+            <ul className="rec-list">
               {recovered.slice(0, 10).map(row => (
                 <li key={row.id}>
                   {row.name} — {row.service} — {money(row.value, currency)}
@@ -360,7 +364,7 @@ export default function Recovery() {
             {offers.length} offers sent · {redeemedOffers.length} redeemed ·{' '}
             {money(vault.claimedValue, currency)} recovered through offers
           </p>
-          <p>
+          <p className="rec-meta">
             Note: offer discounts are free text, not amounts, so a numeric
             ROI ratio against discount cost is not computed — this
             section tracks the return side. Cost-side ROI needs numeric

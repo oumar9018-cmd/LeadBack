@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { getSlaSummary } from '../utils/sla.js'
+import './SlaCenter.css'
 
 /**
  * #8 SLA Command Center + #123 SLA Breach Analytics (dashboard section).
@@ -21,25 +22,16 @@ export default function SlaCenter({ items, firstResponseHours }) {
 
   const shown = summary.breached.slice(0, 5)
   return (
-    <section
-      style={{
-        border: '1px solid #fecaca',
-        borderRadius: 12,
-        padding: 16,
-        background: '#fef2f2',
-        marginBottom: 16,
-      }}
-      aria-live="polite"
-    >
+    <section className="sla-banner" aria-live="polite">
       <span className="app-eyebrow">SLA — FIRST RESPONSE</span>
-      <div style={{ marginTop: 6 }}>
+      <div className="sla-head">
         <strong>
           {summary.breached.length} past the {firstResponseHours}h
           first-response target
           {summary.atRisk.length > 0 &&
             ` · ${summary.atRisk.length} at risk`}
         </strong>
-        <div style={{ marginTop: 4 }}>
+        <div className="sla-sub">
           Breach ages: {summary.buckets.under48} under 48h
           {summary.buckets.over48 > 0 && ` · ${summary.buckets.over48} over 48h`}
           {summary.oldestBreachHours !== null &&
@@ -47,7 +39,7 @@ export default function SlaCenter({ items, firstResponseHours }) {
         </div>
       </div>
       {shown.length > 0 && (
-        <ul style={{ marginTop: 10 }}>
+        <ul className="sla-list">
           {shown.map(row => (
             <li key={row.id}>
               {row.name} — {row.service} — {row.age}h unanswered
@@ -58,7 +50,6 @@ export default function SlaCenter({ items, firstResponseHours }) {
       <button
         type="button"
         className="primary-button"
-        style={{ marginTop: 10 }}
         onClick={() => navigate('/app/inquiries')}
       >
         View inquiries

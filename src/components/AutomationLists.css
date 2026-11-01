@@ -1,0 +1,36 @@
+/* Shared list styling for the new automation cards (Rules, Territory)
+ * and the Workflows list view: hairline separators, actions pushed
+ * right on wide screens, wrapped below on phones. */
+
+.auto-list {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 12px;
+}
+
+.auto-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.auto-list li:last-child {
+  border-bottom: 0;
+}
+
+.auto-list li > .ghost-button:first-of-type {
+  margin-left: auto;
+}
+
+.badge-off {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  background: #f1f5f9;
+  color: #64748b;
+}

@@ -14,6 +14,8 @@ import {
   RULE_STATUSES,
   validateRule,
 } from './utils/rules.js'
+import './Workflows.css'
+import './components/AutomationLists.css'
 
 /**
  * #1 — Visual Workflow Automation Builder.
@@ -48,20 +50,6 @@ function fieldKind(fieldId) {
 function operatorsFor(fieldId) {
   const kind = fieldKind(fieldId)
   return RULE_OPERATORS.filter(o => o.kinds.includes(kind))
-}
-
-const NODE_STYLE = {
-  border: '1px solid #e5e7eb',
-  borderRadius: 12,
-  padding: 12,
-  background: '#fff',
-  marginBottom: 10,
-}
-
-const RAIL_STYLE = {
-  borderLeft: '3px solid #2563EB',
-  marginLeft: 8,
-  paddingLeft: 16,
 }
 
 export default function Workflows() {
@@ -254,9 +242,15 @@ export default function Workflows() {
   }
 
   function nodeChrome(listKey, index, children) {
+    const accent =
+      listKey === 'actions'
+        ? 'wf-node-then'
+        : listKey === 'elseActions'
+          ? 'wf-node-else'
+          : ''
     return (
       <div
-        style={NODE_STYLE}
+        className={`wf-node ${accent}`}
         draggable
         onDragStart={e =>
           e.dataTransfer.setData(
@@ -268,7 +262,7 @@ export default function Workflows() {
         onDrop={e => onDropOn(listKey, index, e)}
       >
         {children}
-        <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+        <div className="wf-node-actions">
           <button type="button" className="ghost-button" onClick={() => move(listKey, index, -1)}>
             Up
           </button>
@@ -379,7 +373,7 @@ export default function Workflows() {
           {nodeChrome(
             'conditions',
             index,
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+            <div className="wf-node-controls">
               <select
                 value={condition.field}
                 onChange={e => {
@@ -413,7 +407,7 @@ export default function Workflows() {
             </div>
           )}
           {index < draft.conditions.length - 1 && (
-            <div style={{ margin: '0 0 10px 20px', fontWeight: 600 }}>AND</div>
+            <div className="wf-and">AND</div>
           )}
         </div>
       )
@@ -425,7 +419,7 @@ export default function Workflows() {
       nodeChrome(
         listKey,
         index,
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+        <div className="wf-node-controls">
           <select
             value={action.type}
             onChange={e =>
@@ -463,7 +457,7 @@ export default function Workflows() {
         {!draft && (
           <>
             {rules.length === 0 && <p>No workflows yet.</p>}
-            <ul>
+            <ul className="auto-list">
               {rules.map(rule => (
                 <li key={rule.id}>
                   <strong>{rule.name}</strong> —{' '}
@@ -476,7 +470,9 @@ export default function Workflows() {
                   {rule.elseActions.length > 0
                     ? `, ${rule.elseActions.length} else`
                     : ''}
-                  ){!rule.enabled && ' [disabled]'}
+                  ){!rule.enabled && (
+                    <span className="badge-off">Disabled</span>
+                  )}
                   {canWrite && (
                     <>
                       <button type="button" className="ghost-button" onClick={() => toggleEnabled(rule)}>
@@ -528,7 +524,7 @@ export default function Workflows() {
               </label>
             </div>
 
-            <div style={RAIL_STYLE}>
+            <div className="wf-rail">
               <h3>IF — all of these match</h3>
               {draft.conditions.length === 0 && (
                 <p>No conditions — this workflow matches every new inquiry.</p>
@@ -550,7 +546,7 @@ export default function Workflows() {
                 Add condition
               </button>
 
-              <h3 style={{ marginTop: 24 }}>THEN — do this</h3>
+              <h3>THEN — do this</h3>
               {draft.actions.length === 0 && <p>No actions yet.</p>}
               {actionNodes('actions')}
               <button
@@ -569,7 +565,7 @@ export default function Workflows() {
                 Add action
               </button>
 
-              <h3 style={{ marginTop: 24 }}>ELSE — otherwise do this</h3>
+              <h3>ELSE — otherwise do this</h3>
               {draft.elseActions.length === 0 && <p>No else actions.</p>}
               {actionNodes('elseActions')}
               <button
@@ -590,7 +586,7 @@ export default function Workflows() {
             </div>
 
             {error && <div className="form-error">{error}</div>}
-            <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
+            <div className="wf-form-actions">
               <button type="submit" className="primary-button">
                 Save workflow
               </button>
