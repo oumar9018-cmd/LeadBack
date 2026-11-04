@@ -27,6 +27,7 @@ function slugifyBranch(name) {
 export default function BranchesCard() {
   const { workspace } = useWorkspace()
   const [branches, setBranches] = useState([])
+  const [loading, setLoading] = useState(true)
   const [name, setName] = useState('')
   const [renamingId, setRenamingId] = useState('')
   const [renameValue, setRenameValue] = useState('')
@@ -55,6 +56,7 @@ export default function BranchesCard() {
       console.error('Branches load failed:', e)
       setBranches([])
     }
+    setLoading(false)
   }
 
   useEffect(() => {
@@ -256,7 +258,9 @@ export default function BranchesCard() {
         </div>
       )}
 
-      {branches.length === 0 && (
+      {loading && <p>Loading…</p>}
+
+      {!loading && branches.length === 0 && (
         <p>No branches yet. Add one above — until then, all rows are unbranched and visible to owners/admins only.</p>
       )}
     </section>

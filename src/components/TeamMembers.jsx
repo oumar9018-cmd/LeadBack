@@ -39,6 +39,7 @@ export default function TeamMembers() {
   const [branches, setBranches] = useState([])
   const [invites, setInvites] = useState([])
   const [members, setMembers] = useState([])
+  const [loading, setLoading] = useState(true)
   const [email, setEmail] = useState('')
   const [role, setRole] = useState('sales_rep')
   const [branchId, setBranchId] = useState('')
@@ -97,6 +98,7 @@ export default function TeamMembers() {
     } catch (e) {
       console.error('Branches load failed:', e)
     }
+    setLoading(false)
   }
 
   useEffect(() => {
@@ -552,7 +554,9 @@ export default function TeamMembers() {
         </div>
       )}
 
-      {invites.length === 0 && members.length === 0 && (
+      {loading && <p>Loading…</p>}
+
+      {!loading && invites.length === 0 && members.length === 0 && (
         <p>No team members yet. Add your first invite above — seats are unlimited and free.</p>
       )}
 

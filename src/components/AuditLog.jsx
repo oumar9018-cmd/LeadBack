@@ -31,6 +31,7 @@ export default function AuditLog() {
   const [actorFilter, setActorFilter] = useState('all')
   const [actionFilter, setActionFilter] = useState('all')
   const [loadError, setLoadError] = useState('')
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     if (!workspace) return undefined
@@ -47,11 +48,13 @@ export default function AuditLog() {
       .then(snap => {
         if (cancelled) return
         setRecords(snap.docs.map(d => ({ id: d.id, ...d.data() })))
+        setLoading(false)
       })
       .catch(error => {
         console.error('Audit load failed:', error)
         if (!cancelled) {
           setLoadError('Could not load the audit log. The updated security rules may not be published yet.')
+          setLoading(false)
         }
       })
     return () => {
@@ -115,7 +118,9 @@ export default function AuditLog() {
         </div>
       )}
 
-      {visible.length === 0 && !loadError && (
+      {loading && <p>Loading…</p>}
+
+      {!loading && visible.length === 0 && !loadError && (
         <p>No audit records yet. Status changes and team changes will appear here.</p>
       )}
 
