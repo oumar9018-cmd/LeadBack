@@ -1,13 +1,20 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Wynback">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="BackWon">
   <defs>
-    <linearGradient id="wb" x1="0" y1="0" x2="1" y2="1">
+    <linearGradient id="bw" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#2457ff" />
       <stop offset="1" stop-color="#1a41c8" />
     </linearGradient>
   </defs>
-  <rect width="64" height="64" rx="16" fill="url(#wb)" />
+  <rect width="64" height="64" rx="16" fill="url(#bw)" />
   <path
-    d="M14 43 L22 21 L29 38 L36 21"
+    d="M16 16 V48"
+    stroke="#ffffff"
+    stroke-width="5"
+    stroke-linecap="round"
+    fill="none"
+  />
+  <path
+    d="M16 16 H27.2 A7.2 7.2 0 0 1 27.2 30.4 H16"
     stroke="#ffffff"
     stroke-width="5"
     stroke-linecap="round"
@@ -15,14 +22,23 @@
     fill="none"
   />
   <path
-    d="M34 40 L50 24"
-    stroke="#7df9c6"
+    d="M16 30.4 H29.6 A8.8 8.8 0 0 1 29.6 48 H16"
+    stroke="#ffffff"
     stroke-width="5"
     stroke-linecap="round"
+    stroke-linejoin="round"
+    fill="none"
   />
   <path
-    d="M41 24 h9 v9"
-    stroke="#7df9c6"
+    d="M42.4 28 L52.8 12.8"
+    stroke="#ffffff"
+    stroke-width="5"
+    stroke-linecap="round"
+    fill="none"
+  />
+  <path
+    d="M44.8 12.8 h8 v8"
+    stroke="#ffffff"
     stroke-width="5"
     stroke-linecap="round"
     stroke-linejoin="round"

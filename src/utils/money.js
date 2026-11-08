@@ -4,7 +4,7 @@
  * currency — not a hardcoded ₹ — is what the user sees.
  *
  * Currency rule (owner order 2026-10-30): the rupee symbol is for India
- * only. Wynback is a global business, so each workspace shows its own
+ * only. BackWon is a global business, so each workspace shows its own
  * country's currency symbol.
  *
  * HONEST CONSTRAINT: Gmail / Firebase Auth does NOT expose the account's

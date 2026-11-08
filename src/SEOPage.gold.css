@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 /* ================================================================== */
-/* Wynback marketing pages — clean light professional theme            */
+/* BackWon marketing pages — clean light professional theme            */
 /* White #ffffff · slate text · professional blue #2563EB primary       */
 /* Body + headings: Inter · subtle borders #e2e8f0                     */
 /* ================================================================== */
@@ -186,7 +186,7 @@
 }
 
 /* Website symbol in the SEO header/footer brand row (replaces the
-   plain "W" letter mark, same LogoMark as the app and home page). */
+   plain "B" letter mark, same LogoMark as the app and home page). */
 .seo-brand-logo {
   flex: 0 0 auto;
   display: block;

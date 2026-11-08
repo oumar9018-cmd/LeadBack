@@ -1,5 +1,5 @@
 /**
- * Wynback WhatsApp utilities.
+ * BackWon WhatsApp utilities.
  *
  * One-tap deep links that open WhatsApp with a pre-filled message.
  * No API keys, no backend — works via wa.me on every device.

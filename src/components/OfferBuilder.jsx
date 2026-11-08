@@ -97,7 +97,7 @@ export default function OfferBuilder({ inquiry, businessName, onClose, onCreated
     const offer = {
       code,
       ownerUid: workspace.ownerUid,
-      businessName: businessName || 'Wynback business',
+      businessName: businessName || 'BackWon business',
       inquiryId: String(inquiry.id),
       customerName: inquiry.name || '',
       customerPhone: inquiry.phone || '',

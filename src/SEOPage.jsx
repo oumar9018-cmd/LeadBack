@@ -197,9 +197,9 @@ function useReveal(type) {
 function SeoHeader() {
   return (
     <header className="seo-nav">
-      <Link className="seo-brand" to="/" aria-label="Wynback home">
+      <Link className="seo-brand" to="/" aria-label="BackWon home">
         <LogoMark width={34} height={34} className="seo-brand-logo" />
-        <span>Wynback</span>
+        <span>BackWon</span>
       </Link>
 
       <nav className="seo-nav-links" aria-label="Main navigation">
@@ -229,7 +229,7 @@ function SeoFooter() {
         <div className="seo-footer-brand">
           <Link className="seo-brand" to="/">
             <LogoMark width={34} height={34} className="seo-brand-logo" />
-            <span>Wynback</span>
+            <span>BackWon</span>
           </Link>
           <p>Turn missed inquiries into customers.</p>
         </div>
@@ -251,7 +251,7 @@ function SeoFooter() {
       </div>
 
       <div className="seo-footer-bottom">
-        <span>© {CURRENT_YEAR} Wynback. All rights reserved.</span>
+        <span>© {CURRENT_YEAR} BackWon. All rights reserved.</span>
         <span>Revenue recovery software.</span>
       </div>
     </footer>
@@ -398,7 +398,7 @@ function Chapters({ page }) {
           “The customer already contacted you. Everything after that is just
           refusing to let silence win.”
         </p>
-        <cite>— The Wynback creed</cite>
+        <cite>— The BackWon creed</cite>
       </blockquote>
     </section>
   )
@@ -525,7 +525,7 @@ function FinalCta() {
   return (
     <section className="seo-final-cta">
       <div className="seo-final-cta-panel reveal">
-        <span className="seo-kicker">WYNBACK</span>
+        <span className="seo-kicker">BACKWON</span>
         <h2>Turn missed inquiries into customers.</h2>
         <p>
           Start free and build a clearer follow-up

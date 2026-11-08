@@ -53,7 +53,7 @@ const features = [
   {
     icon: 'message',
     title: 'Follow up in one tap',
-    text: 'Open WhatsApp with the right message already written. Timing is everything — Wynback makes sure you never miss the window.',
+    text: 'Open WhatsApp with the right message already written. Timing is everything — BackWon makes sure you never miss the window.',
   },
   {
     icon: 'mic',
@@ -76,7 +76,7 @@ const steps = [
   {
     number: '2',
     title: 'Follow up in one tap',
-    text: 'Wynback nudges you at the right moment. One tap sends the perfect WhatsApp message — or a personal voice note.',
+    text: 'BackWon nudges you at the right moment. One tap sends the perfect WhatsApp message — or a personal voice note.',
   },
   {
     number: '3',
@@ -106,8 +106,8 @@ const stats = [
 
 const faqs = [
   {
-    q: 'How is Wynback different from a CRM?',
-    a: 'CRMs track deals you already have. Wynback recovers customers you almost lost — missed calls, unread messages, quotes that went cold. It is built for the follow-up, not the pipeline.',
+    q: 'How is BackWon different from a CRM?',
+    a: 'CRMs track deals you already have. BackWon recovers customers you almost lost — missed calls, unread messages, quotes that went cold. It is built for the follow-up, not the pipeline.',
   },
   {
     q: 'Do I need any technical setup?',
@@ -115,18 +115,18 @@ const faqs = [
   },
   {
     q: 'What is the voice-note follow-up?',
-    a: 'When someone calls and you miss it, Wynback nudges you to send a 10-second personal voice note on WhatsApp. Customers respond to a human voice far more than a template — and no competitor offers this workflow.',
+    a: 'When someone calls and you miss it, BackWon nudges you to send a 10-second personal voice note on WhatsApp. Customers respond to a human voice far more than a template — and no competitor offers this workflow.',
   },
   {
     q: 'Is my customer data private?',
     a: 'Yes. Your inquiries live in your private workspace, under your control — delete any inquiry permanently, anytime. We never sell data and never show ads.',
   },
   {
-    q: 'How much does Wynback cost?',
-    a: 'Wynback is completely free — every feature included, no paid plans, no feature gates, no credit card. Tools like this usually charge for automations, reminders and analytics; we would rather earn your trust first.',
+    q: 'How much does BackWon cost?',
+    a: 'BackWon is completely free — every feature included, no paid plans, no feature gates, no credit card. Tools like this usually charge for automations, reminders and analytics; we would rather earn your trust first.',
   },
   {
-    q: 'Which businesses is Wynback for?',
+    q: 'Which businesses is BackWon for?',
     a: 'Any local business where one customer is worth real money: salons, spas, auto repair, clinics, coaching centers, photographers, home services, fitness studios.',
   },
 ]
@@ -164,9 +164,9 @@ function App() {
     <div className="home-page">
       <header className="nav">
         <div className="nav-inner">
-          <Link className="nav-brand" to={url('/')} aria-label="Wynback home">
+          <Link className="nav-brand" to={url('/')} aria-label="BackWon home">
             <LogoMark width={30} height={30} className="nav-logo" />
-            <span>Wynback</span>
+            <span>BackWon</span>
           </Link>
 
           {/*
@@ -195,7 +195,7 @@ function App() {
             <div className="hero-copy">
               <h1>Win back every customer you almost lost</h1>
               <p className="hero-sub">
-                Wynback catches every missed call and cold inquiry, then helps you
+                BackWon catches every missed call and cold inquiry, then helps you
                 win them back in one tap — a WhatsApp message or a personal voice
                 note. Nothing slips away.
               </p>
@@ -210,7 +210,7 @@ function App() {
               <p className="hero-note">Free forever · Every feature included · No credit card required</p>
             </div>
 
-            <div className="hero-visual" aria-label="How Wynback works">
+            <div className="hero-visual" aria-label="How BackWon works">
               <div className="browser-frame">
                 <div className="browser-bar">
                   <div className="browser-dots">
@@ -323,7 +323,7 @@ function App() {
               <div className="section-head">
                 <span className="kicker">How it works</span>
                 <h2>Three steps. Ten seconds each.</h2>
-                <p>Wynback turns every forgotten inquiry into a second chance — without the CRM headache.</p>
+                <p>BackWon turns every forgotten inquiry into a second chance — without the CRM headache.</p>
               </div>
             </Reveal>
             <div className="steps-grid">
@@ -387,7 +387,7 @@ function App() {
             <div className="footer-brand">
               <Link className="nav-brand" to={url('/')}>
                 <LogoMark width={26} height={26} className="nav-logo" />
-                <span>Wynback</span>
+                <span>BackWon</span>
               </Link>
               <p>Win back every customer you almost lost.</p>
               <p className="footer-cred"><IconClock width={14} height={14} /> Built for follow-ups that actually happen.</p>
@@ -416,7 +416,7 @@ function App() {
           </div>
 
           <div className="footer-bottom">
-            <span>© 2026 Wynback. All rights reserved.</span>
+            <span>© 2026 BackWon. All rights reserved.</span>
             <span>Win-back software for local businesses.</span>
           </div>
         </div>

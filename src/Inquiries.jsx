@@ -341,7 +341,7 @@ export default function Inquiries() {
         get: row => row.custom?.[field.id] ?? '',
       })),
     ]
-    downloadCsv('wynback-inquiries.csv', toCsv(columns, filtered))
+    downloadCsv('backwon-inquiries.csv', toCsv(columns, filtered))
   }
 
   async function handleBookingAsInquiry(booking) {

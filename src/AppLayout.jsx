@@ -244,7 +244,7 @@ export default function AppLayout() {
       <aside className="sidebar" ref={drawerRef} id="app-drawer" aria-label="Main navigation">
         <div className="sidebar-brand">
           <LogoMark width={30} height={30} />
-          <span>Wynback</span>
+          <span>BackWon</span>
         </div>
 
         <div className="workspace">
@@ -344,7 +344,7 @@ export default function AppLayout() {
             </button>
             <span className="topbar-brand">
               <LogoMark width={30} height={30} />
-              Wynback
+              BackWon
             </span>
           </div>
 
@@ -416,7 +416,7 @@ export default function AppLayout() {
         <Outlet />
 
         <footer className="app-footer">
-          Wynback · Revenue recovery workspace
+          BackWon · Revenue recovery workspace
         </footer>
       </main>
 

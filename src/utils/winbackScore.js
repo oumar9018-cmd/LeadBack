@@ -1,5 +1,5 @@
 /**
- * Wynback Win-Back Score engine.
+ * BackWon Win-Back Score engine.
  *
  * Every open inquiry gets a 0–100 score estimating how likely it is to
  * convert if followed up NOW. The score is computed transparently from

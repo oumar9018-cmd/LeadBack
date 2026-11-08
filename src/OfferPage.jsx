@@ -153,7 +153,7 @@ export default function OfferPage() {
           )}
           <div className="offer-brand">
             <LogoMark width={22} height={22} />
-            <span>Powered by Wynback</span>
+            <span>Powered by BackWon</span>
           </div>
         </div>
       </div>
@@ -211,7 +211,7 @@ export default function OfferPage() {
 
         <div className="offer-brand">
           <LogoMark width={22} height={22} />
-          <span>Powered by Wynback</span>
+          <span>Powered by BackWon</span>
         </div>
       </div>
     </div>

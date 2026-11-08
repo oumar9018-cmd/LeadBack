@@ -1,5 +1,5 @@
 /**
- * Wynback Revenue Recovery Forecast.
+ * BackWon Revenue Recovery Forecast.
  *
  * Honest, transparent prediction: expected recovery = open pipeline value
  * × the owner's OWN historical conversion rate. When there's no history

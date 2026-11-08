@@ -1,5 +1,5 @@
 /**
- * Wynback SVG icon system.
+ * BackWon SVG icon system.
  * All icons are stroke-based, 24x24 viewBox, currentColor.
  * No emojis, no text glyphs — pure SVG.
  */
@@ -149,11 +149,6 @@ export function IconShield(props) {
   </>)
 }
 
-/**
- * Wynback logo mark — a "W" whose final stroke rises into an
- * upward arrow: the visual metaphor of winning a customer back.
- * Animated gradient sweep gives it a living, premium feel.
- */
 export function IconFlame(props) {
   return base(props, <>
     <path d="M12 22 c4.5 0 7.5-3 7.5-7.2 0-3.1-1.9-5.3-3.4-7.1C14.6 6 13.5 4.6 13.5 2 c-3.5 2-5 4.6-5.6 7-1-.6-1.8-1.6-2.2-3.2C4.4 7.4 4.5 9.4 4.5 11 4.5 16 7.5 22 12 22 z" />
@@ -230,25 +225,42 @@ export function IconSend(props) {
   </>)
 }
 
+/**
+ * BackWon logo mark — a bold "B" with a small up arrow at the
+ * top right: the visual metaphor of winning a customer back.
+ */
 export function LogoMark(props) {
   return (
     <svg viewBox="0 0 40 40" fill="none" aria-hidden="true" {...props}>
       <rect width="40" height="40" rx="10" fill="#2563eb" />
       <path
-        d="M9 27 L14 13 L19 24 L24 13"
+        d="M10 10 V30"
+        stroke="#fff"
+        strokeWidth={3.4}
+        strokeLinecap="round"
+      />
+      <path
+        d="M10 10 H17 A4.5 4.5 0 0 1 17 19 H10"
         stroke="#fff"
         strokeWidth={3.4}
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <path
-        d="M22 25 L31 16"
+        d="M10 19 H18.5 A5.5 5.5 0 0 1 18.5 30 H10"
+        stroke="#fff"
+        strokeWidth={3.4}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M26.5 17.5 L33 8"
         stroke="#fff"
         strokeWidth={3.4}
         strokeLinecap="round"
       />
       <path
-        d="M25.5 16 h5.5 v5.5"
+        d="M28 8 h5 v5"
         stroke="#fff"
         strokeWidth={3.4}
         strokeLinecap="round"

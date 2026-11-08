@@ -24,15 +24,15 @@
 const home = {
   type: 'home',
   path: '/',
-  title: 'Wynback — Win Back Every Customer You Almost Lost',
+  title: 'BackWon — Win Back Every Customer You Almost Lost',
   description:
-    'Wynback helps local businesses win back missed calls and cold inquiries with one-tap WhatsApp follow-ups, personal voice notes, and structured follow-up sequences. Start free.',
+    'BackWon helps local businesses win back missed calls and cold inquiries with one-tap WhatsApp follow-ups, personal voice notes, and structured follow-up sequences. Start free.',
   keywords:
     'win back customers, missed call follow up, WhatsApp follow up tool, customer recovery software, voice note follow up, lead recovery, small business CRM',
   eyebrow: 'CUSTOMER WIN-BACK',
   heading: 'Win back every customer you almost lost.',
   intro:
-    'Wynback gives local businesses one simple workspace to catch every missed inquiry, follow up in one tap on WhatsApp — or with a personal voice note — and measure the revenue that comes back.',
+    'BackWon gives local businesses one simple workspace to catch every missed inquiry, follow up in one tap on WhatsApp — or with a personal voice note — and measure the revenue that comes back.',
   sections: [
     {
       icon: 'inbox',
@@ -61,15 +61,15 @@ const features = {
   type: 'features',
   path: '/features',
   navLabel: 'Features',
-  title: 'Wynback Features — One-Tap WhatsApp Follow-ups & Voice Notes',
+  title: 'BackWon Features — One-Tap WhatsApp Follow-ups & Voice Notes',
   description:
-    'Explore Wynback features: one-tap WhatsApp follow-ups, personal voice-note win-backs, structured follow-up sequences, public booking links, recovery analytics, unlimited team seats, and webhooks & API.',
+    'Explore BackWon features: one-tap WhatsApp follow-ups, personal voice-note win-backs, structured follow-up sequences, public booking links, recovery analytics, unlimited team seats, and webhooks & API.',
   keywords:
     'WhatsApp follow up tool, voice note follow up, missed call recovery, follow up sequence software, booking link generator, customer win back features, unlimited team seats free, role based access, round robin lead routing, webhooks api, bulk csv import, activity log',
   eyebrow: 'FEATURES',
   heading: 'Every feature has one job: getting the customer back.',
   intro:
-    'Wynback is deliberately narrow. It does the work that decides whether an interested customer becomes a paying one — and it leaves the rest alone.',
+    'BackWon is deliberately narrow. It does the work that decides whether an interested customer becomes a paying one — and it leaves the rest alone.',
   stats: [
     { value: '14', label: 'Features included' },
     { value: '0', label: 'Spreadsheets required' },
@@ -84,7 +84,7 @@ const features = {
     {
       icon: 'clock',
       title: 'Follow-up queue',
-      text: 'Every open inquiry gets a next action and an owner. Your team opens Wynback and knows exactly who to contact today.',
+      text: 'Every open inquiry gets a next action and an owner. Your team opens BackWon and knows exactly who to contact today.',
     },
     {
       icon: 'trending',
@@ -149,16 +149,16 @@ const features = {
   ],
   faq: [
     {
-      q: 'Do I need to connect my phone system to Wynback?',
-      a: 'No. Wynback is designed for businesses whose inquiries arrive across calls, WhatsApp, Instagram and walk-ins, so you can log an inquiry manually in seconds. Everything is in one place without any telephony integration.',
+      q: 'Do I need to connect my phone system to BackWon?',
+      a: 'No. BackWon is designed for businesses whose inquiries arrive across calls, WhatsApp, Instagram and walk-ins, so you can log an inquiry manually in seconds. Everything is in one place without any telephony integration.',
     },
     {
-      q: 'Can more than one person use Wynback?',
-      a: 'Yes — Wynback includes unlimited team seats, free. Invite staff by email with a role: owner, admin, branch manager or sales rep. Branch managers see only their branch, sales reps see only their assigned leads, and staff can never delete data.',
+      q: 'Can more than one person use BackWon?',
+      a: 'Yes — BackWon includes unlimited team seats, free. Invite staff by email with a role: owner, admin, branch manager or sales rep. Branch managers see only their branch, sales reps see only their assigned leads, and staff can never delete data.',
     },
     {
-      q: 'How is Wynback different from a CRM?',
-      a: 'A general CRM tries to run your whole business. Wynback does one thing: making sure an interested customer who has already contacted you gets a reply and a follow-up. That narrower focus is why owners actually keep using it.',
+      q: 'How is BackWon different from a CRM?',
+      a: 'A general CRM tries to run your whole business. BackWon does one thing: making sure an interested customer who has already contacted you gets a reply and a follow-up. That narrower focus is why owners actually keep using it.',
     },
     {
       q: 'Is my data exported if I cancel?',
@@ -176,15 +176,15 @@ const integrations = {
   type: 'integrations',
   path: '/integrations',
   navLabel: 'Integrations',
-  title: 'Wynback Integrations — Shopify, Meta Leads, IndiaMART & Website API',
+  title: 'BackWon Integrations — Shopify, Meta Leads, IndiaMART & Website API',
   description:
-    'Connect Shopify, Meta leads, IndiaMART or any website form to Wynback. New inquiries land in your inbox automatically — webhooks and API included free.',
+    'Connect Shopify, Meta leads, IndiaMART or any website form to BackWon. New inquiries land in your inbox automatically — webhooks and API included free.',
   keywords:
     'Shopify webhook, Meta leads integration, IndiaMART leads, website form API, lead webhook software, bearer token api, automatic lead capture',
   eyebrow: 'INTEGRATIONS',
   heading: 'Every lead source, one inbox.',
   intro:
-    'Connect the tools your business already uses. New inquiries land in Wynback automatically — no copy-paste, no missed leads, no extra software to learn.',
+    'Connect the tools your business already uses. New inquiries land in BackWon automatically — no copy-paste, no missed leads, no extra software to learn.',
   stats: [
     { value: '4', label: 'Sources live' },
     { value: '0', label: 'Extra cost' },
@@ -234,7 +234,7 @@ const integrations = {
     },
     {
       q: 'What happens if the same lead comes twice?',
-      a: 'Wynback deduplicates by source and external ID, so a retried webhook never creates a second inquiry.',
+      a: 'BackWon deduplicates by source and external ID, so a retried webhook never creates a second inquiry.',
     },
     {
       q: 'Is my data safe with webhooks?',
@@ -242,28 +242,28 @@ const integrations = {
     },
     {
       q: 'Does this cost extra?',
-      a: 'No. Webhooks and API are included free, like everything else in Wynback.',
+      a: 'No. Webhooks and API are included free, like everything else in BackWon.',
     },
   ],
 }
 
 /* ------------------------------------------------------------------ */
-/* Pricing — free forever, stated plainly (Wynback has no paid plans). */
+/* Pricing — free forever, stated plainly (BackWon has no paid plans). */
 /* ------------------------------------------------------------------ */
 
 const pricing = {
   type: 'pricing',
   path: '/pricing',
   navLabel: 'Pricing',
-  title: 'Wynback Pricing — Free Forever, Every Feature Included',
+  title: 'BackWon Pricing — Free Forever, Every Feature Included',
   description:
-    'Wynback pricing: free forever. Every feature included, unlimited team seats, no credit card, no trial, no paid plans.',
+    'BackWon pricing: free forever. Every feature included, unlimited team seats, no credit card, no trial, no paid plans.',
   keywords:
     'free CRM, free lead follow up software, free customer recovery tool, no credit card software, unlimited team seats free',
   eyebrow: 'PRICING',
   heading: 'Free. Forever. No catch.',
   intro:
-    'Every feature in Wynback is free — unlimited seats, API, audit log, all of it. No credit card, no trial clock, no plan to upgrade to.',
+    'Every feature in BackWon is free — unlimited seats, API, audit log, all of it. No credit card, no trial clock, no plan to upgrade to.',
   stats: [
     { value: 'Free', label: 'To start' },
     { value: 'Free', label: 'Per seat' },
@@ -303,7 +303,7 @@ const pricing = {
   ],
   faq: [
     {
-      q: 'Is Wynback really free?',
+      q: 'Is BackWon really free?',
       a: 'Yes. Every feature today is free — no card, no trial, no paid plans, no per-seat charges.',
     },
     {
@@ -329,15 +329,15 @@ const useCases = {
   type: 'use-cases',
   path: '/use-cases',
   navLabel: 'Use Cases',
-  title: 'Wynback Use Cases — Recover Missed Inquiries & Lost Leads',
+  title: 'BackWon Use Cases — Recover Missed Inquiries & Lost Leads',
   description:
-    'See how businesses use Wynback to recover missed calls, unanswered DMs, cold quote requests, no-shows and dormant leads — and turn them into revenue.',
+    'See how businesses use BackWon to recover missed calls, unanswered DMs, cold quote requests, no-shows and dormant leads — and turn them into revenue.',
   keywords:
     'lead recovery use cases, missed call follow up, quote follow up software, dormant lead reactivation, no-show follow up, lead follow up examples',
   eyebrow: 'USE CASES',
   heading: 'Where your revenue is leaking right now.',
   intro:
-    'Most lost revenue is not lost to competitors — it leaks out of ordinary gaps. A call you could not answer, a DM you meant to reply to, a quote you never chased. These are the gaps Wynback closes.',
+    'Most lost revenue is not lost to competitors — it leaks out of ordinary gaps. A call you could not answer, a DM you meant to reply to, a quote you never chased. These are the gaps BackWon closes.',
   sections: [
     {
       icon: 'phone',
@@ -402,7 +402,7 @@ const useCases = {
     },
     {
       q: 'Do I need different tools for each use case?',
-      a: 'No. Inquiry capture, follow-up management and revenue recovery are three views of the same workspace in Wynback, so a single workflow covers all of them.',
+      a: 'No. Inquiry capture, follow-up management and revenue recovery are three views of the same workspace in BackWon, so a single workflow covers all of them.',
     },
   ],
 }
@@ -414,7 +414,7 @@ const useCases = {
 const missedInquiries = {
   type: 'missed-inquiries',
   path: '/use-cases/missed-inquiries',
-  title: 'Recover Missed Customer Inquiries | Wynback',
+  title: 'Recover Missed Customer Inquiries | BackWon',
   description:
     'Stop losing customers who already contacted you. Track every missed call, DM and form enquiry, follow up on time, and see the revenue you recover.',
   keywords:
@@ -422,7 +422,7 @@ const missedInquiries = {
   eyebrow: 'USE CASE · MISSED INQUIRIES',
   heading: 'The customer already contacted you. That is the expensive part.',
   intro:
-    'Acquiring an inquiry costs marketing money, word of mouth and reputation. Losing one costs nothing to prevent. Wynback makes sure no inquiry disappears just because you were busy when it arrived.',
+    'Acquiring an inquiry costs marketing money, word of mouth and reputation. Losing one costs nothing to prevent. BackWon makes sure no inquiry disappears just because you were busy when it arrived.',
   stats: [
     { value: '100%', label: 'Of inquiries logged' },
     { value: '< 30s', label: 'To record an inquiry' },
@@ -439,7 +439,7 @@ const missedInquiries = {
     },
     {
       title: 'Follow up on time',
-      text: 'Work the follow-up queue daily. Wynback shows you who is overdue so timing never depends on memory.',
+      text: 'Work the follow-up queue daily. BackWon shows you who is overdue so timing never depends on memory.',
     },
     {
       title: 'Record the outcome',
@@ -471,15 +471,15 @@ const missedInquiries = {
   faq: [
     {
       q: 'How fast should I follow up on a missed inquiry?',
-      a: 'Fast. Intent decays quickly — a person who asked about your service an hour ago is far more likely to book than the same person next week. Wynback surfaces the newest open inquiries first so your first call of the day is to the warmest person on the list.',
+      a: 'Fast. Intent decays quickly — a person who asked about your service an hour ago is far more likely to book than the same person next week. BackWon surfaces the newest open inquiries first so your first call of the day is to the warmest person on the list.',
     },
     {
       q: 'What if the inquiry came in on WhatsApp or Instagram?',
-      a: 'You log it manually with its source. Wynback does not need access to your accounts, which keeps setup simple and works across every channel you use, including walk-ins and phone calls.',
+      a: 'You log it manually with its source. BackWon does not need access to your accounts, which keeps setup simple and works across every channel you use, including walk-ins and phone calls.',
     },
     {
       q: 'Can I track inquiries I lost months ago?',
-      a: 'Yes — and it is often worth it. Logging your old enquiries in Wynback gives you a ready-made list of people who already expressed interest but never got a proper follow-up.',
+      a: 'Yes — and it is often worth it. Logging your old enquiries in BackWon gives you a ready-made list of people who already expressed interest but never got a proper follow-up.',
     },
   ],
 }
@@ -491,15 +491,15 @@ const missedInquiries = {
 const followUpManagement = {
   type: 'follow-up-management',
   path: '/use-cases/follow-up-management',
-  title: 'Follow-Up Management Software for Local Business | Wynback',
+  title: 'Follow-Up Management Software for Local Business | BackWon',
   description:
-    'Build a follow-up routine your team actually keeps. Wynback turns scattered reminders into one shared follow-up queue with owners, dates and outcomes.',
+    'Build a follow-up routine your team actually keeps. BackWon turns scattered reminders into one shared follow-up queue with owners, dates and outcomes.',
   keywords:
     'follow up management software, sales follow up process, follow up system for small business, lead follow up tool, follow up reminder app',
   eyebrow: 'USE CASE · FOLLOW-UP MANAGEMENT',
   heading: 'Most deals are not lost. They are just never followed up.',
   intro:
-    'Following up is not hard — it is just easy to postpone. Wynback removes the two things that break every follow-up habit: not knowing who to contact, and relying on someone remembering to do it.',
+    'Following up is not hard — it is just easy to postpone. BackWon removes the two things that break every follow-up habit: not knowing who to contact, and relying on someone remembering to do it.',
   stats: [
     { value: '1', label: 'Shared follow-up queue' },
     { value: '0', label: 'Sticky notes needed' },
@@ -512,7 +512,7 @@ const followUpManagement = {
     },
     {
       title: 'Give it a date',
-      text: 'An action without a date is a wish. Every follow-up in Wynback has a due date attached.',
+      text: 'An action without a date is a wish. Every follow-up in BackWon has a due date attached.',
     },
     {
       title: 'Work the queue',
@@ -537,7 +537,7 @@ const followUpManagement = {
     {
       icon: 'refresh',
       title: 'Handles long cycles',
-      text: 'Some customers take months. Wynback keeps the thread alive across weeks without anyone holding it in their head.',
+      text: 'Some customers take months. BackWon keeps the thread alive across weeks without anyone holding it in their head.',
     },
     {
       icon: 'check',
@@ -555,8 +555,8 @@ const followUpManagement = {
       a: 'Yes. Invite your team by email — seats are unlimited and free. Everyone shares the same inquiry queue, reps see only their assigned leads, and every follow-up still lives on the customer record, never in someone’s phone or inbox.',
     },
     {
-      q: 'Is Wynback an automation tool?',
-      a: 'Wynback is deliberately a management tool, not an automation tool. It tells your team exactly who needs a human follow-up and when — the message itself still comes from a person, which is what converts in local service businesses.',
+      q: 'Is BackWon an automation tool?',
+      a: 'BackWon is deliberately a management tool, not an automation tool. It tells your team exactly who needs a human follow-up and when — the message itself still comes from a person, which is what converts in local service businesses.',
     },
   ],
 }
@@ -568,15 +568,15 @@ const followUpManagement = {
 const revenueRecovery = {
   type: 'revenue-recovery',
   path: '/use-cases/revenue-recovery',
-  title: 'Revenue Recovery Software for Old Leads | Wynback',
+  title: 'Revenue Recovery Software for Old Leads | BackWon',
   description:
-    'Measure the revenue your follow-ups actually recover. Wynback tracks recovered opportunities, win-back value and the true ROI of following up.',
+    'Measure the revenue your follow-ups actually recover. BackWon tracks recovered opportunities, win-back value and the true ROI of following up.',
   keywords:
     'revenue recovery software, recover lost revenue, win back lost customers, lead recovery ROI, recovered revenue tracking',
   eyebrow: 'USE CASE · REVENUE RECOVERY',
   heading: 'You cannot improve revenue you never measured.',
   intro:
-    'Most teams know how many new leads they got. Almost none know how much money they recovered from the ones they nearly lost. Wynback makes that number visible — and it is usually the most motivating figure in the business.',
+    'Most teams know how many new leads they got. Almost none know how much money they recovered from the ones they nearly lost. BackWon makes that number visible — and it is usually the most motivating figure in the business.',
   stats: [
     { value: '$', label: 'Recovered, tracked live' },
     { value: '1', label: 'Number that matters' },
@@ -625,7 +625,7 @@ const revenueRecovery = {
   faq: [
     {
       q: 'What counts as recovered revenue?',
-      a: 'Any revenue from a customer whose inquiry had gone cold, been unanswered or been written off, and who converted after a deliberate follow-up. Wynback lets you record the value at the moment you win it back.',
+      a: 'Any revenue from a customer whose inquiry had gone cold, been unanswered or been written off, and who converted after a deliberate follow-up. BackWon lets you record the value at the moment you win it back.',
     },
     {
       q: 'How long before I can see a recovery figure?',
@@ -633,7 +633,7 @@ const revenueRecovery = {
     },
     {
       q: 'Do I need accounting data to use this?',
-      a: 'No. You enter the value of the won-back job or booking yourself. Wynback is a recovery record, not an accounting system, so there is no integration work required.',
+      a: 'No. You enter the value of the won-back job or booking yourself. BackWon is a recovery record, not an accounting system, so there is no integration work required.',
     },
   ],
 }
@@ -646,15 +646,15 @@ const howItWorks = {
   type: 'how-it-works',
   path: '/how-it-works',
   navLabel: 'How it works',
-  title: 'How Wynback Works — Missed Inquiry to Paying Customer',
+  title: 'How BackWon Works — Missed Inquiry to Paying Customer',
   description:
-    'See how Wynback works in four steps: capture the inquiry, assign a follow-up, win the customer back, and report the revenue you recovered.',
+    'See how BackWon works in four steps: capture the inquiry, assign a follow-up, win the customer back, and report the revenue you recovered.',
   keywords:
-    'how wynback works, lead recovery process, inquiry follow up workflow, lead management workflow, follow up process steps',
+    'how backwon works, lead recovery process, inquiry follow up workflow, lead management workflow, follow up process steps',
   eyebrow: 'HOW IT WORKS',
   heading: 'A four-step loop, not a software project.',
   intro:
-    'Wynback turns a messy, everyday problem into a repeatable routine. Once the loop is running, recovering a missed customer stops being luck.',
+    'BackWon turns a messy, everyday problem into a repeatable routine. Once the loop is running, recovering a missed customer stops being luck.',
   steps: [
     {
       title: '1. Capture the inquiry',
@@ -666,7 +666,7 @@ const howItWorks = {
     },
     {
       title: '3. Follow up',
-      text: 'Work the daily follow-up queue. Wynback shows what is due today and what is already overdue.',
+      text: 'Work the daily follow-up queue. BackWon shows what is due today and what is already overdue.',
     },
     {
       title: '4. Track the outcome',
@@ -682,7 +682,7 @@ const howItWorks = {
     {
       icon: 'users',
       title: 'Survives a busy week',
-      text: 'Because the daily action is one short list, Wynback survives the kind of week that usually kills a CRM rollout.',
+      text: 'Because the daily action is one short list, BackWon survives the kind of week that usually kills a CRM rollout.',
     },
     {
       icon: 'trending',
@@ -702,7 +702,7 @@ const howItWorks = {
     },
     {
       q: 'Do I have to change how we take bookings?',
-      a: 'No. Wynback sits alongside whatever you already use. You log the inquiry in Wynback so it gets followed up; your existing tools keep doing what they do.',
+      a: 'No. BackWon sits alongside whatever you already use. You log the inquiry in BackWon so it gets followed up; your existing tools keep doing what they do.',
     },
     {
       q: 'What do I have to do every day?',
@@ -719,9 +719,9 @@ const industries = {
   type: 'industries',
   path: '/industries',
   navLabel: 'Industries',
-  title: 'Wynback for Local Service Businesses & Industries',
+  title: 'BackWon for Local Service Businesses & Industries',
   description:
-    'Wynback helps auto services, home services, salons, fitness studios, photographers and local businesses recover missed inquiries and book more jobs.',
+    'BackWon helps auto services, home services, salons, fitness studios, photographers and local businesses recover missed inquiries and book more jobs.',
   keywords:
     'lead recovery for local business, service business CRM, salon follow up software, gym lead management, home services lead tracking, auto service CRM',
   eyebrow: 'INDUSTRIES',
@@ -803,16 +803,16 @@ const industries = {
   },
   faq: [
     {
-      q: 'Is Wynback only for service businesses?',
-      a: 'Wynback is designed for businesses where a customer inquiry usually needs a human response before it converts — which covers most local service businesses. If your sales cycle is long and multi-stakeholder, a full CRM will fit you better.',
+      q: 'Is BackWon only for service businesses?',
+      a: 'BackWon is designed for businesses where a customer inquiry usually needs a human response before it converts — which covers most local service businesses. If your sales cycle is long and multi-stakeholder, a full CRM will fit you better.',
     },
     {
-      q: 'Can I use Wynback on site, from my phone?',
-      a: 'Yes. Wynback runs in the browser, so you can log and work inquiries from a phone while on site.',
+      q: 'Can I use BackWon on site, from my phone?',
+      a: 'Yes. BackWon runs in the browser, so you can log and work inquiries from a phone while on site.',
     },
     {
       q: 'Do you support businesses outside India?',
-      a: 'Yes. Wynback works anywhere in the world. The workflow is language- and currency-agnostic — set it to whatever your business uses.',
+      a: 'Yes. BackWon works anywhere in the world. The workflow is language- and currency-agnostic — set it to whatever your business uses.',
     },
   ],
 }
@@ -824,7 +824,7 @@ const industries = {
 const carDetailing = {
   type: 'car-detailing',
   path: '/industries/car-detailing',
-  title: 'Wynback for Car Detailing — Recover More Bookings',
+  title: 'BackWon for Car Detailing — Recover More Bookings',
   description:
     'Car detailing lead management software. Track missed detailing inquiries, follow up on quotes, and turn more enquiries into booked jobs.',
   keywords:
@@ -832,7 +832,7 @@ const carDetailing = {
   eyebrow: 'INDUSTRY · CAR DETAILING',
   heading: 'Most detailing enquiries never get a second message.',
   intro:
-    'Detailing customers message three or four shops and book whoever replies properly first. Wynback makes sure your studio is the one that follows through — every time.',
+    'Detailing customers message three or four shops and book whoever replies properly first. BackWon makes sure your studio is the one that follows through — every time.',
   stats: [
     { value: '3–4', label: 'Shops each customer messages' },
     { value: '1st', label: 'Proper reply usually wins' },
@@ -873,11 +873,11 @@ const carDetailing = {
   faq: [
     {
       q: 'Is this a detailing booking or scheduling system?',
-      a: 'No — and that is deliberate. Wynback does not replace your calendar. It makes sure every enquiry reaches your calendar by giving you a reliable follow-up process around the bookings you already take.',
+      a: 'No — and that is deliberate. BackWon does not replace your calendar. It makes sure every enquiry reaches your calendar by giving you a reliable follow-up process around the bookings you already take.',
     },
     {
       q: 'I am a one-person mobile detailing business. Is this useful for me?',
-      a: 'Yes, arguably more than for a large shop. When you are the only person, every missed call is a job you personally lost, and there is no one else to pick up the follow-up. Wynback is the second pair of hands.',
+      a: 'Yes, arguably more than for a large shop. When you are the only person, every missed call is a job you personally lost, and there is no one else to pick up the follow-up. BackWon is the second pair of hands.',
     },
     {
       q: 'How quickly will I see recovered bookings?',
@@ -898,15 +898,15 @@ const about = {
   type: 'about',
   path: '/about',
   navLabel: 'About',
-  title: 'About Wynback — Revenue Recovery for Growing Businesses',
+  title: 'About BackWon — Revenue Recovery for Growing Businesses',
   description:
-    'Wynback builds simple revenue recovery software for local service businesses. Learn why we focus on one job: making sure no customer inquiry is missed.',
+    'BackWon builds simple revenue recovery software for local service businesses. Learn why we focus on one job: making sure no customer inquiry is missed.',
   keywords:
-    'about wynback, wynback company, revenue recovery company, small business software India, wynback story',
+    'about backwon, backwon company, revenue recovery company, small business software India, backwon story',
   eyebrow: 'ABOUT',
   heading: 'We build one thing, and we build it narrowly.',
   intro:
-    'Wynback exists because of a pattern we kept seeing in small businesses: the marketing worked, the phone rang, and the revenue still leaked — on the follow-up.',
+    'BackWon exists because of a pattern we kept seeing in small businesses: the marketing worked, the phone rang, and the revenue still leaked — on the follow-up.',
   stats: [
     { value: '1', label: 'Problem we solve' },
     { value: 'Free', label: 'To start' },
@@ -936,12 +936,12 @@ const about = {
   ],
   faq: [
     {
-      q: 'Is Wynback a CRM?',
-      a: 'Not really. Wynback is a revenue recovery tool. A CRM tries to run your whole customer relationship; Wynback handles the specific stretch where most small businesses lose money — between an inquiry arriving and a follow-up happening.',
+      q: 'Is BackWon a CRM?',
+      a: 'Not really. BackWon is a revenue recovery tool. A CRM tries to run your whole customer relationship; BackWon handles the specific stretch where most small businesses lose money — between an inquiry arriving and a follow-up happening.',
     },
     {
-      q: 'Who is behind Wynback?',
-      a: 'Wynback is built by a small team focused on practical software for local service businesses — and it is completely free, every feature included, because businesses that cannot absorb enterprise software costs still deserve enterprise-grade tools.',
+      q: 'Who is behind BackWon?',
+      a: 'BackWon is built by a small team focused on practical software for local service businesses — and it is completely free, every feature included, because businesses that cannot absorb enterprise software costs still deserve enterprise-grade tools.',
     },
     {
       q: 'How do I get in touch?',
@@ -957,7 +957,7 @@ const about = {
 const resources = {
   type: 'resources',
   path: '/resources',
-  title: 'Wynback Resources — Inquiry & Follow-Up Guides',
+  title: 'BackWon Resources — Inquiry & Follow-Up Guides',
   description:
     'Practical guides on missed customer inquiries, follow-up workflows, lead response times and measuring recovered revenue for local businesses.',
   keywords:
@@ -1001,11 +1001,11 @@ const resources = {
   faq: [
     {
       q: 'Are these resources free?',
-      a: 'Yes. Every guide is free to read, and none of them require a Wynback account.',
+      a: 'Yes. Every guide is free to read, and none of them require a BackWon account.',
     },
     {
-      q: 'Do I need Wynback to apply these guides?',
-      a: 'No. The workflows work on paper or in a spreadsheet too. Wynback just removes the manual overhead of keeping them up to date.',
+      q: 'Do I need BackWon to apply these guides?',
+      a: 'No. The workflows work on paper or in a spreadsheet too. BackWon just removes the manual overhead of keeping them up to date.',
     },
     {
       q: 'Which guide should I start with?',
@@ -1022,7 +1022,7 @@ const resources = {
 const salons = {
   type: 'salons',
   path: '/industries/salons',
-  title: 'Wynback for Salons — Win Back Missed Appointments',
+  title: 'BackWon for Salons — Win Back Missed Appointments',
   description:
     'Salon client follow-up software. Recover missed calls, rebook no-shows, and bring lapsed clients back — without chasing them manually.',
   keywords:
@@ -1030,7 +1030,7 @@ const salons = {
   eyebrow: 'INDUSTRY · SALONS & SPAS',
   heading: 'Your chair is empty because nobody followed up.',
   intro:
-    'Salon clients message three or four places and book whoever replies first. Wynback makes sure your salon is the one that follows through — on every missed call, every unanswered DM, every client who never rebooked.',
+    'Salon clients message three or four places and book whoever replies first. BackWon makes sure your salon is the one that follows through — on every missed call, every unanswered DM, every client who never rebooked.',
   stats: [
     { value: '3–4', label: 'Salons each client messages' },
     { value: '1st', label: 'Good reply usually wins' },
@@ -1070,16 +1070,16 @@ const salons = {
   ],
   faq: [
     {
-      q: 'Is Wynback a salon booking system?',
-      a: 'No — deliberately not. Wynback does not replace your calendar or booking app. It makes sure every enquiry reaches your calendar by giving you a reliable follow-up process around the bookings you already take.',
+      q: 'Is BackWon a salon booking system?',
+      a: 'No — deliberately not. BackWon does not replace your calendar or booking app. It makes sure every enquiry reaches your calendar by giving you a reliable follow-up process around the bookings you already take.',
     },
     {
       q: 'I am a solo stylist. Is this useful for me?',
-      a: 'Yes — arguably more than for a large salon. When you are the only person, every missed call is an appointment you personally lost. Wynback is the second pair of hands that follows up while you are with a client.',
+      a: 'Yes — arguably more than for a large salon. When you are the only person, every missed call is an appointment you personally lost. BackWon is the second pair of hands that follows up while you are with a client.',
     },
     {
       q: 'How do I win back clients who stopped coming?',
-      a: 'Add your lapsed clients to Wynback and work them like new enquiries: a personal message, a reason to return, a clear next step. Most salons are surprised how many "lost" clients just needed one nudge.',
+      a: 'Add your lapsed clients to BackWon and work them like new enquiries: a personal message, a reason to return, a clear next step. Most salons are surprised how many "lost" clients just needed one nudge.',
     },
     {
       q: 'Do I need to connect my Instagram or phone?',
@@ -1092,7 +1092,7 @@ const salons = {
 const autoRepair = {
   type: 'auto-repair',
   path: '/industries/auto-repair',
-  title: 'Wynback for Auto Repair — Recover Missed Service Jobs',
+  title: 'BackWon for Auto Repair — Recover Missed Service Jobs',
   description:
     'Auto repair shop follow-up software. Track missed calls, chase unsent quotes, and turn more enquiries into booked service jobs.',
   keywords:
@@ -1100,7 +1100,7 @@ const autoRepair = {
   eyebrow: 'INDUSTRY · AUTO REPAIR',
   heading: 'The job went to whoever called back first.',
   intro:
-    'Drivers with a strange noise or a warning light call two or three shops and book whoever responds properly. Wynback makes sure your shop is the one that follows up — every time.',
+    'Drivers with a strange noise or a warning light call two or three shops and book whoever responds properly. BackWon makes sure your shop is the one that follows up — every time.',
   stats: [
     { value: '2–3', label: 'Shops each driver calls' },
     { value: '1st', label: 'Proper callback usually wins' },
@@ -1140,8 +1140,8 @@ const autoRepair = {
   ],
   faq: [
     {
-      q: 'Is Wynback a garage management system?',
-      a: 'No. Wynback does not do job cards, invoicing or parts. It handles the gap most garage software ignores: making sure every enquiry gets a follow-up until it becomes a booking.',
+      q: 'Is BackWon a garage management system?',
+      a: 'No. BackWon does not do job cards, invoicing or parts. It handles the gap most garage software ignores: making sure every enquiry gets a follow-up until it becomes a booking.',
     },
     {
       q: 'How do I handle price shoppers?',
@@ -1162,7 +1162,7 @@ const autoRepair = {
 const clinics = {
   type: 'clinics',
   path: '/industries/clinics',
-  title: 'Wynback for Clinics — Reduce No-Shows, Win Back Patients',
+  title: 'BackWon for Clinics — Reduce No-Shows, Win Back Patients',
   description:
     'Clinic patient follow-up software. Recover missed appointment enquiries, rebook no-shows, and bring lapsed patients back with a simple workflow.',
   keywords:
@@ -1170,7 +1170,7 @@ const clinics = {
   eyebrow: 'INDUSTRY · CLINICS',
   heading: 'Empty slots are patients who never got a follow-up.',
   intro:
-    'Patients who enquire and hear nothing book elsewhere. Patients who miss an appointment and hear nothing stay missed. Wynback gives clinics a simple, respectful follow-up routine that keeps the diary full.',
+    'Patients who enquire and hear nothing book elsewhere. Patients who miss an appointment and hear nothing stay missed. BackWon gives clinics a simple, respectful follow-up routine that keeps the diary full.',
   stats: [
     { value: '1', label: 'Shared follow-up queue' },
     { value: '0', label: 'Enquiries lost to voicemail' },
@@ -1200,7 +1200,7 @@ const clinics = {
     {
       icon: 'bell',
       title: 'Respectful, not pushy',
-      text: 'Clinic follow-ups need the right tone. Wynback keeps the human in the loop — reminders prompt your team, people send the message.',
+      text: 'Clinic follow-ups need the right tone. BackWon keeps the human in the loop — reminders prompt your team, people send the message.',
     },
     {
       icon: 'shield',
@@ -1210,8 +1210,8 @@ const clinics = {
   ],
   faq: [
     {
-      q: 'Is Wynback a practice management system?',
-      a: 'No. Wynback does not handle clinical records, billing or scheduling. It covers the communication gap: making sure every patient enquiry and missed appointment gets a proper follow-up.',
+      q: 'Is BackWon a practice management system?',
+      a: 'No. BackWon does not handle clinical records, billing or scheduling. It covers the communication gap: making sure every patient enquiry and missed appointment gets a proper follow-up.',
     },
     {
       q: 'How do we follow up without sounding pushy?',
@@ -1232,7 +1232,7 @@ const clinics = {
 const coaches = {
   type: 'coaches',
   path: '/industries/coaches',
-  title: 'Wynback for Coaches — Turn Enquiries Into Clients',
+  title: 'BackWon for Coaches — Turn Enquiries Into Clients',
   description:
     'Coaching business follow-up software. Track discovery-call enquiries, follow up on proposals, and win back prospects who went quiet.',
   keywords:
@@ -1240,7 +1240,7 @@ const coaches = {
   eyebrow: 'INDUSTRY · COACHES',
   heading: 'They were interested. Then life happened.',
   intro:
-    'Coaching prospects enquire in a burst of motivation and go quiet when the week gets busy. Wynback keeps every conversation warm until they are ready — so the client comes to you, not to the coach who followed up.',
+    'Coaching prospects enquire in a burst of motivation and go quiet when the week gets busy. BackWon keeps every conversation warm until they are ready — so the client comes to you, not to the coach who followed up.',
   stats: [
     { value: '3–5', label: 'Touches to get a yes' },
     { value: '0', label: 'Prospects forgotten' },
@@ -1280,8 +1280,8 @@ const coaches = {
   ],
   faq: [
     {
-      q: 'I already have a CRM. Why Wynback?',
-      a: 'Most coaches do not need a CRM — they need a follow-up habit. Wynback is narrower and simpler: one queue of people to contact, worked daily. If your CRM is where leads go to be forgotten, Wynback is the fix.',
+      q: 'I already have a CRM. Why BackWon?',
+      a: 'Most coaches do not need a CRM — they need a follow-up habit. BackWon is narrower and simpler: one queue of people to contact, worked daily. If your CRM is where leads go to be forgotten, BackWon is the fix.',
     },
     {
       q: 'How often should I follow up with a prospect?',
@@ -1293,7 +1293,7 @@ const coaches = {
     },
     {
       q: 'Does it handle payments or contracts?',
-      a: 'No. Wynback covers enquiry to signed client. Your existing tools keep handling payments, contracts and delivery.',
+      a: 'No. BackWon covers enquiry to signed client. Your existing tools keep handling payments, contracts and delivery.',
     },
   ],
 }
@@ -1302,7 +1302,7 @@ const coaches = {
 const realEstate = {
   type: 'real-estate',
   path: '/industries/real-estate',
-  title: 'Wynback for Real Estate Agents — Never Lose a Buyer Again',
+  title: 'BackWon for Real Estate Agents — Never Lose a Buyer Again',
   description:
     'Real estate lead follow-up software. Track every viewing enquiry, chase cold listings, and win back buyers and sellers who went quiet.',
   keywords:
@@ -1310,7 +1310,7 @@ const realEstate = {
   eyebrow: 'INDUSTRY · REAL ESTATE',
   heading: 'Speed to lead wins listings. Follow-up wins deals.',
   intro:
-    'Buyers enquire on five listings and view with whoever responds first. Sellers choose the agent who stays in touch. Wynback makes sure no enquiry, viewing or valuation ever goes quiet on your watch.',
+    'Buyers enquire on five listings and view with whoever responds first. Sellers choose the agent who stays in touch. BackWon makes sure no enquiry, viewing or valuation ever goes quiet on your watch.',
   stats: [
     { value: '5 min', label: 'Response window that matters' },
     { value: '3–5', label: 'Touches to stay top of mind' },
@@ -1350,12 +1350,12 @@ const realEstate = {
   ],
   faq: [
     {
-      q: 'Is Wynback a replacement for my estate agency CRM?',
-      a: 'For many small agencies, yes — because the CRM is where leads go to die. Wynback does the one thing that actually wins deals: making sure every enquiry gets followed up. If you love your CRM, Wynback can sit alongside it for the follow-up layer.',
+      q: 'Is BackWon a replacement for my estate agency CRM?',
+      a: 'For many small agencies, yes — because the CRM is where leads go to die. BackWon does the one thing that actually wins deals: making sure every enquiry gets followed up. If you love your CRM, BackWon can sit alongside it for the follow-up layer.',
     },
     {
       q: 'How fast should I respond to a portal enquiry?',
-      a: 'Within minutes if possible. But the bigger leak is not the first response — it is the second, third and fourth follow-up that never happens. Wynback fixes that part.',
+      a: 'Within minutes if possible. But the bigger leak is not the first response — it is the second, third and fourth follow-up that never happens. BackWon fixes that part.',
     },
     {
       q: 'Can I track both buyers and sellers?',
@@ -1363,7 +1363,7 @@ const realEstate = {
     },
     {
       q: 'Does it do automated drip emails?',
-      a: 'Wynback is deliberately human-first: it tells your team who to contact and when, and the message comes from a person. In property, the personal touch is what converts.',
+      a: 'BackWon is deliberately human-first: it tells your team who to contact and when, and the message comes from a person. In property, the personal touch is what converts.',
     },
   ],
 }
@@ -1372,7 +1372,7 @@ const realEstate = {
 const freelancers = {
   type: 'freelancers',
   path: '/industries/freelancers',
-  title: 'Wynback for Freelancers — Win Back Every Project Enquiry',
+  title: 'BackWon for Freelancers — Win Back Every Project Enquiry',
   description:
     'Freelancer lead follow-up software. Track project enquiries, chase unsent proposals, and turn more conversations into paying clients.',
   keywords:
@@ -1380,7 +1380,7 @@ const freelancers = {
   eyebrow: 'INDUSTRY · FREELANCERS',
   heading: 'The project went to whoever followed up.',
   intro:
-    'Clients enquire with three freelancers and hire whoever stays engaged. Between delivering work, enquiries go quiet and projects slip away. Wynback is the follow-up system for people who do everything themselves.',
+    'Clients enquire with three freelancers and hire whoever stays engaged. Between delivering work, enquiries go quiet and projects slip away. BackWon is the follow-up system for people who do everything themselves.',
   stats: [
     { value: '10 min', label: 'A day on the queue' },
     { value: '3–5', label: 'Touches to close' },
@@ -1410,7 +1410,7 @@ const freelancers = {
     {
       icon: 'zap',
       title: 'No CRM overhead',
-      text: 'You do not need pipelines, stages and automation rules. You need a list of people to message today. That is Wynback.',
+      text: 'You do not need pipelines, stages and automation rules. You need a list of people to message today. That is BackWon.',
     },
     {
       icon: 'shield',
@@ -1425,7 +1425,7 @@ const freelancers = {
     },
     {
       q: 'How do I follow up without being annoying?',
-      a: 'Add something useful each time: a relevant example, a clearer timeline, a smaller first step. Wynback prompts the contact; you bring the value. Three to five touches across two weeks is normal, not pushy.',
+      a: 'Add something useful each time: a relevant example, a clearer timeline, a smaller first step. BackWon prompts the contact; you bring the value. Three to five touches across two weeks is normal, not pushy.',
     },
     {
       q: 'Can I track different service lines?',
@@ -1433,7 +1433,7 @@ const freelancers = {
     },
     {
       q: 'Does it integrate with my invoicing tool?',
-      a: 'No integrations needed. Wynback covers enquiry to won project; your existing tools keep handling the rest.',
+      a: 'No integrations needed. BackWon covers enquiry to won project; your existing tools keep handling the rest.',
     },
   ],
 }
@@ -1446,9 +1446,9 @@ const manifesto = {
   type: 'manifesto',
   path: '/manifesto',
   navLabel: 'Manifesto',
-  title: 'The Wynback Manifesto — Why We Exist',
+  title: 'The BackWon Manifesto — Why We Exist',
   description:
-    'Wynback exists for one reason: the easiest customer to win is the one who already contacted you. Read why follow-up is the most underrated growth lever in business.',
+    'BackWon exists for one reason: the easiest customer to win is the one who already contacted you. Read why follow-up is the most underrated growth lever in business.',
   keywords:
     'customer win back philosophy, follow up importance, small business growth, why follow up matters, revenue recovery mindset',
   eyebrow: 'MANIFESTO',
@@ -1484,7 +1484,7 @@ const manifesto = {
     {
       icon: 'target',
       title: 'We build for the follow-up',
-      text: 'Wynback does not try to run your business. It does one thing: make sure no customer who reached out ever disappears into silence. Everything we build serves that single moment — the second chance.',
+      text: 'BackWon does not try to run your business. It does one thing: make sure no customer who reached out ever disappears into silence. Everything we build serves that single moment — the second chance.',
     },
   ],
   stats: [
@@ -1502,8 +1502,8 @@ const manifesto = {
       a: 'CRMs are built for companies with sales teams, pipelines and forecasts. Most businesses need something smaller and harder to abandon: one list of people who deserve a reply, worked every day. Narrow tools get used. Broad tools get admired and ignored.',
     },
     {
-      q: 'Who is Wynback for, really?',
-      a: 'Any business where one customer is worth a phone call — salons, garages, clinics, coaches, agents, freelancers, studios, trades. If a missed call costs you real money, Wynback is for you, wherever in the world you are.',
+      q: 'Who is BackWon for, really?',
+      a: 'Any business where one customer is worth a phone call — salons, garages, clinics, coaches, agents, freelancers, studios, trades. If a missed call costs you real money, BackWon is for you, wherever in the world you are.',
     },
   ],
 }
@@ -1596,7 +1596,7 @@ export const FOOTER_GROUPS = [
   {
     title: 'Company',
     links: [
-      { to: about.path, label: 'About Wynback' },
+      { to: about.path, label: 'About BackWon' },
       { to: manifesto.path, label: 'Manifesto' },
       { to: '/', label: 'Home' },
     ],

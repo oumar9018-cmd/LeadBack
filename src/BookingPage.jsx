@@ -153,7 +153,7 @@ export default function BookingPage() {
             )}{' '}
             shortly on WhatsApp.
           </p>
-          <p className="booking-powered">Powered by Wynback</p>
+          <p className="booking-powered">Powered by BackWon</p>
         </div>
       </div>
     )
@@ -236,7 +236,7 @@ export default function BookingPage() {
           {submitError && <p className="booking-error" role="alert">{submitError}</p>}
         </form>
 
-        <p className="booking-powered">Powered by Wynback</p>
+        <p className="booking-powered">Powered by BackWon</p>
       </div>
     </div>
   )

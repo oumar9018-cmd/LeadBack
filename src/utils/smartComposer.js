@@ -1,6 +1,6 @@
 import { currencySymbol } from './money.js'
 /**
- * Wynback Smart Composer engine.
+ * BackWon Smart Composer engine.
  *
  * Generates a personalized follow-up message from real inquiry context:
  * customer name, service, value, days since inquiry, attempt count,

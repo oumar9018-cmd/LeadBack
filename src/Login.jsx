@@ -73,23 +73,44 @@ function ShieldIcon() {
   )
 }
 
-/** Clean blue "W" mark for the login brand (light enterprise theme). */
+/** Clean blue "B" mark for the login brand (light enterprise theme). */
 function BrandMark() {
   return (
     <svg viewBox="0 0 40 40" fill="none" aria-hidden="true">
       <rect width="40" height="40" rx="11" fill="#2563EB" />
       <path
-        d="M9 27 L14 13 L19 24 L24 13"
+        d="M10 10 V30"
+        stroke="#FFFFFF"
+        strokeWidth={3.6}
+        strokeLinecap="round"
+      />
+      <path
+        d="M10 10 H17 A4.5 4.5 0 0 1 17 19 H10"
         stroke="#FFFFFF"
         strokeWidth={3.6}
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <path
-        d="M22.5 26 L31.5 16.5"
+        d="M10 19 H18.5 A5.5 5.5 0 0 1 18.5 30 H10"
         stroke="#FFFFFF"
         strokeWidth={3.6}
         strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M26.5 17.5 L33 8"
+        stroke="#FFFFFF"
+        strokeWidth={3.6}
+        strokeLinecap="round"
+        opacity={0.85}
+      />
+      <path
+        d="M28 8 h5 v5"
+        stroke="#FFFFFF"
+        strokeWidth={3.6}
+        strokeLinecap="round"
+        strokeLinejoin="round"
         opacity={0.85}
       />
     </svg>
@@ -246,7 +267,7 @@ export default function Login() {
 
         case 'auth/internal-error':
           setErrorMessage(
-            'Google sign-in encountered a browser authentication error. Please close this tab, reopen Wynback, and try again.'
+            'Google sign-in encountered a browser authentication error. Please close this tab, reopen BackWon, and try again.'
           )
           break
 
@@ -268,12 +289,12 @@ export default function Login() {
             type="button"
             className="wynl-logo"
             onClick={() => navigate('/')}
-            aria-label="Wynback home"
+            aria-label="BackWon home"
           >
             <span className="wynl-logo-mark">
               <BrandMark />
             </span>
-            <span className="wynl-logo-name">Wynback</span>
+            <span className="wynl-logo-name">BackWon</span>
           </button>
 
           <h1 className="wynl-title">Welcome back</h1>
@@ -307,7 +328,7 @@ export default function Login() {
           </div>
 
           <p className="wynl-terms">
-            By continuing, you agree to Wynback’s terms of service and privacy policy.
+            By continuing, you agree to BackWon’s terms of service and privacy policy.
           </p>
         </div>
 

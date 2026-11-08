@@ -21,7 +21,7 @@ export default class ErrorBoundary extends React.Component {
 
   componentDidCatch(error, info) {
     // Keep the crash visible in the console for diagnostics.
-    console.error('Wynback crashed:', error, info)
+    console.error('BackWon crashed:', error, info)
   }
 
   handleReload = () => {
@@ -70,7 +70,7 @@ export default class ErrorBoundary extends React.Component {
             Something went wrong
           </h1>
           <p style={{ fontSize: 14, color: '#64748b', margin: '0 0 20px' }}>
-            Wynback hit an unexpected error. Your data is safe — reloading
+            BackWon hit an unexpected error. Your data is safe — reloading
             usually fixes it.
           </p>
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
@@ -88,7 +88,7 @@ export default class ErrorBoundary extends React.Component {
                 cursor: 'pointer',
               }}
             >
-              Reload Wynback
+              Reload BackWon
             </button>
             <button
               type="button"

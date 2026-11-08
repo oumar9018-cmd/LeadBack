@@ -65,7 +65,7 @@ export default function DripSequences({ inquiry, businessName, initialSteps, onS
         <span className="app-eyebrow">AUTOMATION</span>
         <h3><IconRepeat width={18} height={18} /> Follow-up drip sequence</h3>
         <p>
-          Wynback reminds you on each day with the message ready to send.
+          BackWon reminds you on each day with the message ready to send.
           Set it once — never forget a follow-up again.
         </p>
       </div>

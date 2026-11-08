@@ -61,7 +61,7 @@ export default function CEO() {
         <header className="ceo-header">
           <div>
             <span className="ceo-eyebrow">
-              WYNBACK CONTROL
+              BACKWON CONTROL
             </span>
 
             <h1>CEO Dashboard</h1>

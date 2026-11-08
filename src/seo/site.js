@@ -11,13 +11,13 @@
 export const SITE_ORIGIN = 'https://oumar9018-cmd.github.io/LeadBack'
 
 export const SITE = {
-  name: 'Wynback',
+  name: 'BackWon',
   tagline: 'Win back every customer you almost lost.',
 
   /** Fallback title/description (also the defaults baked into index.html). */
-  title: 'Wynback — Win Back Every Customer You Almost Lost',
+  title: 'BackWon — Win Back Every Customer You Almost Lost',
   description:
-    'Wynback helps local businesses win back missed calls and cold inquiries with one-tap WhatsApp follow-ups, personal voice notes, and structured follow-up sequences.',
+    'BackWon helps local businesses win back missed calls and cold inquiries with one-tap WhatsApp follow-ups, personal voice notes, and structured follow-up sequences.',
 
   /** Absolute path (from the site root) of the social share image. */
   ogImage: '/og-image.png',
