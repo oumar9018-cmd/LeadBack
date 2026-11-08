@@ -29,11 +29,13 @@ export default function ForecastWidget({ inquiries, currency = 'INR' }) {
             <strong>{formatMoney(f.mid, currency)}</strong>
             <span>likely recovery from your open pipeline</span>
           </div>
-          <div className="forecast-bar" aria-hidden="true">
-            <span className="forecast-low" style={{ width: `${(f.low / f.pipelineValue) * 100}%` }} />
-            <span className="forecast-mid" style={{ width: `${((f.mid - f.low) / f.pipelineValue) * 100}%` }} />
-            <span className="forecast-high" style={{ width: `${((f.high - f.mid) / f.pipelineValue) * 100}%` }} />
-          </div>
+          {f.pipelineValue > 0 && (
+            <div className="forecast-bar" aria-hidden="true">
+              <span className="forecast-low" style={{ width: `${(f.low / f.pipelineValue) * 100}%` }} />
+              <span className="forecast-mid" style={{ width: `${((f.mid - f.low) / f.pipelineValue) * 100}%` }} />
+              <span className="forecast-high" style={{ width: `${((f.high - f.mid) / f.pipelineValue) * 100}%` }} />
+            </div>
+          )}
           <div className="forecast-labels">
             <span>{formatMoney(f.low, currency)}</span>
             <span>{formatMoney(f.high, currency)}</span>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { BASE_PATH } from './basePath.js'
-import { formatMoney } from './utils/money.js'
+import { CURRENCY_CODES, formatMoney } from './utils/money.js'
 import { waLink, normalizePhone } from './utils/whatsapp.js'
 import { IconGift, IconCopy, IconCheck, IconSend, IconTimer, IconTrash } from './components/icons.jsx'
 import './Offers.css'
@@ -37,6 +37,7 @@ export default function Offers() {
   // owns an offer list it, so staff see a notice, never a broken list.
   const { workspace, loading: wsLoading } = useWorkspace()
   const [offers, setOffers] = useState([])
+  const [currency, setCurrency] = useState('INR')
   const [loading, setLoading] = useState(true)
   const [copiedId, setCopiedId] = useState(null)
   const [deleteConfirmId, setDeleteConfirmId] = useState(null)
@@ -55,6 +56,23 @@ export default function Offers() {
       return undefined
     }
     let cancelled = false
+    // Workspace currency (same pattern as Recovery.jsx): the saved
+    // currency wins; INR is the fallback until one is saved.
+    db.collection('users')
+      .doc(workspace.ownerUid)
+      .collection('settings')
+      .doc('workspace')
+      .get()
+      .then(snap => {
+        if (cancelled) return
+        const savedCurrency = snap.exists ? snap.data()?.currency : undefined
+        if (CURRENCY_CODES.includes(savedCurrency)) {
+          setCurrency(savedCurrency)
+        }
+      })
+      .catch(() => {
+        // Currency falls back to INR.
+      })
     db.collection('offers')
       .where('ownerUid', '==', workspace.ownerUid)
       .get()
@@ -234,7 +252,7 @@ export default function Offers() {
           </div>
           <div className="offers-stat">
             <span>Revenue attributed</span>
-            <strong>{formatMoney(attributed)}</strong>
+            <strong>{formatMoney(attributed, currency)}</strong>
             <small>from claimed offers</small>
           </div>
         </section>
@@ -296,7 +314,7 @@ export default function Offers() {
                         ? 'Expired'
                         : `Expires ${new Date(offer.expiresAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}`}
                       {' · '}{offer.views || 0} view{(offer.views || 0) === 1 ? '' : 's'}
-                      {offer.recoveredValue ? ` · ${formatMoney(offer.recoveredValue)} recovered` : ''}
+                      {offer.recoveredValue ? ` · ${formatMoney(offer.recoveredValue, currency)} recovered` : ''}
                       {offer.ladder && (
                         <>
                           {' · '}Ladder step{' '}

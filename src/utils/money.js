@@ -1,7 +1,9 @@
 /**
  * Shared money helpers. Every money rendering in the app must go through
- * these (or the identical local `money()` in App.jsx) so the workspace
- * currency — not a hardcoded ₹ — is what the user sees.
+ * these so the workspace currency — not a hardcoded ₹ — is what the
+ * user sees. (The identical local `money()` that used to live in
+ * App.jsx was removed in the 2026-11-08 audit fix; this file is the
+ * single source now.)
  *
  * Currency rule (owner order 2026-10-30): the rupee symbol is for India
  * only. BackWon is a global business, so each workspace shows its own
@@ -123,12 +125,22 @@ export function formatMoney(value, currency = 'INR') {
   }).format(Number(value) || 0)
 }
 
-/** Compact form: ₹48.2K / $1.2K style for tight spaces. */
+/** Compact form: ₹48.2K / $1.2K style for tight spaces. Lakh/crore
+ * units are INR-only; every other currency uses Intl compact (K/M). */
 export function formatMoneyCompact(value, currency = 'INR') {
   const n = Number(value) || 0
   const symbol = currencySymbol(currency)
-  if (n >= 10000000) return `${symbol}${(n / 10000000).toFixed(1)}Cr`
-  if (n >= 100000) return `${symbol}${(n / 100000).toFixed(1)}L`
-  if (n >= 1000) return `${symbol}${(n / 1000).toFixed(1)}K`
-  return `${symbol}${Math.round(n)}`
+  if (currency === 'INR') {
+    if (n >= 10000000) return `${symbol}${(n / 10000000).toFixed(1)}Cr`
+    if (n >= 100000) return `${symbol}${(n / 100000).toFixed(1)}L`
+    if (n >= 1000) return `${symbol}${(n / 1000).toFixed(1)}K`
+    return `${symbol}${Math.round(n)}`
+  }
+  const code = isSupportedCurrency(currency) ? currency : 'USD'
+  return new Intl.NumberFormat(LOCALES[code] || 'en-US', {
+    style: 'currency',
+    currency: code,
+    notation: 'compact',
+    maximumFractionDigits: 1,
+  }).format(n)
 }

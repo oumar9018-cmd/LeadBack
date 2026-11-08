@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { url } from './basePath.js'
+import { LogoMark } from './components/icons.jsx'
 import './Login.css'
 
 /* ------------------------------------------------------------------ */
@@ -69,50 +70,6 @@ function ShieldIcon() {
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d="M12 3l7.5 3v5.5c0 4.6-3.2 8-7.5 9.5-4.3-1.5-7.5-4.9-7.5-9.5V6L12 3z" />
       <path d="M9 12l2.2 2.2L15.5 10" />
-    </svg>
-  )
-}
-
-/** Clean blue "B" mark for the login brand (light enterprise theme). */
-function BrandMark() {
-  return (
-    <svg viewBox="0 0 40 40" fill="none" aria-hidden="true">
-      <rect width="40" height="40" rx="11" fill="#2563EB" />
-      <path
-        d="M10 10 V30"
-        stroke="#FFFFFF"
-        strokeWidth={3.6}
-        strokeLinecap="round"
-      />
-      <path
-        d="M10 10 H17 A4.5 4.5 0 0 1 17 19 H10"
-        stroke="#FFFFFF"
-        strokeWidth={3.6}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M10 19 H18.5 A5.5 5.5 0 0 1 18.5 30 H10"
-        stroke="#FFFFFF"
-        strokeWidth={3.6}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M26.5 17.5 L33 8"
-        stroke="#FFFFFF"
-        strokeWidth={3.6}
-        strokeLinecap="round"
-        opacity={0.85}
-      />
-      <path
-        d="M28 8 h5 v5"
-        stroke="#FFFFFF"
-        strokeWidth={3.6}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        opacity={0.85}
-      />
     </svg>
   )
 }
@@ -292,7 +249,7 @@ export default function Login() {
             aria-label="BackWon home"
           >
             <span className="wynl-logo-mark">
-              <BrandMark />
+              <LogoMark />
             </span>
             <span className="wynl-logo-name">BackWon</span>
           </button>

@@ -16,7 +16,9 @@ export function normalizePhone(raw) {
   if (digits.length === 10) return '91' + digits
   if (digits.length === 12 && digits.startsWith('91')) return digits
   if (digits.length === 11 && digits.startsWith('0')) return '91' + digits.slice(1)
-  return digits.length >= 10 ? digits : null
+  // Anything else (e.g. a 13-digit typo) is invalid — never pass it
+  // through, or wa.me links go dead.
+  return null
 }
 
 /**
@@ -77,10 +79,10 @@ export const TEMPLATES = {
 
 export function fillTemplate(templateText, { name, business, service, link }) {
   return templateText
-    .replace('{name}', name || 'there')
-    .replace('{business}', business || 'us')
-    .replace('{service}', service || 'our service')
-    .replace('{link}', link || '')
+    .replaceAll('{name}', name || 'there')
+    .replaceAll('{business}', business || 'us')
+    .replaceAll('{service}', service || 'our service')
+    .replaceAll('{link}', link || '')
     .trim()
 }
 

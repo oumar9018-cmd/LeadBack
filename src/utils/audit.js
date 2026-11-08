@@ -9,7 +9,8 @@
  *
  * Actions: 'status_changed' | 'member_added' | 'member_removed' |
  * 'member_role_changed' | 'member_availability_changed' |
- * 'inquiry_assigned' | 'export' (export is reserved — no export
+ * 'inquiry_assigned' | 'rule_applied' | 'task_created' |
+ * 'territory_applied' | 'export' (export is reserved — no export
  * feature exists yet; the future export path must log here).
  */
 
@@ -20,6 +21,9 @@ export const AUDIT_ACTIONS = [
   'member_role_changed',
   'member_availability_changed',
   'inquiry_assigned',
+  'rule_applied',
+  'task_created',
+  'territory_applied',
   'export',
 ]
 
@@ -29,7 +33,14 @@ export async function logAudit(ownerUid, { action, inquiryId = '', detail = '' }
     const db = window.firebase?.firestore?.()
     const user = auth?.currentUser
     if (!user || !db || !ownerUid) return
-    if (!AUDIT_ACTIONS.includes(action)) return
+    if (!AUDIT_ACTIONS.includes(action)) {
+      // Never drop an audit event silently again: an unknown action
+      // means the allow-list (here and in firestore.rules) has drifted
+      // from the call sites, and the entry would also be rejected by
+      // the rules. Warn loudly so the drift is visible.
+      console.warn('Audit log skipped unknown action:', action)
+      return
+    }
 
     await db
       .collection('users')

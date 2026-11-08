@@ -3,7 +3,7 @@
  *
  * A lead counts toward the graveyard when:
  *  - status === 'lost' (explicitly dead), OR
- *  - status is open (new/followup/replied) AND last activity is > 30 days ago
+ *  - status is open (new/followup/replied) AND last activity is >= 30 days ago
  *    ("stale" — the owner has effectively abandoned it).
  *
  * lastActivity = latest of createdAt and any followupHistory entry date.
@@ -44,7 +44,7 @@ export function isStale(item, now = Date.now()) {
   if (['recovered', 'lost'].includes(item.status)) return false
   const last = lastActivityMs(item)
   if (!last) return false
-  return now - last > STALE_AFTER_DAYS * 24 * 60 * 60 * 1000
+  return now - last >= STALE_AFTER_DAYS * 24 * 60 * 60 * 1000
 }
 
 export function computeGraveyard(items, now = Date.now()) {

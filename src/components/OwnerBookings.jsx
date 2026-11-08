@@ -8,8 +8,11 @@ import { useWorkspace } from './WorkspaceContext.jsx'
  * never write into the owner's private inquiries collection).
  *
  * Props:
- * - onAddInquiry: (booking) => void — adds the booking as an inquiry
- *   on the dashboard (owner-signed-in write, so it is allowed).
+ * - onAddInquiry: (booking) => boolean | Promise<boolean> — adds the
+ *   booking as an inquiry on the dashboard (owner-signed-in write, so
+ *   it is allowed). Returns true when an inquiry was created, false
+ *   when it was skipped (duplicate) or the save failed — the booking
+ *   is only marked 'added' when the handler did NOT return false.
  */
 export default function OwnerBookings({ onAddInquiry }) {
   const [bookings, setBookings] = useState([])
@@ -51,7 +54,11 @@ export default function OwnerBookings({ onAddInquiry }) {
   }, [wsLoading, workspace])
 
   async function markAdded(booking) {
-    onAddInquiry?.(booking)
+    // Merge fix (D-15): the handler reports whether an inquiry was
+    // actually created. A duplicate-skip or failed save returns
+    // false — the booking stays pending instead of vanishing.
+    const created = await onAddInquiry?.(booking)
+    if (created === false) return
     setBookings(prev => prev.map(b =>
       b.id === booking.id ? { ...b, status: 'added' } : b
     ))

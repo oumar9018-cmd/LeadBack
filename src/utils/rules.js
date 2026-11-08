@@ -75,10 +75,15 @@ export function matchCondition(condition, inquiry) {
   const field = fieldDef(condition.field)
   const operator = operatorDef(condition.operator)
   if (!field || !operator) return false
-  const actual = toComparable(field, inquiry[field.id])
+  // is_empty / is_not_empty are judged on the RAW value, before numeric
+  // coercion — otherwise '' becomes 0 and is_empty never fires.
   if (!operator.needsValue) {
-    return operator.id === 'is_empty' ? actual === '' : actual !== ''
+    const raw = inquiry[field.id]
+    const empty =
+      raw === null || raw === undefined || String(raw).trim() === ''
+    return operator.id === 'is_empty' ? empty : !empty
   }
+  const actual = toComparable(field, inquiry[field.id])
   const wanted = toComparable(field, condition.value)
   switch (operator.id) {
     case 'equals':
@@ -127,6 +132,12 @@ export function applyAction(action, draft, rule, nowMs = Date.now()) {
       case 'set_status': {
         if (!RULE_STATUSES.includes(action.value)) return ''
         draft.status = action.value
+        // Rule-driven recovery counts like a manual one: stamp
+        // recoveredAt ('YYYY-MM-DD', as markRecovered does in App.jsx)
+        // so streaks count rule-recovered rows too.
+        if (action.value === 'recovered') {
+          draft.recoveredAt = new Date(nowMs).toISOString().slice(0, 10)
+        }
         return `status set to ${action.value} by rule "${rule.name}"`
       }
       case 'schedule_followup': {

@@ -1,13 +1,20 @@
 // #23 + #56 — team analytics (pure, unit-tested).
 //
 // #23 promise score: a promise is a followupHistory entry of type
-// 'scheduled'. It counts as KEPT when the rep acted afterwards (any
-// later history entry) or the lead replied/recovered; BROKEN when its
-// date passed with no later action; PENDING while its date is ahead.
+// 'scheduled'. It counts as KEPT when the rep acted afterwards (a later
+// ACTION entry — WhatsApp/call/visit/message, or a Blitz send — the same
+// action signal smartComposer.js and aiInsights.js use) or the lead
+// replied/recovered; BROKEN when its date passed with no later action;
+// PENDING while its date is ahead. A later 'scheduled' entry, a note,
+// or a status log ('Marked recovered', …) does NOT count as acting:
+// history entry types are free-text labels (see App.jsx logActivity),
+// so the action test is a pattern over type + note, not an enum.
 // Attribution note (shown in the UI): history does not record WHO
 // scheduled, so promises are attributed to the currently assigned rep.
 // #56 rep performance: assigned / recovered / lost / open per rep,
 // with a recovery rate over closed leads only.
+
+const ACTION_RE = /whatsapp|voice|call|visit|message|sent|contact|blitz/i
 
 export function promiseScores(items, nowMs = Date.now()) {
   const perRep = new Map()
@@ -19,7 +26,9 @@ export function promiseScores(items, nowMs = Date.now()) {
     history.forEach((entry, idx) => {
       if (entry.type !== 'scheduled') return
       const dueMs = Date.parse(`${entry.date || ''}T${entry.time || '10:00'}`)
-      const later = history.slice(idx + 1).length > 0
+      const later = history
+        .slice(idx + 1)
+        .some(e => ACTION_RE.test(`${e.type || ''} ${e.note || ''}`))
       const outcome = item.status === 'replied' || item.status === 'recovered'
       const kept = outcome || later
       let kind

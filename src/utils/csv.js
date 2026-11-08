@@ -43,7 +43,7 @@ export function downloadCsv(filename, text) {
  *
  * package.json is React-only, so no csv library is added. Handles:
  * quoted fields, embedded commas and newlines, escaped double quotes
- * (""), \r\n and \n line endings, a leading BOM, and a header row.
+ * (""), \r\n, \n and lone-\r line endings, a leading BOM, and a header row.
  * Fully-empty rows are dropped. Nothing here guesses types — the
  * importer validates after parsing.
  */
@@ -74,7 +74,14 @@ export function parseCsv(text) {
       row.push(field)
       field = ''
     } else if (ch === '\r') {
-      // \r\n is handled by the \n branch; a lone \r is ignored.
+      // \r\n is handled by the \n branch; a lone \r (not followed by
+      // \n) is a row break too (classic Mac line ending).
+      if (src[i + 1] !== '\n') {
+        row.push(field)
+        rows.push(row)
+        row = []
+        field = ''
+      }
     } else if (ch === '\n') {
       row.push(field)
       rows.push(row)
@@ -104,6 +111,6 @@ export function guessMapping(headers) {
     phone: find(/phone|mobile|number/i),
     service: find(/service|treatment|product/i),
     value: find(/value|amount|price/i),
-    lastContact: find(/last|contact/i),
+    lastContact: find(/last.?contact|last contacted/i),
   }
 }

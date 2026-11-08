@@ -101,7 +101,7 @@ function setJsonLd(html, json) {
 
 function setRoot(html, body) {
   // The vite template's root is NOT empty — it holds the splash markup
-  // (<div id="root"><div id="wynback-splash">…nested divs…</div></div>),
+  // (<div id="root"><div id="backwon-splash">…nested divs…</div></div>),
   // so the old empty-root pattern never matched and the fallback below
   // APPENDED a second <div id="root"> holding the prerendered page.
   // On every route that left the full landing page sitting underneath

@@ -303,7 +303,7 @@ export default function AppLayout() {
           {/* Sales Reps get no settings page at all (rules deny it). */}
           {/* Role-gated links wait for the workspace so they never flicker
               in and out on first load (audit: API link briefly missing). */}
-          {!wsLoading && workspace?.role !== 'sales_rep' && (
+          {!wsLoading && canViewSettings(workspace?.role) && (
             <NavLink to="/app/settings" onClick={closeSidebar}>Settings</NavLink>
           )}
           {/* API & Webhooks is its own section, owner/admin only. */}
@@ -400,7 +400,7 @@ export default function AppLayout() {
 
                 <div className="profile-menu-divider" />
 
-                {workspace?.role !== 'sales_rep' && (
+                {canViewSettings(workspace?.role) && (
                   <Link to="/app/settings" onClick={() => setProfileOpen(false)}>Settings</Link>
                 )}
 

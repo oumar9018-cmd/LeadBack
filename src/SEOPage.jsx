@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { NAV_LINKS, FOOTER_GROUPS, getSeoPage } from './seo/pages.js'
 import { useSEO } from './seo/useSEO.js'
 import { LogoMark } from './components/icons.jsx'
+import MissedRevenueCalculator from './components/MissedRevenueCalculator.jsx'
 import './SEOPage.gold.css'
 
 /**
@@ -546,10 +547,35 @@ function FinalCta() {
 export default function SEOPage({ type }) {
   const page = getSeoPage(type)
 
+  // useSEO guards against an undefined page internally (its effect returns
+  // early), so calling the hook unconditionally here is safe even for an
+  // unknown type — hooks must never run conditionally.
   useSEO(page)
   useReveal(type)
 
-  if (!page) return null
+  if (!page) {
+    return (
+      <div className="seo-shell">
+        <SeoHeader />
+        <main>
+          <section className="seo-hero">
+            <span className="seo-eyebrow">NOT FOUND</span>
+            <h1>That page does not exist.</h1>
+            <p className="seo-hero-intro">
+              The page you were looking for is not here. Head back home and
+              start from there.
+            </p>
+            <div className="seo-hero-actions">
+              <Link className="seo-button seo-button-primary" to="/">
+                Back to home <span aria-hidden="true">→</span>
+              </Link>
+            </div>
+          </section>
+        </main>
+        <SeoFooter />
+      </div>
+    )
+  }
 
   const isIndustry = INDUSTRY_TYPES.has(type)
   const isManifesto = type === 'manifesto'
@@ -574,7 +600,7 @@ export default function SEOPage({ type }) {
           <>
             <Steps page={page} />
             <Cards page={page} />
-            
+            {page.widget === 'calculator' && <MissedRevenueCalculator />}
             <Plans page={page} />
             <Showcase page={page} />
             <Faq page={page} />

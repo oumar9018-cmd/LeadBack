@@ -40,12 +40,17 @@ export default function Settings() {
 
   const [settings, setSettings] = useState(defaultSettings)
   const [settingsLoaded, setSettingsLoaded] = useState(false)
+  // H-2 — the slug actually published for this workspace (claimed in
+  // businessSlugs). The booking link shows this, not a fresh slugify
+  // of the name, so a "-2" suffix survives reloads.
+  const [publishedSlug, setPublishedSlug] = useState('')
 
   useEffect(() => {
     if (wsLoading || !workspace) {
       if (!wsLoading) {
         setSettings(defaultSettings)
         setSettingsLoaded(false)
+        setPublishedSlug('')
       }
       return undefined
     }
@@ -74,6 +79,21 @@ export default function Settings() {
         if (!cancelled) setSettings(defaultSettings)
       } finally {
         if (!cancelled) setSettingsLoaded(true)
+      }
+      // H-2 — load the slug already published for this workspace, so
+      // the booking link shows the claimed slug (with any "-2" suffix)
+      // instead of a fresh slugify of the business name.
+      try {
+        const businessSnap = await db
+          .collection('businesses')
+          .doc(workspace.ownerUid)
+          .get()
+        if (!cancelled && businessSnap.exists) {
+          const existingSlug = businessSnap.data()?.slug || ''
+          if (existingSlug) setPublishedSlug(existingSlug)
+        }
+      } catch (error) {
+        console.error('Published slug load failed:', error)
       }
     })()
     return () => {
@@ -114,17 +134,63 @@ export default function Settings() {
       // This write needs the matching firestore.rules entry (deployed by
       // the owner via Firebase Console); if the rules are not live yet
       // this fails quietly and settings still save.
-      const slug = slugify(settings.businessName)
-      if (slug) {
+      const baseSlug = slugify(settings.businessName)
+      if (baseSlug) {
         try {
-          await db.collection('businesses').doc(workspace.ownerUid).set({
-            ownerUid: workspace.ownerUid,
-            slug,
-            name: settings.businessName.trim(),
-            services: (settings.services || '').trim(),
-            hours: (settings.hours || '').trim(),
-            updatedAt: new Date().toISOString(),
-          }, { merge: true })
+          // H-2 — slugs must be unique: read the previously published
+          // slug, then claim the new one in businessSlugs (doc id =
+          // slug; the rules let only its owner claim it). A clash is
+          // a permission-denied claim, so try -2, -3, ... (max 5).
+          let oldSlug = ''
+          try {
+            const businessSnap = await db
+              .collection('businesses')
+              .doc(workspace.ownerUid)
+              .get()
+            if (businessSnap.exists) oldSlug = businessSnap.data()?.slug || ''
+          } catch (readError) {
+            console.error('Previous booking slug read failed:', readError)
+          }
+          let claimedSlug = ''
+          for (let attempt = 0; attempt < 5 && !claimedSlug; attempt += 1) {
+            const candidate = attempt === 0 ? baseSlug : `${baseSlug}-${attempt + 1}`
+            try {
+              await db.collection('businessSlugs').doc(candidate).set({
+                ownerUid: workspace.ownerUid,
+                slug: candidate,
+                updatedAt: new Date().toISOString(),
+              })
+              claimedSlug = candidate
+            } catch (claimError) {
+              if (claimError?.code === 'permission-denied') continue
+              console.error('Booking slug claim failed:', claimError)
+              break
+            }
+          }
+          // If every claim failed, keep the old slug rather than
+          // breaking the save; with no slug at all there is nothing
+          // to publish.
+          const slug = claimedSlug || oldSlug
+          if (!slug) {
+            console.error('Booking page publish skipped: no slug could be claimed.')
+          } else {
+            await db.collection('businesses').doc(workspace.ownerUid).set({
+              ownerUid: workspace.ownerUid,
+              slug,
+              name: settings.businessName.trim(),
+              services: (settings.services || '').trim(),
+              hours: (settings.hours || '').trim(),
+              updatedAt: new Date().toISOString(),
+            }, { merge: true })
+            if (claimedSlug && oldSlug && claimedSlug !== oldSlug) {
+              try {
+                await db.collection('businessSlugs').doc(oldSlug).delete()
+              } catch (deleteError) {
+                console.error('Old booking slug release failed:', deleteError)
+              }
+            }
+            setPublishedSlug(slug)
+          }
         } catch (businessError) {
           console.error('Booking page publish failed (rules may not be deployed yet):', businessError)
         }
@@ -139,6 +205,9 @@ export default function Settings() {
   // Managers see the form but cannot change anything (the fieldset
   // below disables every control); reps never reach the form at all.
   const readOnly = Boolean(workspace && !canWriteSettings(workspace.role))
+  // H-2 — the booking link shows the actually published (claimed)
+  // slug; before the first save it falls back to the name slug.
+  const displaySlug = publishedSlug || slugify(settings.businessName)
 
   if (!wsLoading && workspace && !canViewSettings(workspace.role)) {
     return (
@@ -265,9 +334,9 @@ export default function Settings() {
                 />
               </label>
 
-              {slugify(settings.businessName) ? (
+              {displaySlug ? (
                 <p className="settings-full">
-                  Your booking link: <strong>{`${typeof window !== 'undefined' ? window.location.origin : ''}${url(`/b/${slugify(settings.businessName)}`)}`}</strong>
+                  Your booking link: <strong>{`${typeof window !== 'undefined' ? window.location.origin : ''}${url(`/b/${displaySlug}`)}`}</strong>
                 </p>
               ) : (
                 <p className="settings-full">Add a business name above to get your booking link.</p>

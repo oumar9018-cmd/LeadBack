@@ -92,12 +92,12 @@ def main():
     draw.rounded_rectangle(mark_box, radius=22, fill=BLUE)
     draw.text(
         (MARGIN + 38, MARGIN + 38),
-        "L",
+        "B",
         font=mark_font,
         fill=WHITE,
         anchor="mm",
     )
-    draw.text((MARGIN + 100, MARGIN + 38), "LeadBack", font=semibold, fill=WHITE, anchor="lm")
+    draw.text((MARGIN + 100, MARGIN + 38), "BackWon", font=semibold, fill=WHITE, anchor="lm")
 
     # --- Headline -----------------------------------------------------
     headline = ["Turn missed inquiries", "into customers."]
@@ -130,13 +130,13 @@ def main():
     )
     draw.text(
         (MARGIN, HEIGHT - 62),
-        "leadback.app",
+        "oumar9018-cmd.github.io/LeadBack/",
         font=small,
         fill=WHITE,
         anchor="lm",
     )
 
-    pill = "1-month free trial"
+    pill = "Free"
     pill_w = text_width(draw, pill, small) + 44
     pill_box = [WIDTH - MARGIN - pill_w, HEIGHT - 88, WIDTH - MARGIN, HEIGHT - 34]
     draw.rounded_rectangle(pill_box, radius=27, fill=BLUE)

@@ -3,6 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#2563eb" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>BackWon — Turn Missed Inquiries Into Customers</title>
     <meta
@@ -26,7 +29,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,600;1,9..144,700&family=Inter:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
     <meta name="twitter:title" content="BackWon — Turn Missed Inquiries Into Customers" />
@@ -63,16 +66,21 @@
     }
     </script>
 
+    <noscript>
+      <style>
+        .reveal { opacity: 1 !important; transform: none !important; }
+      </style>
+    </noscript>
 </head>
   <body>
     <div id="root">
       <!-- Branded loading splash: shown while the JS bundle downloads/parses.
            Prevents a bare white page on slow connections; React replaces it. -->
-      <div id="wynback-splash" style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#ffffff;font-family:Inter,system-ui,sans-serif;">
+      <div id="backwon-splash" style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#ffffff;font-family:Inter,system-ui,sans-serif;">
         <div style="text-align:center;">
-          <div style="width:56px;height:56px;margin:0 auto 16px;border-radius:16px;background:#2563EB;color:#fff;font-weight:700;font-size:28px;display:flex;align-items:center;justify-content:center;">W</div>
+          <div style="width:56px;height:56px;margin:0 auto 16px;border-radius:16px;background:#2563EB;color:#fff;font-weight:700;font-size:28px;display:flex;align-items:center;justify-content:center;">B</div>
           <div style="font-weight:600;color:#0f172a;">BackWon</div>
-          <div style="font-size:13px;color:#64748b;margin-top:4px;">Loading your workspace…</div>
+          <div style="font-size:13px;color:#64748b;margin-top:4px;">Loading BackWon…</div>
         </div>
       </div>
     </div>
@@ -85,9 +93,9 @@
       // original path/query/hash so React Router renders the correct page.
       (function () {
         try {
-          var stored = sessionStorage.getItem('wynback-redirect');
+          var stored = sessionStorage.getItem('backwon-redirect');
           if (!stored) return;
-          sessionStorage.removeItem('wynback-redirect');
+          sessionStorage.removeItem('backwon-redirect');
           // Only restore if we're on the site root (where 404.html sent us).
           var root = SITE_BASE;
           var indexPath = SITE_BASE + 'index.html';

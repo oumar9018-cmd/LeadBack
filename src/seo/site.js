@@ -26,7 +26,10 @@ export const SITE = {
   locale: 'en_US',
 
   /** Structured data shared by every page. */
-  sameAs: [],
+  sameAs: [
+    'https://github.com/oumar9018-cmd',
+    'https://github.com/oumar9018-cmd/LeadBack',
+  ],
 }
 
 /**

@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { url } from './basePath.js'
+import { useWorkspace } from './components/WorkspaceContext.jsx'
+import { roleLabel } from './utils/workspace.js'
 
 export default function Profile() {
+  const { workspace } = useWorkspace()
   const [user, setUser] = useState(() => (
     window.firebase?.auth?.().currentUser || null
   ))
@@ -40,7 +43,7 @@ export default function Profile() {
         <div>
           <span className="app-eyebrow">ACCOUNT</span>
           <h1>Profile</h1>
-          <p>Manage your BackWon account information.</p>
+          <p>Your account.</p>
         </div>
       </div>
 
@@ -89,6 +92,22 @@ export default function Profile() {
           <div className="profile-info-row">
             <span>Account status</span>
             <strong className="profile-status">Connected</strong>
+          </div>
+
+          <div className="profile-info-row">
+            <span>Role</span>
+            <strong>{workspace ? roleLabel(workspace.role) : '—'}</strong>
+          </div>
+
+          <div className="profile-info-row">
+            <span>Workspace</span>
+            <strong>
+              {workspace
+                ? workspace.isMember
+                  ? `Team workspace${workspace.branchId ? ` · ${workspace.branchId}` : ''}`
+                  : 'Your workspace'
+                : '—'}
+            </strong>
           </div>
         </div>
 

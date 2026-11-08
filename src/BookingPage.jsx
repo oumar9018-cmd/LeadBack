@@ -33,13 +33,26 @@ export default function BookingPage() {
       setLoadState('not-found')
       return
     }
-    db.collection('businesses')
-      .where('slug', '==', slug)
-      .limit(1)
-      .get()
-      .then((snap) => {
-        if (!snap.empty) {
-          setBusiness({ id: snap.docs[0].id, ...snap.docs[0].data() })
+    // H-2 — slugs are unique via businessSlugs/{slug} (doc id = slug):
+    // resolve the slug to its owner, then read that owner's
+    // businesses doc. Not-found if either doc is missing.
+    db.collection('businessSlugs').doc(slug).get()
+      .then((slugSnap) => {
+        if (!slugSnap.exists) {
+          setLoadState('not-found')
+          return null
+        }
+        const ownerUid = slugSnap.data()?.ownerUid
+        if (!ownerUid) {
+          setLoadState('not-found')
+          return null
+        }
+        return db.collection('businesses').doc(ownerUid).get()
+      })
+      .then((businessSnap) => {
+        if (!businessSnap) return
+        if (businessSnap.exists) {
+          setBusiness({ id: businessSnap.id, ...businessSnap.data() })
           setLoadState('ready')
         } else {
           setLoadState('not-found')
@@ -69,7 +82,7 @@ export default function BookingPage() {
           preferredTime: preferredTime || '',
           note: note.trim(),
           status: 'pending',
-          source: 'wynback-link',
+          source: 'backwon-link',
           createdAt: new Date().toISOString(),
         })
       setBooked(true)

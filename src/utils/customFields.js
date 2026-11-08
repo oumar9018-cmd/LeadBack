@@ -29,13 +29,20 @@ function slugify(label) {
     .replace(/^-+|-+$/g, '')
 }
 
-/** Stable id from the label, deduplicated against existing ids. */
+/** Stable id from the label, deduplicated against existing ids. A label
+ * that slugifies to nothing (e.g. non-ASCII) gets a generated id
+ * instead of the shared "field" base, so distinct labels never collide. */
 export function customFieldId(label, existingIds = []) {
-  const base = slugify(label) || 'field'
-  if (!existingIds.includes(base)) return base
+  const slug = slugify(label)
+  if (!slug) {
+    let n = existingIds.length + 1
+    while (existingIds.includes(`field-${n}`)) n += 1
+    return `field-${n}`
+  }
+  if (!existingIds.includes(slug)) return slug
   let n = 2
-  while (existingIds.includes(`${base}-${n}`)) n += 1
-  return `${base}-${n}`
+  while (existingIds.includes(`${slug}-${n}`)) n += 1
+  return `${slug}-${n}`
 }
 
 /**
@@ -71,13 +78,12 @@ export function normalizeCustomValue(type, raw) {
     const n = Number(raw)
     return Number.isNaN(n) ? '' : n
   }
+  if (type === 'date') {
+    const text = String(raw).trim()
+    if (!text) return ''
+    return Number.isNaN(Date.parse(text)) ? '' : text
+  }
   return String(raw).trim()
-}
-
-/** Display string for a stored value ('—' when empty). */
-export function formatCustomValue(value) {
-  if (value === '' || value === null || value === undefined) return '—'
-  return String(value)
 }
 
 /**

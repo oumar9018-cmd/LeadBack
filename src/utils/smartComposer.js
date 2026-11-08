@@ -130,7 +130,7 @@ export function composeMessage(inquiry = {}, opts = {}) {
 const OCCASIONS = [
   { month: 9, day: 20, days: 21, name: 'Diwali' },
   { month: 2, day: 14, days: 14, name: 'Holi' },
-  { month: 11, day: 25, days: 21, name: 'New Year' },
+  { month: 0, day: 1, days: 21, name: 'New Year' },
   { month: 7, day: 15, days: 14, name: 'Raksha Bandhan' },
   { month: 9, day: 1, days: 14, name: 'Navratri' },
 ]

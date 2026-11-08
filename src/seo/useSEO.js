@@ -25,7 +25,7 @@ function upsertMeta(attr, key, content) {
   tag.setAttribute('content', content)
 }
 
-const JSONLD_ID = 'leadback-jsonld'
+const JSONLD_ID = 'backwon-jsonld'
 
 /**
  * Apply a page's SEO metadata to the document head.

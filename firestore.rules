@@ -109,6 +109,12 @@ service cloud.firestore {
         allow read: if isOwner(userId) || isWorkspaceAdmin(userId) ||
           isBranchManager(userId);
         allow write: if isOwner(userId) || isWorkspaceAdmin(userId);
+        // H-5 — a branch manager may move ONLY the roundRobin pointer
+        // (roundRobin.js writes { roundRobin: {...} } with merge in
+        // its transaction). Every other settings field stays
+        // owner/admin-only.
+        allow update: if isBranchManager(userId) &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['roundRobin']);
       }
 
       // Batch 3 — team invites. Doc id is the lowercased email so the
@@ -135,8 +141,9 @@ service cloud.firestore {
       // grant themselves a role.
       match /members/{memberId} {
         allow get: if isOwner(userId) || isWorkspaceAdmin(userId) ||
-          request.auth.uid == memberId || isCeo();
-        allow list: if isOwner(userId) || isWorkspaceAdmin(userId) || isCeo();
+          request.auth.uid == memberId || isCeo() || isBranchManager(userId);
+        allow list: if isOwner(userId) || isWorkspaceAdmin(userId) || isCeo() ||
+          isBranchManager(userId);
         allow create: if signedIn() && request.auth.uid == memberId &&
           exists(/databases/$(database)/documents/users/$(userId)/invites/$(request.auth.token.email)) &&
           get(/databases/$(database)/documents/users/$(userId)/invites/$(request.auth.token.email)).data.status == 'pending' &&
@@ -144,11 +151,21 @@ service cloud.firestore {
         allow update: if isOwner(userId) || isWorkspaceAdmin(userId);
         // Batch 5 — a member may toggle ONLY their own routing
         // availability (and, for admins, whether they take routed
-        // leads). Role, branch, assignedCount and every other field
-        // stay owner/admin-only, so nobody can self-promote or pad
-        // their own load count.
+        // leads). Role, branch and every other field stay
+        // owner/admin-only (assignedCount has one narrow
+        // branch-manager exception below: +1 only, own branch only),
+        // so nobody can self-promote or pad their own load count.
         allow update: if request.auth.uid == memberId &&
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['available', 'takesLeads']);
+        // H-5 — a branch manager may bump ONLY assignedCount (+1) on a
+        // member of their own branch, so the round-robin transaction in
+        // roundRobin.js can run when a branch manager creates an
+        // inquiry. Role, branch, availability and everything else
+        // stay owner/admin-only.
+        allow update: if isBranchManager(userId) &&
+          resource.data.get('branchId', '') == memberBranch(userId) &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['assignedCount']) &&
+          request.resource.data.get('assignedCount', 0) == resource.data.get('assignedCount', 0) + 1;
         allow delete: if isOwner(userId) || isWorkspaceAdmin(userId);
       }
 
@@ -179,7 +196,7 @@ service cloud.firestore {
         allow get, list: if isOwner(userId) || isWorkspaceAdmin(userId) || isCeo();
         allow create: if (isOwner(userId) || isWorkspaceMember(userId)) &&
           request.resource.data.actorUid == request.auth.uid &&
-          request.resource.data.action in ['status_changed', 'member_added', 'member_removed', 'member_role_changed', 'member_availability_changed', 'inquiry_assigned', 'export'];
+          request.resource.data.action in ['status_changed', 'member_added', 'member_removed', 'member_role_changed', 'member_availability_changed', 'inquiry_assigned', 'rule_applied', 'task_created', 'territory_applied', 'export'];
         allow update, delete: if false;
       }
     }
@@ -216,42 +233,95 @@ service cloud.firestore {
     match /offers/{offerId} {
       // Anyone with the link can view the offer.
       allow get: if true;
-      // Owners can list their own offers.
-      allow list: if signedIn() && request.auth.uid == resource.data.ownerUid;
+      // Owners can list their own offers; workspace admins too (H-3).
+      allow list: if signedIn() &&
+        (request.auth.uid == resource.data.ownerUid ||
+          isWorkspaceAdmin(resource.data.ownerUid));
       // Owners create offers stamped with their uid.
       allow create: if signedIn() &&
         request.resource.data.ownerUid == request.auth.uid;
-      // Owners have full control over their offers.
-      allow update: if signedIn() && request.auth.uid == resource.data.ownerUid;
+      // Owners and workspace admins have full control over offers (H-3).
+      allow update: if signedIn() &&
+        (request.auth.uid == resource.data.ownerUid ||
+          isWorkspaceAdmin(resource.data.ownerUid));
       // Public can only move sent -> viewed -> redeemed and bump counters.
+      // D-12: views may stay the same or rise by exactly 1, and the
+      // status may only step sent -> viewed or viewed -> redeemed
+      // (never sent -> redeemed). This allows OfferPage's two exact
+      // shapes: first view (sent -> viewed, views +1) and claim
+      // (viewed -> redeemed, views unchanged).
       allow update: if request.resource.data.diff(resource.data).affectedKeys()
           .hasOnly(['status', 'viewedAt', 'views', 'redeemedAt']) &&
-        resource.data.status in ['sent', 'viewed'] &&
-        request.resource.data.status in ['viewed', 'redeemed'];
-      allow delete: if signedIn() && request.auth.uid == resource.data.ownerUid;
+        ((resource.data.status == 'sent' && request.resource.data.status == 'viewed') ||
+          (resource.data.status == 'viewed' && request.resource.data.status == 'redeemed')) &&
+        (request.resource.data.get('views', 0) == resource.data.get('views', 0) ||
+          request.resource.data.get('views', 0) == resource.data.get('views', 0) + 1);
+      allow delete: if signedIn() &&
+        (request.auth.uid == resource.data.ownerUid ||
+          isWorkspaceAdmin(resource.data.ownerUid));
     }
 
     // Public booking pages (/b/{slug}): the business record contains only
     // public listing info (name, slug, services, hours), so anyone with a
     // link can look it up. Only the owning business may write it.
     match /businesses/{businessId} {
-      allow get, list: if true;
-      allow create, update: if signedIn() &&
+      // D-40 — get only. Listing is no longer allowed: BookingPage
+      // looks businesses up via the businessSlugs map instead.
+      allow get: if true;
+      // C-2 — the doc id IS the owner's uid (Settings.jsx writes
+      // businesses/{workspace.ownerUid}), so only that owner may
+      // create or update it. Checking only the incoming ownerUid let
+      // any signed-in user overwrite any business doc.
+      allow create: if signedIn() &&
+        businessId == request.auth.uid &&
+        request.resource.data.ownerUid == request.auth.uid;
+      allow update: if signedIn() &&
+        businessId == request.auth.uid &&
+        resource.data.ownerUid == request.auth.uid &&
         request.resource.data.ownerUid == request.auth.uid;
       allow delete: if signedIn() &&
         resource.data.ownerUid == request.auth.uid;
 
       // Booking requests: anyone with the link can create one; only the
-      // owning business can read them.
+      // owning business (and its workspace admins) can read them.
       match /bookings/{bookingId} {
-        allow create: if request.resource.data.keys().hasAll(
+        // H-7 — exactly the 8 fields BookingPage sends, the 4 required
+        // ones present, status pending, a non-empty phone string and a
+        // YYYY-MM-DD date. No extra fields, no junk bookings.
+        allow create: if request.resource.data.keys().hasOnly(
+            ['customerName', 'customerPhone', 'preferredDate', 'preferredTime', 'note', 'status', 'source', 'createdAt']) &&
+          request.resource.data.keys().hasAll(
             ['customerName', 'customerPhone', 'preferredDate', 'status']) &&
-          request.resource.data.status == 'pending';
+          request.resource.data.status == 'pending' &&
+          request.resource.data.customerPhone is string &&
+          request.resource.data.customerPhone.size() > 0 &&
+          request.resource.data.preferredDate.matches('^\\d{4}-\\d{2}-\\d{2}$');
         allow read: if signedIn() &&
-          get(/databases/$(database)/documents/businesses/$(businessId)).data.ownerUid == request.auth.uid;
+          (get(/databases/$(database)/documents/businesses/$(businessId)).data.ownerUid == request.auth.uid ||
+            isWorkspaceAdmin(get(/databases/$(database)/documents/businesses/$(businessId)).data.ownerUid));
         allow update, delete: if signedIn() &&
-          get(/databases/$(database)/documents/businesses/$(businessId)).data.ownerUid == request.auth.uid;
+          (get(/databases/$(database)/documents/businesses/$(businessId)).data.ownerUid == request.auth.uid ||
+            isWorkspaceAdmin(get(/databases/$(database)/documents/businesses/$(businessId)).data.ownerUid));
       }
+    }
+
+    // D-40 / H-2 — public slug lookup map. One doc per slug:
+    // businessSlugs/{slug} = { businessId, ownerUid, ... }. Public
+    // get only (BookingPage reads the slug, then gets the business
+    // doc by id); listing is never allowed, so slugs cannot be
+    // enumerated. Only the owning business may write its slug doc,
+    // and a slug can never be claimed twice.
+    match /businessSlugs/{slug} {
+      allow get: if true;
+      allow list: if false;
+      allow create: if signedIn() &&
+        request.resource.data.ownerUid == request.auth.uid &&
+        !exists(/databases/$(database)/documents/businessSlugs/$(slug));
+      allow update: if signedIn() &&
+        resource.data.ownerUid == request.auth.uid &&
+        request.resource.data.ownerUid == request.auth.uid;
+      allow delete: if signedIn() &&
+        resource.data.ownerUid == request.auth.uid;
     }
 
     match /{document=**} {

@@ -26,7 +26,7 @@ const home = {
   path: '/',
   title: 'BackWon — Win Back Every Customer You Almost Lost',
   description:
-    'BackWon helps local businesses win back missed calls and cold inquiries with one-tap WhatsApp follow-ups, personal voice notes, and structured follow-up sequences. Start free.',
+    'BackWon helps local businesses win back missed calls and cold inquiries with one-tap WhatsApp follow-ups and personal voice notes. Start free.',
   keywords:
     'win back customers, missed call follow up, WhatsApp follow up tool, customer recovery software, voice note follow up, lead recovery, small business CRM',
   eyebrow: 'CUSTOMER WIN-BACK',
@@ -50,7 +50,24 @@ const home = {
       text: 'Measure which conversations came back and exactly how much revenue your follow-ups generated.',
     },
   ],
-  faq: [],
+  faq: [
+    {
+      q: 'Is BackWon really free?',
+      a: 'Yes. Every feature is free — no credit card, no trial, no paid plans, and unlimited team seats.',
+    },
+    {
+      q: 'How fast can I start?',
+      a: 'Sign in with Google and start logging inquiries the same day. There is no setup, no installation and no configuration project.',
+    },
+    {
+      q: 'What is a missed inquiry?',
+      a: 'A customer who contacted you — a missed call, a DM, a form enquiry or a walk-in — and did not get a reply. BackWon logs it so you can follow up before they go elsewhere.',
+    },
+    {
+      q: 'Do I need to connect my phone or Instagram?',
+      a: 'No. You log inquiries manually with their source, so it works across calls, WhatsApp, Instagram and walk-ins without any integration.',
+    },
+  ],
 }
 
 /* ------------------------------------------------------------------ */
@@ -63,7 +80,7 @@ const features = {
   navLabel: 'Features',
   title: 'BackWon Features — One-Tap WhatsApp Follow-ups & Voice Notes',
   description:
-    'Explore BackWon features: one-tap WhatsApp follow-ups, personal voice-note win-backs, structured follow-up sequences, public booking links, recovery analytics, unlimited team seats, and webhooks & API.',
+    'Explore BackWon features: one-tap WhatsApp follow-ups, voice-note win-backs, follow-up sequences, booking links, recovery analytics and unlimited seats.',
   keywords:
     'WhatsApp follow up tool, voice note follow up, missed call recovery, follow up sequence software, booking link generator, customer win back features, unlimited team seats free, role based access, round robin lead routing, webhooks api, bulk csv import, activity log',
   eyebrow: 'FEATURES',
@@ -176,7 +193,7 @@ const integrations = {
   type: 'integrations',
   path: '/integrations',
   navLabel: 'Integrations',
-  title: 'BackWon Integrations — Shopify, Meta Leads, IndiaMART & Website API',
+  title: 'BackWon Integrations — Shopify, Meta & IndiaMART Leads',
   description:
     'Connect Shopify, Meta leads, IndiaMART or any website form to BackWon. New inquiries land in your inbox automatically — webhooks and API included free.',
   keywords:
@@ -329,7 +346,7 @@ const useCases = {
   type: 'use-cases',
   path: '/use-cases',
   navLabel: 'Use Cases',
-  title: 'BackWon Use Cases — Recover Missed Inquiries & Lost Leads',
+  title: 'BackWon Use Cases — Recover Missed Inquiries',
   description:
     'See how businesses use BackWon to recover missed calls, unanswered DMs, cold quote requests, no-shows and dormant leads — and turn them into revenue.',
   keywords:
@@ -998,6 +1015,17 @@ const resources = {
       text: 'Turn existing customer interest into more completed jobs, without increasing your marketing spend.',
     },
   ],
+  showcase: {
+    title: 'Try the missed-revenue calculator',
+    text: 'Put a number on what missed calls cost you each month — an honest estimate, in under a minute.',
+    items: [
+      {
+        to: '/resources/missed-revenue-calculator',
+        title: 'Missed revenue calculator',
+        text: 'Estimate the monthly revenue lost to missed calls, from your own deal value and close rate.',
+      },
+    ],
+  },
   faq: [
     {
       q: 'Are these resources free?',
@@ -1012,6 +1040,65 @@ const resources = {
       a: 'Start with "Why inquiries get missed" if you are not sure where your leakage is, or "Building a follow-up workflow" if you already know you are not following up consistently.',
     },
   ],
+}
+
+/* ------------------------------------------------------------------ */
+/* Missed revenue calculator                                           */
+/* ------------------------------------------------------------------ */
+
+const missedRevenueCalculator = {
+  type: 'missed-revenue-calculator',
+  path: '/resources/missed-revenue-calculator',
+  title: 'Missed Revenue Calculator — BackWon',
+  description:
+    'Estimate how much revenue missed calls cost your business each month. Enter missed calls, deal value and close rate — free, no sign-up.',
+  keywords:
+    'missed call revenue calculator, lost revenue calculator, missed inquiry cost, lead recovery estimate, small business revenue loss',
+  eyebrow: 'RESOURCES · CALCULATOR',
+  heading: 'What are your missed calls costing you?',
+  intro:
+    'Every missed call is a customer who wanted something and did not get it. Enter your own numbers below for an honest estimate of what those missed calls could be worth each month.',
+  sections: [
+    {
+      icon: 'dollar',
+      title: 'How the estimate works',
+      text: 'Missed calls per day × 30 days × your average deal value × your close rate. That is the revenue those missed calls could have been worth — if you had followed up.',
+    },
+    {
+      icon: 'search',
+      title: 'Why it is an estimate',
+      text: 'This is a simple model, not a measurement. It assumes every missed call was a real opportunity and that your close rate applies evenly. Real results depend on how fast you follow up and how many callers you can still reach.',
+    },
+    {
+      icon: 'trending',
+      title: 'What to do with the number',
+      text: 'If the number surprises you, start with the most recent missed inquiries — they are the warmest. Log them in BackWon, follow up in one tap, and record what comes back.',
+    },
+    {
+      icon: 'clock',
+      title: 'A small habit beats a big tool',
+      text: 'Ten minutes a day on the follow-up queue recovers more revenue than a new ad campaign. The calculator shows the size of the prize; the habit collects it.',
+    },
+  ],
+  faq: [
+    {
+      q: 'Is this calculator’s number real revenue?',
+      a: 'No — it is an estimate, not a measured figure. It shows what missed calls could be worth under your own assumptions, so you can decide whether following up is worth your time.',
+    },
+    {
+      q: 'Why 30 days?',
+      a: 'The estimate assumes 30 days in a month, applied to the missed calls per day you enter. Change the inputs and the estimate updates.',
+    },
+    {
+      q: 'What close rate should I use?',
+      a: 'Use the rate at which your enquiries normally become paying customers. If you do not know it, start with 20% and adjust once you have tracked real outcomes.',
+    },
+    {
+      q: 'Do I need an account to use it?',
+      a: 'No. The calculator is free to use here, and nothing you enter is stored or sent anywhere.',
+    },
+  ],
+  widget: 'calculator',
 }
 
 /* ------------------------------------------------------------------ */
@@ -1448,7 +1535,7 @@ const manifesto = {
   navLabel: 'Manifesto',
   title: 'The BackWon Manifesto — Why We Exist',
   description:
-    'BackWon exists for one reason: the easiest customer to win is the one who already contacted you. Read why follow-up is the most underrated growth lever in business.',
+    'BackWon exists for one reason: the easiest customer to win is the one who already contacted you. Follow-up is the most underrated growth lever.',
   keywords:
     'customer win back philosophy, follow up importance, small business growth, why follow up matters, revenue recovery mindset',
   eyebrow: 'MANIFESTO',
@@ -1537,6 +1624,7 @@ export const SEO_PAGES = [
   about,
   manifesto,
   resources,
+  missedRevenueCalculator,
 ]
 
 /** Look up a page by its `type` key. */

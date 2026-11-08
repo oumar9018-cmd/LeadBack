@@ -3,8 +3,7 @@
  *
  * Emitted as a single @graph so Google can resolve the relationships between
  * the Organization, the WebSite, the individual WebPage, the product and the
- * FAQ. Rich results we are eligible for: Sitelinks Searchbox, Breadcrumbs,
- * Software App and FAQ.
+ * FAQ. Rich results we are eligible for: Breadcrumbs, Software App and FAQ.
  *
  * Plain ESM — imported by both the browser hook and the Node prerender script.
  */
@@ -63,7 +62,7 @@ function softwareNode(page) {
     offers: {
       '@type': 'Offer',
       price: '0',
-      priceCurrency: 'USD',
+      priceCurrency: 'INR',
       description: 'Free to start',
     },
   }
@@ -84,6 +83,7 @@ const SEGMENT_LABELS = {
   'car-detailing': 'Car Detailing',
   about: 'About',
   resources: 'Resources',
+  'missed-revenue-calculator': 'Missed Revenue Calculator',
   salons: 'Salons',
   'auto-repair': 'Auto Repair',
   clinics: 'Clinics',

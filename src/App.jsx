@@ -72,6 +72,7 @@ import {
   CURRENCY_CODES,
   currencySymbol,
   defaultCurrencyForBrowser,
+  formatMoney,
 } from './utils/money.js'
 import { logAudit } from './utils/audit.js'
 import { assignNext } from './utils/roundRobin.js'
@@ -107,28 +108,13 @@ const statusLabels = {
   lost: 'Lost',
 }
 
-function money(value, currency = 'INR') {
-  const locales = {
-    INR: 'en-IN',
-    USD: 'en-US',
-    GBP: 'en-GB',
-    EUR: 'de-DE',
-    AED: 'en-AE',
-    AUD: 'en-AU',
-    CAD: 'en-CA',
-    SGD: 'en-SG',
-    JPY: 'ja-JP',
-    MXN: 'es-MX',
-    NZD: 'en-NZ',
-  }
-
-  const code = locales[currency] ? currency : 'USD'
-
-  return new Intl.NumberFormat(locales[code], {
-    style: 'currency',
-    currency: code,
-    maximumFractionDigits: 0,
-  }).format(value)
+/** Same slug algorithm as Settings.jsx slugify + the dashboard businessSlug. */
+function slugifyName(name) {
+  return (name || '')
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
 }
 
 /* ------------------------------------------------------------------ */
@@ -216,13 +202,12 @@ function Dashboard() {
   const [authUser, setAuthUser] = useState(
     () => window.firebase?.auth?.().currentUser || null
   )
+  // H-6 — ownerUid whose booking doc backfill already ran, so the
+  // workspace-load effect attempts it once per workspace.
+  const businessBackfillRef = useRef(null)
   const [profileOpen, setProfileOpen] = useState(false)
   const [businessName, setBusinessName] = useState('')
-  const businessSlug = (businessName || '')
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
+  const businessSlug = slugifyName(businessName)
   const [profileName, setProfileName] = useState('')
   // New workspaces default to the browser-timezone currency (see
   // utils/money.js); a saved workspace currency always wins below.
@@ -300,6 +285,10 @@ function Dashboard() {
 
     let cancelled = false
     ;(async () => {
+      // H-6 — the name as loaded from settings ('' when the doc is
+      // missing or unreadable); the backfill below uses this, not the
+      // businessName state, which has not re-rendered yet.
+      let loadedBusinessName = ''
       try {
         const snapshot = await db
           .collection('users')
@@ -314,9 +303,9 @@ function Dashboard() {
         const savedCurrency = data?.currency
         const savedReviewLink = data?.googleReviewLink
 
-        setBusinessName(
+        loadedBusinessName =
           typeof savedName === 'string' ? savedName.trim() : ''
-        )
+        setBusinessName(loadedBusinessName)
 
         setCurrency(
           CURRENCY_CODES.includes(savedCurrency)
@@ -333,6 +322,20 @@ function Dashboard() {
           setBusinessName('')
           setGoogleReviewLink('')
         }
+      }
+
+      // H-6 — lazily ensure the public booking doc exists. Booking
+      // links 404 until Settings is saved once, because nothing else
+      // creates businesses/{ownerUid}. Runs once per workspace, only
+      // for the owner (the rules let only the owner create that doc),
+      // and never blocks the UI: ensureBusinessDoc logs failures.
+      if (
+        !cancelled &&
+        workspace.role === 'owner' &&
+        businessBackfillRef.current !== workspace.ownerUid
+      ) {
+        businessBackfillRef.current = workspace.ownerUid
+        ensureBusinessDoc(db, workspace.ownerUid, loadedBusinessName)
       }
 
       try {
@@ -467,32 +470,102 @@ function Dashboard() {
     }
   }, [wsLoading, workspace])
 
-  useEffect(() => {
-    if (!inquiriesLoaded || !workspace) return
-
+  // C-1 — per-document writes replace the deleted whole-list sync
+  // effect (a batch capped at 500 silently lost data above 500
+  // inquiries). Every mutation site below calls this with just the
+  // changed fields; set(..., {merge:true}) means concurrent patches
+  // (status + history) never clobber each other. Failures are
+  // surfaced in the UI, never swallowed.
+  function persistInquiry(id, patch) {
     const db = window.firebase?.firestore?.()
-
-    if (!db) return
-
-    const batch = db.batch()
-    const userRef = db.collection('users').doc(workspace.ownerUid)
-
-    items.forEach(item => {
-      const inquiryRef = userRef.collection('inquiries').doc(String(item.id))
-      batch.set(inquiryRef, item, { merge: true })
-    })
-
-    if (items.length > 0) {
-      batch.commit().catch(error => {
-        console.error('Inquiry save failed:', error)
-      })
+    if (!workspace || !db || id === undefined || id === null || id === '') {
+      return
     }
-  }, [items, inquiriesLoaded, workspace])
+    db.collection('users')
+      .doc(workspace.ownerUid)
+      .collection('inquiries')
+      .doc(String(id))
+      .set(patch, { merge: true })
+      .catch(error => {
+        console.error('Inquiry save failed:', error)
+        setInquiriesError('Could not save that change — please retry')
+      })
+  }
+
+  // H-1 — Firestore-generated ids (never Date.now()): doc().id mints
+  // a random id client-side without a write, so two creates in the
+  // same millisecond can no longer overwrite each other.
+  function newDocId() {
+    try {
+      const db = window.firebase?.firestore?.()
+      if (db && workspace) {
+        return db
+          .collection('users')
+          .doc(workspace.ownerUid)
+          .collection('inquiries')
+          .doc().id
+      }
+    } catch (error) {
+      console.error('Inquiry id generation failed:', error)
+    }
+    return `inq-${Math.random().toString(36).slice(2)}${Math.random().toString(36).slice(2)}`
+  }
+
+  // H-6 — lazily ensure the public booking doc exists, mirroring the
+  // Settings.jsx publish shape (businesses/{ownerUid}) and its slug
+  // claim loop (businessSlugs/{slug}, -2/-3/... on clash, max 5).
+  // Idempotent: returns at once when the doc already exists and never
+  // overwrites one. Failures only log — the UI never blocks on this.
+  async function ensureBusinessDoc(db, ownerUid, businessNameValue) {
+    try {
+      const businessRef = db.collection('businesses').doc(ownerUid)
+      const snap = await businessRef.get()
+      if (snap.exists) return
+      const baseSlug =
+        slugifyName(businessNameValue) || `biz-${String(ownerUid).slice(0, 8)}`
+      let claimedSlug = ''
+      for (let attempt = 0; attempt < 5 && !claimedSlug; attempt += 1) {
+        const candidate =
+          attempt === 0 ? baseSlug : `${baseSlug}-${attempt + 1}`
+        try {
+          await db.collection('businessSlugs').doc(candidate).set({
+            ownerUid,
+            slug: candidate,
+            updatedAt: new Date().toISOString(),
+          })
+          claimedSlug = candidate
+        } catch (claimError) {
+          if (claimError?.code === 'permission-denied') continue
+          console.error('Booking slug claim failed:', claimError)
+          break
+        }
+      }
+      // If every claim failed, still create the businesses doc with
+      // the fallback slug; Settings re-claims on the next save.
+      await businessRef.set(
+        {
+          ownerUid,
+          slug: claimedSlug || baseSlug,
+          name: (businessNameValue || '').trim(),
+          services: '',
+          hours: '',
+          updatedAt: new Date().toISOString(),
+        },
+        { merge: true }
+      )
+    } catch (error) {
+      console.error('Booking page backfill failed:', error)
+    }
+  }
 
   const [filter, setFilter] = useState('all')
   const [search, setSearch] = useState('')
   const [showAddInquiry, setShowAddInquiry] = useState(false)
   const [selectedInquiry, setSelectedInquiry] = useState(null)
+  // D-13 — id of the inquiry whose single-doc fetch succeeded, so
+  // the redirect guard below accepts a deep link even when the row
+  // is outside the scoped list (and never lands in `items`).
+  const [detailLoadedId, setDetailLoadedId] = useState(null)
   // The detail modal below has a 260ms close animation: it keeps rendering
   // AFTER selectedInquiry is set back to null. Freeze the last opened
   // inquiry so the closing frame never reads `.name` (etc.) off null.
@@ -514,8 +587,7 @@ function Dashboard() {
   }
 
   // #13 — edit one custom value on the open inquiry. Local state first
-  // (instant UI), then the whole-list sync effect persists the merged
-  // doc — the same pattern as the assignment/branch selects above.
+  // (instant UI), then persistInquiry writes the merged custom map.
   // Empty values drop the key so docs stay clean.
   function updateCustomValue(field, raw) {
     const value = normalizeCustomValue(field.type, raw)
@@ -534,6 +606,9 @@ function Dashboard() {
       )
     )
     setSelectedInquiry(current => (current ? apply(current) : current))
+    if (detailInquiry) {
+      persistInquiry(detailInquiry.id, { custom: apply(detailInquiry).custom })
+    }
   }
 
   // Review requests (batch 2): the saved Google review link, or '' when
@@ -553,8 +628,9 @@ function Dashboard() {
   }
 
   // Permanent delete (the UI had no way to remove an inquiry before).
-  // The items->Firestore sync only ever SETs docs for items in state, so an
-  // explicit doc delete + state removal stays deleted across reloads.
+  // Deletes are explicit: there is no whole-list sync to resurrect
+  // the doc, so an explicit doc delete + state removal stays deleted
+  // across reloads.
   async function deleteInquiry(id) {
     setDeleteConfirmId(null)
     setSelectedInquiry(null)
@@ -618,6 +694,10 @@ function Dashboard() {
           .doc(String(inquiryId))
           .get()
         if (snap.exists) {
+          // D-13 — remember this id loaded, so the redirect guard
+          // below accepts the deep link even though the row never
+          // lands in `items`.
+          setDetailLoadedId(inquiryId)
           setSelectedInquiry({ id: snap.id, ...snap.data() })
         }
       } catch (error) {
@@ -677,6 +757,7 @@ function Dashboard() {
     setItems(current =>
       current.map(item => (item.id === id ? { ...item, status } : item))
     )
+    persistInquiry(id, { status })
     if (prev && prev.status !== status) {
       logAudit(workspace?.ownerUid, {
         action: 'status_changed',
@@ -703,6 +784,7 @@ function Dashboard() {
         ? { ...current, status: 'recovered', recoveredAt }
         : current
     )
+    persistInquiry(id, { status: 'recovered', recoveredAt })
     logActivity(id, 'Marked recovered')
     logAudit(workspace?.ownerUid, {
       action: 'status_changed',
@@ -726,6 +808,7 @@ function Dashboard() {
         ? { ...current, status: 'lost', lostAt, lossReason: reason, lossNote: note || '' }
         : current
     )
+    persistInquiry(id, { status: 'lost', lostAt, lossReason: reason, lossNote: note || '' })
     logActivity(id, `Marked lost (${LOSS_REASON_LABELS[reason] || reason})`)
     logAudit(workspace?.ownerUid, {
       action: 'status_changed',
@@ -737,7 +820,7 @@ function Dashboard() {
 
   function logActivity(id, label) {
     const entry = {
-      id: Date.now(),
+      id: newDocId(),
       type: label,
       date: new Date().toISOString().slice(0, 10),
       time: new Date().toTimeString().slice(0, 5),
@@ -755,6 +838,17 @@ function Dashboard() {
         ? { ...current, followupHistory: [...(current.followupHistory || []), entry] }
         : current
     )
+    // Append atomically when FieldValue is available, so two quick
+    // actions can never overwrite each other's history entry.
+    const FieldValue = window.firebase?.firestore?.FieldValue
+    if (FieldValue?.arrayUnion) {
+      persistInquiry(id, { followupHistory: FieldValue.arrayUnion(entry) })
+    } else {
+      const current = items.find(item => item.id === id)
+      persistInquiry(id, {
+        followupHistory: [...(current?.followupHistory || []), entry],
+      })
+    }
   }
 
   function getFollowupState(item) {
@@ -782,7 +876,7 @@ function Dashboard() {
     }
 
     const historyEntry = {
-      id: Date.now(),
+      id: newDocId(),
       type: 'scheduled',
       date: followup.date,
       time: followup.time,
@@ -812,6 +906,15 @@ function Dashboard() {
       ],
     })
 
+    persistInquiry(selectedInquiry.id, {
+      status: 'followup',
+      followup,
+      followupHistory: [
+        ...(selectedInquiry.followupHistory || []),
+        historyEntry,
+      ],
+    })
+
     setFollowupForm({ date: '', time: '', note: '' })
   }
 
@@ -828,10 +931,10 @@ function Dashboard() {
       return
     }
 
-    // Batch 5: route before the whole-list sync writes the row. The
-    // routing fields travel inside the item object like every other
-    // field, so the sync effect needs no change. Routing never blocks
-    // creation — assignNext falls back to unassigned on any failure.
+    // Batch 5: route before the direct write below persists the row.
+    // The routing fields travel inside the item object like every other
+    // field. Routing never blocks creation — assignNext falls back to
+    // unassigned on any failure.
     const db = window.firebase?.firestore?.()
     // #11 — territory picks the branch BEFORE routing (a manager's
     // own branch always wins); routing then picks a rep inside it.
@@ -846,7 +949,7 @@ function Dashboard() {
     // #2 — automation rules run AFTER routing, so a rule assignment
     // wins over round-robin. Rules never block creation.
     let newInquiry = {
-      id: Date.now(),
+      id: newDocId(),
       name: form.name.trim(),
       phone: form.phone.trim(),
       service: form.service.trim(),
@@ -875,6 +978,33 @@ function Dashboard() {
     newInquiry = applyAutoFollowup(newInquiry, autoFollowupDays)
     const autoApplied =
       !hadFollowup && !!(newInquiry.followup && newInquiry.followup.date)
+
+    // C-1 — adds write their own doc directly (the deleted sync
+    // effect used to persist them). The stored doc carries no `id`
+    // field, matching Inquiries.jsx; the id lives in the doc id.
+    // On failure nothing is prepended — the error is shown instead
+    // of a phantom row that vanishes on reload.
+    if (!workspace || !db) {
+      console.error('Inquiry save failed: no workspace or Firestore.')
+      setInquiriesError('Could not save that inquiry — please retry')
+      setFormError('Could not save that inquiry — please retry.')
+      return
+    }
+    try {
+      const docData = { ...newInquiry }
+      delete docData.id
+      await db
+        .collection('users')
+        .doc(workspace.ownerUid)
+        .collection('inquiries')
+        .doc(String(newInquiry.id))
+        .set(docData)
+    } catch (error) {
+      console.error('Inquiry save failed:', error)
+      setInquiriesError('Could not save that inquiry — please retry')
+      setFormError('Could not save that inquiry — please retry.')
+      return
+    }
 
     setItems(current => [newInquiry, ...current])
 
@@ -927,7 +1057,8 @@ function Dashboard() {
   if (
     detailOnly &&
     inquiriesLoaded &&
-    !items.some(item => String(item.id) === searchParams.get('inquiry'))
+    !items.some(item => String(item.id) === searchParams.get('inquiry')) &&
+    detailLoadedId !== searchParams.get('inquiry')
   ) {
     return <Navigate to="/app/inquiries" replace />
   }
@@ -974,9 +1105,11 @@ function Dashboard() {
           booking requests into inquiries. */}
       {canManageTeam(workspace?.role) && (
         <OwnerBookings
-          onAddInquiry={(booking) => {
+          onAddInquiry={async (booking) => {
+          const db = window.firebase?.firestore?.()
+          const inquiryId = newDocId()
           const newInquiry = {
-            id: Date.now(),
+            id: inquiryId,
             name: booking.customerName,
             phone: booking.customerPhone,
             service: `Booking request — ${booking.preferredDate}${booking.preferredTime ? ` at ${booking.preferredTime}` : ''}`,
@@ -987,7 +1120,30 @@ function Dashboard() {
             assignedTo: '',
             branchId: '',
           }
+          // C-1 — booking conversions write their own doc directly
+          // (the deleted sync effect used to persist them). On
+          // failure nothing is prepended — see handleAddInquiry.
+          if (!workspace || !db) {
+            console.error('Inquiry save failed: no workspace or Firestore.')
+            setInquiriesError('Could not save that inquiry — please retry')
+            return false
+          }
+          try {
+            const docData = { ...newInquiry }
+            delete docData.id
+            await db
+              .collection('users')
+              .doc(workspace.ownerUid)
+              .collection('inquiries')
+              .doc(String(inquiryId))
+              .set(docData)
+          } catch (error) {
+            console.error('Inquiry save failed:', error)
+            setInquiriesError('Could not save that inquiry — please retry')
+            return false
+          }
           setItems(current => [newInquiry, ...current])
+          return true
         }}
       />
       )}
@@ -999,7 +1155,7 @@ function Dashboard() {
           </div>
           <span>Recovered revenue</span>
           <strong className="stat-number gold-number">
-            {money(animatedRevenue, currency)}
+            {formatMoney(animatedRevenue, currency)}
           </strong>
           <small>Revenue from recovered inquiries</small>
         </div>
@@ -1107,7 +1263,7 @@ function Dashboard() {
               </div>
 
               <div className="inquiry-value">
-                {money(Number(item.value) || 0, currency)}
+                {formatMoney(Number(item.value) || 0, currency)}
               </div>
 
               <div className="inquiry-score">
@@ -1228,7 +1384,7 @@ function Dashboard() {
                     </em>
                   )}
                 </div>
-                <strong>{money(Number(item.value) || 0, currency)}</strong>
+                <strong>{formatMoney(Number(item.value) || 0, currency)}</strong>
               </div>
             )
           })}
@@ -1383,7 +1539,7 @@ function Dashboard() {
 
               <div className="detail-card">
                 <span>Estimated value</span>
-                <strong>{money(Number(detailInquiry.value) || 0, currency)}</strong>
+                <strong>{formatMoney(Number(detailInquiry.value) || 0, currency)}</strong>
               </div>
 
               <div className="detail-card">
@@ -1401,8 +1557,8 @@ function Dashboard() {
               </div>
 
               {/* #13 — custom fields: one editable card per defined
-                  field. Values persist through the whole-list sync
-                  effect, like assignment/branch above. */}
+                  field. Values persist through persistInquiry, like
+                  assignment/branch above. */}
               {customFields.map(field => (
                 <div className="detail-card" key={field.id}>
                   <span>{field.label}</span>
@@ -1502,10 +1658,12 @@ function Dashboard() {
                       <li>
                         Next best action: {nba.action} — {nba.reason}
                       </li>
-                      <li>
-                        Recovery probability: {prob.label} ({score}) —
-                        heuristic estimate, not a measured rate.
-                      </li>
+                      {prob && (
+                        <li>
+                          Recovery probability: {prob.label} ({score}) —
+                          heuristic estimate, not a measured rate.
+                        </li>
+                      )}
                       {risk.level !== 'closed' && (
                         <li>
                           Deal risk: {risk.level}
@@ -1551,8 +1709,9 @@ function Dashboard() {
                       setSelectedInquiry(current =>
                         current ? { ...current, assignedTo } : current
                       )
-                      // Gate 8 fix: the items sync effect persists
-                      // this change without logging it, so log the
+                      persistInquiry(detailInquiry.id, { assignedTo })
+                      // Gate 8 fix: persistInquiry above persists this
+                      // change without logging it, so log the
                       // assignment here (manual moves only — routing
                       // logs its own lines at creation time).
                       if (assignedTo !== (detailInquiry.assignedTo || '')) {
@@ -1598,6 +1757,7 @@ function Dashboard() {
                       setSelectedInquiry(current =>
                         current ? { ...current, branchId } : current
                       )
+                      persistInquiry(detailInquiry.id, { branchId })
                     }}
                   >
                     <option value="">No branch (owner/admin only)</option>
@@ -1676,9 +1836,8 @@ function Dashboard() {
                 recovered inquiry with a saved, valid review link and a
                 valid phone. No auto-send: the owner taps, WhatsApp opens
                 pre-filled, the owner sends. The tap is logged ("Review
-                requested") so it shows in the timeline — the same
-                persisted state as every other action (the whole-list
-                sync effect writes it to Firestore). */}
+                requested") so it shows in the timeline — logActivity
+                persists it like every other action. */}
             {detailInquiry.status === 'recovered' && validReviewLink() && normalizePhone(detailInquiry.phone) && (
               <section className="review-request-section">
                 <div>
@@ -1770,8 +1929,8 @@ function Dashboard() {
               businessName={businessName}
               initialSteps={detailInquiry.dripSteps}
               onSave={(steps) => {
-                // Persist the steps onto the inquiry (the whole-list sync
-                // effect writes them to Firestore) and surface due steps
+                // Persist the steps onto the inquiry (persistInquiry
+                // writes them to Firestore) and surface due steps
                 // in the follow-up queue. Due dates are computed from the
                 // day the sequence was saved.
                 const today = new Date()
@@ -1783,6 +1942,7 @@ function Dashboard() {
                 const updated = { ...detailInquiry, dripSteps }
                 setItems(prev => prev.map(item => String(item.id) === String(detailInquiry.id) ? updated : item))
                 setSelectedInquiry(updated)
+                persistInquiry(detailInquiry.id, { dripSteps })
                 logActivity(detailInquiry.id, `Drip sequence saved (${steps.length} steps)`)
               }}
             />

@@ -2838,20 +2838,6 @@ a {
   animation: premium-rise .7s .12s cubic-bezier(.2, .7, .3, 1) both;
 }
 
-.login-pill {
-  display: inline-block;
-  padding: 7px 13px;
-  border: 1px solid rgba(255, 255, 255, .22);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, .09);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  color: #e9d5ff;
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: .16em;
-}
-
 .login-hero-copy h1 {
   margin: 20px 0 14px;
   font-family: Manrope, sans-serif;
@@ -2889,23 +2875,6 @@ a {
   gap: 14px;
   margin-top: 36px;
   animation: premium-rise .7s .24s cubic-bezier(.2, .7, .3, 1) both;
-}
-
-.login-glass-card {
-  padding: 18px 18px 16px;
-  border-radius: 17px;
-  background: rgba(255, 255, 255, .09);
-  border: 1px solid rgba(255, 255, 255, .18);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  box-shadow:
-    0 22px 50px rgba(0, 0, 0, .32),
-    inset 0 1px 0 rgba(255, 255, 255, .22);
-  animation: float-y 6.5s ease-in-out infinite;
-}
-
-.login-glass-card-alt {
-  animation-delay: -3.2s;
 }
 
 @keyframes float-y {
@@ -3067,11 +3036,6 @@ a {
     height: 27px;
   }
 
-  .login-pill {
-    font-size: 9px;
-    padding: 6px 11px;
-  }
-
   .login-hero-copy h1 {
     font-size: 30px;
     margin: 14px 0 8px;
@@ -3084,11 +3048,6 @@ a {
   .login-glass-row {
     margin-top: 20px;
     gap: 10px;
-  }
-
-  .login-glass-card {
-    padding: 13px 14px 12px;
-    border-radius: 14px;
   }
 
   .login-glass-number {

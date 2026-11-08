@@ -164,7 +164,7 @@ function App() {
     <div className="home-page">
       <header className="nav">
         <div className="nav-inner">
-          <Link className="nav-brand" to={url('/')} aria-label="BackWon home">
+          <Link className="nav-brand" to="/" aria-label="BackWon home">
             <LogoMark width={30} height={30} className="nav-logo" />
             <span>BackWon</span>
           </Link>
@@ -216,7 +216,7 @@ function App() {
                   <div className="browser-dots">
                     <i /><i /><i />
                   </div>
-                  <span className="browser-url">oumar9018-cmd.github.io/LeadBack/app</span>
+                  <span className="browser-url">BackWon app</span>
                 </div>
                 <div className="browser-body flow-body">
                   <div className="dash-top">
@@ -385,7 +385,7 @@ function App() {
         <div className="container">
           <div className="footer-grid">
             <div className="footer-brand">
-              <Link className="nav-brand" to={url('/')}>
+              <Link className="nav-brand" to="/">
                 <LogoMark width={26} height={26} className="nav-logo" />
                 <span>BackWon</span>
               </Link>

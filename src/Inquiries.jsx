@@ -268,6 +268,25 @@ export default function Inquiries() {
       } catch (ruleError) {
         console.error('Rules failed (creation continues without them):', ruleError)
       }
+      // D-14 — if a rule reassigned the row away from the round-robin
+      // pick, the pick keeps load credit for a lead they never got.
+      // Give the count back so future "least-loaded" picks stay fair.
+      // Best-effort only: a failed decrement never blocks creation.
+      if (route.assignedTo && doc.assignedTo !== route.assignedTo) {
+        try {
+          const decrement = window.firebase?.firestore?.FieldValue?.increment?.(-1)
+          if (decrement !== undefined) {
+            await db
+              .collection('users')
+              .doc(workspace.ownerUid)
+              .collection('members')
+              .doc(route.assignedTo)
+              .update({ assignedCount: decrement })
+          }
+        } catch (decrementError) {
+          console.error('Round-robin count decrement failed:', decrementError)
+        }
+      }
       // #3 — default auto follow-up, only when no rule scheduled one.
       // Rules always win: applyAutoFollowup is a no-op if a follow-up
       // already exists.
@@ -347,12 +366,33 @@ export default function Inquiries() {
   async function handleBookingAsInquiry(booking) {
     try {
       const db = window.firebase?.firestore?.()
-      const branchId = workspace?.role === 'branch_manager' ? workspace.branchId || '' : ''
+      // D-15 — mirror handleAddInquiry: the same territory → routing →
+      // rules → auto-follow-up pipeline, plus the duplicate check.
+      // The duplicate check runs first, as in handleAddInquiry, so a
+      // duplicate never consumes a round-robin pick. A booking has no
+      // value or custom fields — value 0, custom {}.
+      const dups = findOpenDuplicates(items, booking.customerPhone)
+      if (dups.length > 0) {
+        console.info('Booking already has an open inquiry — skipping duplicate:', booking.customerPhone)
+        return false
+      }
+      const service = `Booking request — ${booking.preferredDate}${booking.preferredTime ? ` at ${booking.preferredTime}` : ''}`
+      // #11 — territory picks the branch BEFORE routing (a manager's
+      // own branch always wins); routing then picks a rep inside it.
+      let branchId = workspace?.role === 'branch_manager' ? workspace.branchId || '' : ''
+      let territoryBranch = ''
+      if (!branchId) {
+        territoryBranch = matchTerritory(territories, { service })
+        if (territoryBranch) branchId = territoryBranch
+      }
       const route = await assignNext(db, workspace?.ownerUid, { branchId })
-      const ref = await addInquiryDoc({
+      // #2 — automation rules run AFTER routing, so a rule assignment
+      // wins over round-robin (that is the point of routing rules).
+      // Rules never block creation: any failure skips rules entirely.
+      let doc = {
         name: booking.customerName,
         phone: booking.customerPhone,
-        service: `Booking request — ${booking.preferredDate}${booking.preferredTime ? ` at ${booking.preferredTime}` : ''}`,
+        service,
         value: 0,
         status: 'new',
         date: 'Just now',
@@ -362,7 +402,40 @@ export default function Inquiries() {
         assignedBy: route.assignedBy,
         source: 'booking',
         branchId,
-      })
+        custom: {},
+      }
+      let ruleNotes = []
+      try {
+        const result = applyRules(rules, doc, 'inquiry_created')
+        doc = result.inquiry
+        ruleNotes = result.taken
+      } catch (ruleError) {
+        console.error('Rules failed (creation continues without them):', ruleError)
+      }
+      // D-14, same as handleAddInquiry: a rule reassignment gives the
+      // round-robin pick's load credit back.
+      if (route.assignedTo && doc.assignedTo !== route.assignedTo) {
+        try {
+          const decrement = window.firebase?.firestore?.FieldValue?.increment?.(-1)
+          if (decrement !== undefined) {
+            await db
+              .collection('users')
+              .doc(workspace.ownerUid)
+              .collection('members')
+              .doc(route.assignedTo)
+              .update({ assignedCount: decrement })
+          }
+        } catch (decrementError) {
+          console.error('Round-robin count decrement failed:', decrementError)
+        }
+      }
+      // #3 — default auto follow-up, only when no rule scheduled one.
+      // Rules always win: applyAutoFollowup is a no-op if a follow-up
+      // already exists.
+      const hadFollowup = !!(doc.followup && doc.followup.date)
+      doc = applyAutoFollowup(doc, autoFollowupDays)
+      const autoApplied = !hadFollowup && !!(doc.followup && doc.followup.date)
+      const ref = await addInquiryDoc(doc)
       if (route.assignedTo && ref) {
         logAudit(workspace.ownerUid, {
           action: 'status_changed',
@@ -370,8 +443,31 @@ export default function Inquiries() {
           detail: `assigned to ${route.assignedEmail || route.assignedTo}`,
         })
       }
+      if (ruleNotes.length > 0 && ref) {
+        logAudit(workspace.ownerUid, {
+          action: 'rule_applied',
+          inquiryId: ref.id,
+          detail: ruleNotes.join('; '),
+        })
+      }
+      if (autoApplied && ref) {
+        logAudit(workspace.ownerUid, {
+          action: 'task_created',
+          inquiryId: ref.id,
+          detail: `Auto follow-up scheduled in ${autoFollowupDays} days`,
+        })
+      }
+      if (territoryBranch && ref) {
+        logAudit(workspace.ownerUid, {
+          action: 'territory_applied',
+          inquiryId: ref.id,
+          detail: `Service matched territory: ${territoryBranch}`,
+        })
+      }
+      return true
     } catch (error) {
       console.error('Add booking as inquiry failed:', error)
+      return false
     }
   }
 

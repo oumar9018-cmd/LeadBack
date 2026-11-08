@@ -11,7 +11,7 @@ import {
 } from '../utils/money.js'
 import './BlitzMode.css'
 import { useWorkspace } from './WorkspaceContext.jsx'
-import { inScope } from '../utils/workspace.js'
+import { canManageTeam, inScope } from '../utils/workspace.js'
 import { blastStatus, markBlastStarted } from '../utils/blastGuard.js'
 
 /**
@@ -95,14 +95,14 @@ export default function BlitzMode() {
     if (loading || !lastBlastLoaded || preselectConsumed) return
     let raw = null
     try {
-      raw = sessionStorage.getItem('wynback-blitz-preselect')
+      raw = sessionStorage.getItem('backwon-blitz-preselect')
     } catch {
       return
     }
     if (!raw) return
     setPreselectConsumed(true)
     try {
-      sessionStorage.removeItem('wynback-blitz-preselect')
+      sessionStorage.removeItem('backwon-blitz-preselect')
     } catch {
       // Non-fatal: a stale preselect is consumed by the flag above.
     }
@@ -203,6 +203,27 @@ export default function BlitzMode() {
   const finished = started && cursor >= queue.length
   const current = !finished && started ? queue[cursor] : null
   const progress = queue.length ? Math.round((cursor / queue.length) * 100) : 0
+
+  // Blitz is a mass-message mode: owner/admin only (same role-note
+  // pattern as Team.jsx / Api.jsx). Sales reps and branch managers
+  // see the note, never the blitz UI. Placed after all hooks so the
+  // early return never changes hook order.
+  if (!wsLoading && workspace && !canManageTeam(workspace.role)) {
+    return (
+      <div className="blitz-page">
+        <div className="blitz-inner">
+          <header className="blitz-header">
+            <div>
+              <span className="app-eyebrow">BLITZ MODE</span>
+              <h1>Re-engagement blitz</h1>
+              <p>Blitz Mode is not available for your role. Your leads live on the Inquiries and Follow-ups pages.</p>
+            </div>
+            <button className="primary-button" onClick={() => navigate('/app/inquiries')}>Back to inquiries</button>
+          </header>
+        </div>
+      </div>
+    )
+  }
 
   // ---- selection screen ----
   if (!started) {

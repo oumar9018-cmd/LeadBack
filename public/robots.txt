@@ -10,10 +10,12 @@ Disallow: /app/
 Disallow: /ceo
 Disallow: /trial
 Disallow: /login
+Disallow: /accept
 Disallow: /LeadBack/app
 Disallow: /LeadBack/app/
 Disallow: /LeadBack/ceo
 Disallow: /LeadBack/trial
 Disallow: /LeadBack/login
+Disallow: /LeadBack/accept
 
 Sitemap: https://oumar9018-cmd.github.io/LeadBack/sitemap.xml

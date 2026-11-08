@@ -16,8 +16,10 @@ import './CsvImport.css'
  * - 10,000 rows per file (the Inquiries list paginates, but lakh-scale
  *   imports are NOT advertised until the list is proven at that size).
  * - Imported rows are status 'lost' (dead leads; Blitz works lost
- *   leads), source 'csv', unassigned, unbranched — owner/admin-only
- *   import, so the rows land where admins can see them.
+ *   leads), source 'csv', unassigned — owner/admin-only import, so
+ *   the rows land where admins can see them. A branch manager's rows
+ *   carry their branchId (same as manual creation), so branch
+ *   scoping and the create rule still hold.
  * - Phone is stored as typed (like manual adds); dedupe uses the
  *   normalized form. Value unmapped → 0, unflagged; value mapped but
  *   unparseable → 0, flagged.
@@ -27,7 +29,7 @@ import './CsvImport.css'
 
 const MAX_ROWS_PER_FILE = 10000
 const BATCH_SIZE = 400
-const PRESELECT_KEY = 'wynback-blitz-preselect'
+const PRESELECT_KEY = 'backwon-blitz-preselect'
 
 function parseValue(raw) {
   const cleaned = String(raw || '').replace(/[^0-9.-]/g, '')
@@ -158,6 +160,10 @@ export default function CsvImport({ open, onClose, workspace, existingItems, onI
   async function runImport(rowsToImport) {
     const db = window.firebase?.firestore?.()
     if (!db || !workspace) return
+    // D-42 — a branch manager's rows carry their branchId (same as
+    // App.jsx manual creation); otherwise the create rule denies the
+    // write and branch scoping breaks. Owners/admins stay unbranched.
+    const branchId = workspace.role === 'branch_manager' ? workspace.branchId || '' : ''
     setImporting(true)
     setImportError('')
     let imported = importedCount
@@ -181,7 +187,7 @@ export default function CsvImport({ open, onClose, workspace, existingItems, onI
             status: 'lost',
             source: 'csv',
             assignedTo: '',
-            branchId: '',
+            branchId,
             importedAt: new Date().toISOString(),
             lastContact: r.lastContact || '',
             date: 'Imported',
@@ -206,7 +212,7 @@ export default function CsvImport({ open, onClose, workspace, existingItems, onI
         status: 'lost',
         source: 'csv',
         assignedTo: '',
-        branchId: '',
+        branchId,
         importedAt: new Date().toISOString(),
         lastContact: r.lastContact || '',
         date: 'Imported',

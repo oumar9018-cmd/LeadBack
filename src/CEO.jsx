@@ -67,7 +67,7 @@ export default function CEO() {
             <h1>CEO Dashboard</h1>
 
             <p>
-              Business overview, customers, revenue and platform operations.
+              Customer accounts registered on BackWon.
             </p>
           </div>
 

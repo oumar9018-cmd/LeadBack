@@ -15,10 +15,32 @@
 
 export const SLA_AT_RISK_FRACTION = 0.75
 
+/** createdAt → ms. Accepts epoch ms, ISO strings, and Firestore
+ * Timestamps (toMillis/toDate); anything else is unknowable (NaN).
+ * Mirrors the toMs pattern in graveyard.js. */
+function createdMs(value) {
+  const n = Number(value)
+  if (Number.isFinite(n) && n > 0) return n
+  if (typeof value === 'string') {
+    const t = Date.parse(value)
+    if (Number.isFinite(t) && t > 0) return t
+  }
+  if (value && typeof value === 'object') {
+    if (typeof value.toMillis === 'function') {
+      const t = value.toMillis()
+      if (Number.isFinite(t) && t > 0) return t
+    } else if (typeof value.toDate === 'function') {
+      const t = value.toDate().getTime()
+      if (Number.isFinite(t) && t > 0) return t
+    }
+  }
+  return NaN
+}
+
 /** 'ok' | 'at-risk' | 'breached' | 'responded' | 'unknown'. Pure. */
 export function getSlaStatus(inquiry, firstResponseHours, nowMs = Date.now()) {
   if (!inquiry || inquiry.status !== 'new') return 'responded'
-  const created = Number(inquiry.createdAt)
+  const created = createdMs(inquiry.createdAt)
   if (!Number.isFinite(created) || created <= 0) return 'unknown'
   const hours = Number(firstResponseHours)
   if (!Number.isFinite(hours) || hours <= 0) return 'ok'
@@ -30,7 +52,7 @@ export function getSlaStatus(inquiry, firstResponseHours, nowMs = Date.now()) {
 
 /** Age in whole hours since creation, or null when unknowable. */
 export function ageHours(inquiry, nowMs = Date.now()) {
-  const created = Number(inquiry?.createdAt)
+  const created = createdMs(inquiry?.createdAt)
   if (!Number.isFinite(created) || created <= 0) return null
   return Math.floor((nowMs - created) / (1000 * 60 * 60))
 }

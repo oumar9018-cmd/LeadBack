@@ -12,6 +12,12 @@ function dayKey(d) {
   return d.toISOString().slice(0, 10)
 }
 
+/** Next calendar day after a 'YYYY-MM-DD' key, as a 'YYYY-MM-DD' key. */
+function nextDayKey(key) {
+  const [y, m, d] = key.split('-').map(Number)
+  return new Date(Date.UTC(y, m - 1, d + 1)).toISOString().slice(0, 10)
+}
+
 function startOfWeek(date) {
   const d = new Date(date)
   const day = (d.getDay() + 6) % 7 // Monday = 0
@@ -77,15 +83,18 @@ export function computeStreaks(items, now = new Date()) {
   const bestWeekValue = byWeek.size ? Math.max(...byWeek.values()) : 0
 
   // Longest streak ever (for "personal best" on streaks too).
+  // Calendar-day comparison, not exact 86400000ms diffs: a recovery at
+  // 23:00 followed by one at 01:00 the next day is still consecutive
+  // (and DST days are not 24h long). Keys are 'YYYY-MM-DD' strings,
+  // so the next calendar day is computed in UTC to avoid local-TZ drift.
   let longestStreak = 0
   let run = 0
-  let prev = null
+  let prevKey = null
   for (const key of [...days].sort()) {
-    const d = new Date(`${key}T00:00:00`)
-    if (prev && d - prev === 86400000) run += 1
+    if (prevKey && nextDayKey(prevKey) === key) run += 1
     else run = 1
     longestStreak = Math.max(longestStreak, run)
-    prev = d
+    prevKey = key
   }
 
   const hitMilestone = STREAK_MILESTONES.find(m => m === currentStreak) || null

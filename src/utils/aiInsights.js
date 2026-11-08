@@ -37,7 +37,7 @@ export function nextBestAction(item, nowMs = Date.now()) {
         (Number(item.value) || 0) >= 5000
           ? 'Send a win-back offer (high value)'
           : 'Send a light win-back message',
-      reason: `Lost lead, score ${score} — a personal offer is the highest-converting reactivation.`,
+      reason: `Lost lead, score ${score} — a personal offer is often the best way back.`,
     }
   if (item.status === 'replied' && quiet !== null && quiet >= 14)
     return {
@@ -72,7 +72,9 @@ export function nextBestAction(item, nowMs = Date.now()) {
 }
 
 // #59 — recovery probability, honestly framed: the score band in words.
+// Closed inquiries have no recovery probability left to estimate.
 export function recoveryProbability(item) {
+  if (item?.status === 'recovered' || item?.status === 'lost') return null
   const { score, band } = winbackScore(item)
   const label = band === 'hot' ? 'High' : band === 'warm' ? 'Medium' : 'Low'
   return {
