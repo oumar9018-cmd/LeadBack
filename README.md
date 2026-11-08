@@ -3,6 +3,8 @@
 LeadBack helps growing businesses recover missed customer inquiries, organize
 follow-ups, and turn more conversations into paying customers.
 
+**Live site:** [https://oumar9018-cmd.github.io/LeadBack/](https://oumar9018-cmd.github.io/LeadBack/)
+
 React 19 + Vite SPA, deployed to GitHub Pages.
 
 ## Getting started
