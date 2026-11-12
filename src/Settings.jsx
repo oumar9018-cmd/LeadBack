@@ -8,6 +8,7 @@ import RulesCard from './components/RulesCard.jsx'
 import AutomationCard from './components/AutomationCard.jsx'
 import SlaCard from './components/SlaCard.jsx'
 import EscalationCard from './components/EscalationCard.jsx'
+import WorkflowsCard from './components/WorkflowsCard.jsx'
 import { CURRENCIES, defaultCurrencyForBrowser } from './utils/money.js'
 
 const defaultSettings = {
@@ -460,6 +461,9 @@ export default function Settings() {
 
           {/* Auto-escalation: opt-in flagging/reassignment of overdue work. */}
           <EscalationCard />
+
+          {/* Workflows: opt-in time-based trigger → action rules (Round 3). */}
+          <WorkflowsCard />
 
           <section className="settings-card settings-account-card">
             <div>

@@ -85,6 +85,144 @@ export function getSlaSummary(items, firstResponseHours, nowMs = Date.now()) {
   }
 }
 
+const DAY_MS = 1000 * 60 * 60 * 24
+
+/**
+ * SLA Centre analytics (Round 3) — the Reports page SLA tab.
+ *
+ * Windows (7 / 30 days) count inquiries CREATED inside the window
+ * whose createdAt is readable; unreadable rows are excluded, never
+ * guessed. A row is "judged" once it has had a fair chance to meet
+ * the target: it is older than the target, or it already received a
+ * first response (status moved off 'new'). "Breached" = judged and
+ * STILL unanswered past the target. The breach rate is therefore
+ * breached ÷ judged — the share of judgeable inquiries that never
+ * got a first response in time.
+ *
+ * Honest limit: BackWon does not record a first-response timestamp,
+ * so a row that was answered late counts as "responded" here — the
+ * rate measures inquiries still waiting past the target, not every
+ * late answer in history. The tab copy says exactly that.
+ *
+ * Worst branch / rep rank the CURRENT live breaches (the same list
+ * getSlaSummary returns), not history. Branch labels follow the
+ * reports.js convention: inquiry.branchId carries the branch name,
+ * '' = unassigned. Assignees resolve through `members` (+ the owner
+ * seed, like aggregateByMember); unknown uids fold into Unassigned.
+ */
+export function getSlaAnalytics(items, firstResponseHours, options = {}) {
+  const list = Array.isArray(items) ? items : []
+  const hours = Number(firstResponseHours)
+  const enabled = Number.isFinite(hours) && hours > 0
+  const nowMs =
+    Number.isFinite(Number(options.nowMs)) && options.nowMs !== undefined
+      ? Number(options.nowMs)
+      : Date.now()
+  const members = Array.isArray(options.members) ? options.members : []
+  const ownerUid = options.ownerUid || ''
+  const ownerEmail = options.ownerEmail || ''
+
+  const memberLabel = uid => {
+    if (!uid) return 'Unassigned'
+    if (ownerUid && uid === ownerUid) return ownerEmail || 'Owner'
+    const member = members.find(m => m && m.id === uid)
+    if (member) return member.email || member.name || uid
+    return 'Unassigned'
+  }
+  const memberKey = uid => {
+    if (!uid) return ''
+    if (ownerUid && uid === ownerUid) return uid
+    return members.some(m => m && m.id === uid) ? uid : ''
+  }
+
+  const emptyWindow = () => ({
+    created: 0,
+    judged: 0,
+    breached: 0,
+    responded: 0,
+    breachRate: null,
+  })
+
+  if (!enabled) {
+    return {
+      enabled: false,
+      targetHours: 0,
+      live: { breached: [], breachedCount: 0, atRiskCount: 0, oldestBreachHours: null },
+      windows: { days7: emptyWindow(), days30: emptyWindow() },
+      worstBranch: null,
+      worstRep: null,
+    }
+  }
+
+  const windowStats = days => {
+    const start = nowMs - days * DAY_MS
+    const stats = emptyWindow()
+    for (const item of list) {
+      const created = createdMs(item?.createdAt)
+      if (!Number.isFinite(created)) continue
+      if (created < start || created > nowMs) continue
+      stats.created += 1
+      const ageMs = nowMs - created
+      const pastTarget = ageMs > hours * 60 * 60 * 1000
+      const responded = item?.status !== 'new'
+      if (!pastTarget && !responded) continue
+      stats.judged += 1
+      if (!responded && pastTarget) stats.breached += 1
+    }
+    stats.responded = stats.judged - stats.breached
+    stats.breachRate =
+      stats.judged > 0
+        ? Math.round((stats.breached / stats.judged) * 100)
+        : null
+    return stats
+  }
+
+  const summary = getSlaSummary(list, hours, nowMs)
+  const breached = summary.breached.map(item => ({
+    id: item.id,
+    name: item.name || 'Unnamed inquiry',
+    service: item.service || '',
+    branch: item.branchId || 'Unassigned / no branch',
+    assigneeUid: memberKey(item.assignedTo),
+    assignee: memberLabel(item.assignedTo),
+    ageHours: item.age ?? null,
+    value: Number(item.value) || 0,
+  }))
+
+  const worstOf = keyOf => {
+    const counts = new Map()
+    for (const row of breached) {
+      const key = keyOf(row)
+      counts.set(key, (counts.get(key) || 0) + 1)
+    }
+    let worst = null
+    for (const [label, count] of counts) {
+      if (
+        !worst ||
+        count > worst.count ||
+        (count === worst.count && label.localeCompare(worst.label) < 0)
+      ) {
+        worst = { label, count }
+      }
+    }
+    return worst
+  }
+
+  return {
+    enabled: true,
+    targetHours: hours,
+    live: {
+      breached,
+      breachedCount: breached.length,
+      atRiskCount: summary.atRisk.length,
+      oldestBreachHours: summary.oldestBreachHours,
+    },
+    windows: { days7: windowStats(7), days30: windowStats(30) },
+    worstBranch: worstOf(row => row.branch),
+    worstRep: worstOf(row => row.assignee),
+  }
+}
+
 /** Load SLA targets (settings/sla doc). Default 24h, 0 = SLA off. */
 export async function loadSlaSettings(db, ownerUid) {
   if (!db || !ownerUid) return { firstResponseHours: 24 }

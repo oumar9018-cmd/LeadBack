@@ -12,7 +12,7 @@ import {
   aggregateByMember,
   summarizeInquiries,
 } from './utils/reports.js'
-import { loadSlaSettings } from './utils/sla.js'
+import { getSlaAnalytics, loadSlaSettings } from './utils/sla.js'
 import { buildDigest, formatDigestText } from './utils/digest.js'
 import './Reports.css'
 
@@ -44,6 +44,7 @@ export default function Reports() {
   const [slaHours, setSlaHours] = useState(0)
   const [copied, setCopied] = useState(false)
   const [digestNow, setDigestNow] = useState(null)
+  const [slaNow, setSlaNow] = useState(null)
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState('')
 
@@ -218,6 +219,25 @@ export default function Reports() {
         })
       : null
 
+  // SLA view: same scoped items and the workspace's real SLA target
+  // (settings/sla). The snapshot is pinned to the moment the tab is
+  // opened, like the digest. slaHours starts at 0 and loadSlaSettings
+  // resolves the real value (0 only when the workspace turned SLA
+  // off), so the tab waits for loading before claiming "off".
+  const sla =
+    view === 'sla' && slaNow !== null
+      ? getSlaAnalytics(items, slaHours, {
+          members: seedMembers,
+          ownerUid: workspace?.ownerUid,
+          ownerEmail: canManageTeam(role) ? user?.email || '' : '',
+          nowMs: slaNow,
+        })
+      : null
+  const slaRateLabel = window =>
+    !window || window.breachRate === null
+      ? '—'
+      : `${window.breachRate}%`
+
   const copyDigest = async () => {
     if (!digest) return
     const text = formatDigestText(digest, currency)
@@ -298,6 +318,18 @@ export default function Reports() {
           >
             Digest
           </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={view === 'sla'}
+            className={view === 'sla' ? 'reports-tab active' : 'reports-tab'}
+            onClick={() => {
+              setSlaNow(Date.now())
+              setView('sla')
+            }}
+          >
+            SLA
+          </button>
         </div>
 
         {role === 'sales_rep' && (
@@ -335,7 +367,7 @@ export default function Reports() {
           </div>
         </section>
 
-        {view !== 'digest' && (
+        {view !== 'digest' && view !== 'sla' && (
         <section className="reports-panel">
           <div className="reports-toolbar">
             <div>
@@ -599,6 +631,133 @@ export default function Reports() {
             <p className="reports-footnote">
               This digest is generated in-app from live data when the tab is opened —
               BackWon has no email scheduler, so nothing is sent automatically.
+            </p>
+          </>
+        )}
+
+        {view === 'sla' && (
+          <>
+            <section className="reports-panel">
+              <div className="reports-toolbar">
+                <div>
+                  <h2>SLA centre — first response</h2>
+                  <p>
+                    {slaHours > 0
+                      ? `Target: first response within ${slaHours}h of a new inquiry`
+                      : 'No first-response target is set'}
+                  </p>
+                </div>
+              </div>
+
+              {showLoading && <div className="reports-empty">Loading reports…</div>}
+
+              {!showLoading && showError && (
+                <div className="reports-empty">{showError}</div>
+              )}
+
+              {!showLoading && !showError && slaHours <= 0 && (
+                <div className="reports-empty">
+                  The first-response SLA is off for this workspace. Turn it on
+                  in Settings (SLA targets) and breaches will be tracked here.
+                </div>
+              )}
+
+              {!showLoading && !showError && sla && sla.enabled && (
+                <>
+                  <section className="reports-stats digest-stats">
+                    <div className="reports-stat">
+                      <span>Breaching now</span>
+                      <strong>{sla.live.breachedCount}</strong>
+                      <small>
+                        {sla.live.oldestBreachHours !== null
+                          ? `Oldest is ${sla.live.oldestBreachHours}h old`
+                          : 'Nothing past the target'}
+                      </small>
+                    </div>
+                    <div className="reports-stat">
+                      <span>At risk</span>
+                      <strong>{sla.live.atRiskCount}</strong>
+                      <small>Past 75% of the target, still unanswered</small>
+                    </div>
+                    <div className="reports-stat">
+                      <span>Breach rate — 7 days</span>
+                      <strong>{slaRateLabel(sla.windows.days7)}</strong>
+                      <small>
+                        {sla.windows.days7.breached} of {sla.windows.days7.judged} judged
+                        inquiries never answered in time
+                      </small>
+                    </div>
+                    <div className="reports-stat">
+                      <span>Breach rate — 30 days</span>
+                      <strong>{slaRateLabel(sla.windows.days30)}</strong>
+                      <small>
+                        {sla.windows.days30.breached} of {sla.windows.days30.judged} judged
+                        inquiries never answered in time
+                      </small>
+                    </div>
+                  </section>
+
+                  {(sla.worstBranch || sla.worstRep) && (
+                    <div className="digest-highlights">
+                      {sla.worstBranch && (
+                        <p>
+                          Most breaches by branch: <strong>{sla.worstBranch.label}</strong> —{' '}
+                          {sla.worstBranch.count} breaching now
+                        </p>
+                      )}
+                      {sla.worstRep && (
+                        <p>
+                          Most breaches by person: <strong>{sla.worstRep.label}</strong> —{' '}
+                          {sla.worstRep.count} breaching now
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  {sla.live.breached.length === 0 ? (
+                    <div className="reports-empty">
+                      No SLA breaches right now — every new inquiry is inside
+                      the {sla.targetHours}h target.
+                    </div>
+                  ) : (
+                    <div className="reports-table-wrap">
+                      <table className="reports-table">
+                        <thead>
+                          <tr>
+                            <th>Customer</th>
+                            <th>Service</th>
+                            <th>Branch</th>
+                            <th>Assigned to</th>
+                            <th>Age</th>
+                            <th>Value</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {sla.live.breached.map(row => (
+                            <tr key={row.id}>
+                              <td><strong>{row.name}</strong></td>
+                              <td>{row.service || '—'}</td>
+                              <td>{row.branch}</td>
+                              <td>{row.assignee}</td>
+                              <td>{row.ageHours !== null ? `${row.ageHours}h` : '—'}</td>
+                              <td>{formatMoney(row.value, currency)}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </>
+              )}
+            </section>
+
+            <p className="reports-footnote">
+              The 7/30-day windows count inquiries created in that period. An
+              inquiry counts as breached only while it is still unanswered past
+              the target; BackWon does not record a first-response time, so an
+              inquiry answered late cannot be told apart from one answered on
+              time — answered inquiries count as responded, and the rate is
+              breaches ÷ inquiries old enough to judge, never a guess.
             </p>
           </>
         )}

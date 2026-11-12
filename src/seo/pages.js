@@ -88,15 +88,15 @@ const features = {
   navLabel: 'Features',
   title: 'BackWon Features — One-Tap WhatsApp Follow-ups & Voice Notes',
   description:
-    'Explore BackWon features: one-tap WhatsApp follow-ups, voice-note win-backs, follow-up sequences, booking links, recovery analytics and unlimited seats.',
+    'Explore BackWon features: one-tap WhatsApp follow-ups, voice-note win-backs, follow-up sequences, booking links, recovery analytics, SLA breach tracking, workflow automations and unlimited seats.',
   keywords:
-    'WhatsApp follow up tool, voice note follow up, missed call recovery, follow up sequence software, booking link generator, customer win back features, unlimited team seats free, role based access, round robin lead routing, webhooks api, bulk csv import, activity log, branch reports, team scorecards, data export, csv export',
+    'WhatsApp follow up tool, voice note follow up, missed call recovery, follow up sequence software, booking link generator, customer win back features, unlimited team seats free, role based access, round robin lead routing, webhooks api, bulk csv import, activity log, branch reports, team scorecards, data export, csv export, sla breach tracking, workflow automation rules, blitz follow up sequence, offer ladder',
   eyebrow: 'FEATURES',
   heading: 'Every feature has one job: getting the customer back.',
   intro:
     'BackWon is deliberately narrow. It does the work that decides whether an interested customer becomes a paying one — and it leaves the rest alone.',
   stats: [
-    { value: '16', label: 'Features included' },
+    { value: '20', label: 'Features included' },
     { value: '0', label: 'Spreadsheets required' },
     { value: 'Free', label: 'Forever' },
   ],
@@ -181,6 +181,26 @@ const features = {
       title: 'Activity log',
       text: 'Every invite, role change, assignment and removal is time-stamped with who did it, so the business always has a clear record.',
     },
+    {
+      icon: 'clock',
+      title: 'SLA centre',
+      text: 'Set a first-response target in hours, then see — live, in Reports — every new inquiry that has passed it unanswered, the ones closing in on it, and the breach rate over the last 7 and 30 days, including which branch and which person has the most breaches. BackWon does not record a first-response time, so the rate counts inquiries still waiting past the target rather than guessing about late answers.',
+    },
+    {
+      icon: 'refresh',
+      title: 'Workflow automations',
+      text: 'Time-based rules you switch on yourself (off by default): when a new inquiry waits too long, an inquiry goes stale, or the SLA is breached, a workflow can assign it to the branch manager or a team member, create a follow-up task for today, or flag it as priority. Workflows run when an owner, admin or branch manager opens the app, act on an inquiry at most once until there is new activity on it, and are written to the activity log. Nothing is ever sent to customers automatically.',
+    },
+    {
+      icon: 'zap',
+      title: 'Blitz 3-touch sequences',
+      text: 'On an inquiry that has gone quiet for 30 days or more, one click starts a rapid 3-touch sequence — today, in 2 days and in 5 days. Each touch lands in your follow-up queue on its day with the WhatsApp message ready, and you send it yourself, like every BackWon follow-up.',
+    },
+    {
+      icon: 'layers',
+      title: 'Offer ladder checklist',
+      text: 'A 3-step win-back checklist on each inquiry: write the first small offer, the stronger second one and your best final offer, and tick each off as you make it — so the team can see what has already been tried on a customer before offering more.',
+    },
   ],
   faq: [
     {
@@ -218,6 +238,22 @@ const features = {
     {
       q: 'Can BackWon receive leads automatically from my website or other tools?',
       a: 'Yes. Webhooks and the API connect Shopify, Meta leads, IndiaMART or any website form — each website uses its own bearer token, and leads are deduplicated by source and external ID so a retried delivery does not create a second inquiry. See the Integrations page for how each source connects.',
+    },
+    {
+      q: 'Can I track whether my team replies to new inquiries fast enough?',
+      a: 'Yes. Set a first-response target in hours in Settings, and the SLA centre in Reports shows every new inquiry still unanswered past that target, the ones at risk of breaching, and the breach rate for the last 7 and 30 days — including the branch and the person with the most breaches. One honest limit: BackWon does not record a first-response time, so the rate counts inquiries still waiting past the target; an inquiry that was answered late counts as answered, not as a breach.',
+    },
+    {
+      q: 'Can BackWon assign or chase inquiries automatically?',
+      a: 'Yes, with workflow automations — and they are off until you switch them on. A workflow pairs a time-based trigger (a new inquiry waiting too long, an inquiry going stale, or an SLA breach) with one action: assign to the branch manager or a team member, create a follow-up task for today, or flag the inquiry as priority. Workflows run when an owner, admin or branch manager opens the app, act at most once per inquiry until there is new activity on it, and every action is recorded in the activity log. They never send anything to customers. Separately, rules can act the moment an inquiry is created — for example assigning it by service or source.',
+    },
+    {
+      q: 'What is a blitz sequence?',
+      a: 'A blitz is a rapid 3-touch follow-up sequence for one stale inquiry — one that has had no activity for 30 days or more. One click schedules touches for today, in 2 days and in 5 days; each appears in your follow-up queue on its day with the WhatsApp message ready, and you send it yourself. Only one blitz can run on an inquiry at a time.',
+    },
+    {
+      q: 'How does the offer ladder work?',
+      a: 'Each open inquiry carries a 3-step offer ladder checklist: a first small offer, a stronger second offer and your best final offer. Your team writes each offer on the inquiry and ticks it off as it is made, so nobody repeats an offer that already failed or jumps straight to the biggest discount.',
     },
   ],
 }

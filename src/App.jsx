@@ -33,6 +33,9 @@ import { ROUTER_BASENAME } from './basePath.js'
 import { ROUTED_SEO_PAGES } from './seo/pages.js'
 import WhatsAppActions from './components/WhatsAppActions.jsx'
 import DripSequences from './components/DripSequences.jsx'
+import BlitzSequence from './components/BlitzSequence.jsx'
+import OfferLadder from './components/OfferLadder.jsx'
+import { ladderProgress } from './utils/ladder.js'
 import SmartComposer from './components/SmartComposer.jsx'
 import ForecastWidget from './components/ForecastWidget.jsx'
 import VoiceInput from './components/VoiceInput.jsx'
@@ -1952,6 +1955,22 @@ function Dashboard() {
               }}
             />
 
+            <BlitzSequence
+              inquiry={detailInquiry}
+              onStart={(steps) => {
+                // Blitz touches ride the drip machinery: merge them
+                // into the inquiry's dripSteps (never wiping a
+                // hand-built drip) so due touches surface in the
+                // Follow-ups queue like any other drip step.
+                const dripSteps = [...(detailInquiry.dripSteps || []), ...steps]
+                const updated = { ...detailInquiry, dripSteps }
+                setItems(prev => prev.map(item => String(item.id) === String(detailInquiry.id) ? updated : item))
+                setSelectedInquiry(updated)
+                persistInquiry(detailInquiry.id, { dripSteps })
+                logActivity(detailInquiry.id, 'Blitz sequence started (3 touches: today, +2 days, +5 days)')
+              }}
+            />
+
             <DripSequences
               inquiry={detailInquiry}
               businessName={businessName}
@@ -1974,6 +1993,23 @@ function Dashboard() {
                 logActivity(detailInquiry.id, `Drip sequence saved (${steps.length} steps)`)
               }}
             />
+
+            {['new', 'followup', 'replied'].includes(detailInquiry.status) && (
+              <OfferLadder
+                inquiry={detailInquiry}
+                onSave={(ladder) => {
+                  const before = ladderProgress(detailInquiry.offerLadder).done
+                  const after = ladderProgress(ladder).done
+                  const updated = { ...detailInquiry, offerLadder: ladder }
+                  setItems(prev => prev.map(item => String(item.id) === String(detailInquiry.id) ? updated : item))
+                  setSelectedInquiry(updated)
+                  persistInquiry(detailInquiry.id, { offerLadder: ladder })
+                  if (after !== before) {
+                    logActivity(detailInquiry.id, `Offer ladder: ${after} of 3 steps done`)
+                  }
+                }}
+              />
+            )}
 
             {detailInquiry.followupHistory?.length > 0 && (
               <div className="followup-history">

@@ -1,0 +1,83 @@
+/* BackWon offer ladder checklist (detail panel) — drip visual language */
+
+.offer-ladder {
+  border-top: 1px solid #edf0f4;
+  padding-top: 24px;
+  margin-top: 8px;
+}
+
+.offer-ladder-heading h3 {
+  margin: 6px 0 4px;
+  font-size: 17px;
+  color: #111827;
+}
+
+.offer-ladder-heading p {
+  margin: 0 0 18px;
+  font-size: 13.5px;
+  color: #6b7280;
+  line-height: 1.6;
+}
+
+.offer-ladder-heading p svg {
+  color: #16a34a;
+  vertical-align: -2px;
+}
+
+.offer-ladder-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.offer-ladder-step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.offer-ladder-step.done {
+  background: #f9fafb;
+}
+
+.offer-ladder-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  color: #374151;
+  white-space: nowrap;
+}
+
+.offer-ladder-toggle input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #2563EB;
+  cursor: pointer;
+}
+
+.offer-ladder-input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: inherit;
+  background: #fff;
+  outline: none;
+}
+
+.offer-ladder-input:focus {
+  border-color: #2563EB;
+}
+
+.offer-ladder-step.done .offer-ladder-input {
+  color: #6b7280;
+}

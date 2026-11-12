@@ -10,6 +10,10 @@ import {
   evaluateEscalations,
 } from '../utils/escalation.js'
 import { loadSlaSettings } from '../utils/sla.js'
+import {
+  loadWorkflowSettings,
+  evaluateWorkflows,
+} from '../utils/workflows.js'
 import { lastActivityMs } from '../utils/graveyard.js'
 import { logAudit } from '../utils/audit.js'
 
@@ -19,6 +23,8 @@ import { logAudit } from '../utils/audit.js'
  *   1. Auto-reschedule of missed follow-ups (settings/automation).
  *   2. Auto-escalation of overdue / SLA-breached inquiries
  *      (settings/escalation, opt-in and off by default).
+ *   3. Workflow automations — time-based trigger → action rules
+ *      (settings/workflows, opt-in and off by default).
  *
  * It renders nothing and runs ONCE per mounted workspace (guard
  * keyed `${ownerUid}:${role}`), only for owner/admin/branch_manager
@@ -61,6 +67,7 @@ export default function AutomationSweep() {
         autoRescheduleMax: 3,
       }
       let escalationConfig = null
+      let workflowSettings = null
       let slaHours = 24
 
       // ---- Load (scoped exactly like Reports.jsx) ----
@@ -100,10 +107,12 @@ export default function AutomationSweep() {
       }
 
       try {
-        ;[automationDefaults, escalationConfig] = await Promise.all([
-          loadAutomationDefaults(db, ownerUid),
-          loadEscalationSettings(db, ownerUid),
-        ])
+        ;[automationDefaults, escalationConfig, workflowSettings] =
+          await Promise.all([
+            loadAutomationDefaults(db, ownerUid),
+            loadEscalationSettings(db, ownerUid),
+            loadWorkflowSettings(db, ownerUid),
+          ])
         const slaSettings = await loadSlaSettings(db, ownerUid)
         slaHours = slaSettings.firstResponseHours
       } catch (error) {
@@ -168,19 +177,23 @@ export default function AutomationSweep() {
       if (cancelled) return
 
       // ---- 2. Escalations against the locally updated copies ----
-      if (!escalationConfig) return
       let actions = []
-      try {
-        actions = evaluateEscalations(localItems, {
-          config: escalationConfig,
-          members,
-          ownerUid,
-          slaHours,
-          nowMs,
-        })
-      } catch (error) {
-        console.error('Automation sweep escalation evaluation failed:', error)
-        return
+      if (escalationConfig) {
+        try {
+          actions = evaluateEscalations(localItems, {
+            config: escalationConfig,
+            members,
+            ownerUid,
+            slaHours,
+            nowMs,
+          })
+        } catch (error) {
+          console.error(
+            'Automation sweep escalation evaluation failed:',
+            error
+          )
+          actions = []
+        }
       }
 
       for (const action of actions) {
@@ -219,6 +232,81 @@ export default function AutomationSweep() {
             action.inquiryId,
             error
           )
+        }
+      }
+      if (cancelled) return
+
+      // ---- 3. Workflow automations (opt-in, off by default) ----
+      if (workflowSettings) {
+        let workflowActions = []
+        try {
+          workflowActions = evaluateWorkflows(localItems, workflowSettings, {
+            members,
+            ownerUid,
+            slaHours,
+            nowMs,
+          })
+        } catch (error) {
+          console.error(
+            'Automation sweep workflow evaluation failed:',
+            error
+          )
+          workflowActions = []
+        }
+
+        for (const action of workflowActions) {
+          if (cancelled) return
+          try {
+            const item = localItems.find(
+              entry => String(entry.id) === String(action.inquiryId)
+            )
+            if (!item) continue
+            const patch = {
+              workflowFired: action.firedPatch,
+              ...(action.patch || {}),
+              ...(action.targetUid
+                ? { assignedTo: action.targetUid }
+                : {}),
+              ...(action.followup
+                ? { followup: action.followup, status: action.status }
+                : {}),
+            }
+            if (action.historyEntry) {
+              patch.followupHistory = FieldValue?.arrayUnion
+                ? FieldValue.arrayUnion(action.historyEntry)
+                : [
+                    ...(item.followupHistory || []),
+                    action.historyEntry,
+                  ]
+            }
+            await inquiryRef(action.inquiryId).set(patch, { merge: true })
+
+            if (action.targetUid) {
+              await logAudit(ownerUid, {
+                action: 'inquiry_assigned',
+                inquiryId: action.inquiryId,
+                detail: `Workflow "${action.ruleName}" assigned to ${action.targetLabel}`,
+              })
+            } else if (action.followup) {
+              await logAudit(ownerUid, {
+                action: 'task_created',
+                inquiryId: action.inquiryId,
+                detail: `Workflow "${action.ruleName}" created a follow-up for ${action.followup.date}`,
+              })
+            } else {
+              await logAudit(ownerUid, {
+                action: 'rule_applied',
+                inquiryId: action.inquiryId,
+                detail: `Workflow "${action.ruleName}" flagged as priority`,
+              })
+            }
+          } catch (error) {
+            console.error(
+              'Automation sweep workflow action failed:',
+              action.inquiryId,
+              error
+            )
+          }
         }
       }
     })()

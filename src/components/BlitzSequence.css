@@ -1,0 +1,56 @@
+/* BackWon blitz sequence (detail panel) — drip visual language */
+
+.blitz-seq {
+  border-top: 1px solid #edf0f4;
+  padding-top: 24px;
+  margin-top: 8px;
+}
+
+.blitz-seq-heading h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 6px 0 4px;
+  font-size: 17px;
+  color: #111827;
+}
+
+.blitz-seq-heading h3 svg {
+  color: #2563EB;
+}
+
+.blitz-seq-heading p {
+  margin: 0 0 18px;
+  font-size: 13.5px;
+  color: #6b7280;
+  line-height: 1.6;
+}
+
+.blitz-seq-actions {
+  margin-bottom: 12px;
+}
+
+.blitz-seq-actions .save-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.blitz-seq-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13.5px;
+  color: #16a34a;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.blitz-seq-note svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
