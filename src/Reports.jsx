@@ -12,6 +12,8 @@ import {
   aggregateByMember,
   summarizeInquiries,
 } from './utils/reports.js'
+import { loadSlaSettings } from './utils/sla.js'
+import { buildDigest, formatDigestText } from './utils/digest.js'
 import './Reports.css'
 
 /**
@@ -39,6 +41,9 @@ export default function Reports() {
   const [members, setMembers] = useState([])
   const [branches, setBranches] = useState([])
   const [currency, setCurrency] = useState(() => defaultCurrencyForBrowser())
+  const [slaHours, setSlaHours] = useState(0)
+  const [copied, setCopied] = useState(false)
+  const [digestNow, setDigestNow] = useState(null)
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState('')
 
@@ -108,6 +113,16 @@ export default function Reports() {
         }
       } catch (error) {
         console.error('Reports branches load failed:', error)
+      }
+
+      // SLA target for the Digest tab (settings/sla doc). 0 = SLA
+      // off, so no breaches are claimed until the real setting is
+      // known; loadSlaSettings itself falls back to its default.
+      try {
+        const sla = await loadSlaSettings(db, workspace.ownerUid)
+        if (!cancelled) setSlaHours(sla.firstResponseHours)
+      } catch (error) {
+        console.error('Reports SLA settings load failed:', error)
       }
 
       try {
@@ -183,8 +198,57 @@ export default function Reports() {
     teamRows = teamRows.filter(row => row.memberId === myUid)
   }
 
-  const rows = view === 'branches' ? branchRows : teamRows
+  const rows =
+    view === 'branches' ? branchRows : view === 'team' ? teamRows : []
   const rateLabel = rate => (rate === null ? '—' : `${rate}%`)
+
+  // Digest view: every figure is computed from the same scoped
+  // items the other tabs use — rep/manager scoping already applied
+  // at load, so the digest inherits it. The "as of" timestamp is
+  // captured when the tab is opened (see the tab onClick), so the
+  // digest is a stable snapshot for that viewing, not a moving
+  // render-time value.
+  const digest =
+    view === 'digest' && digestNow !== null
+      ? buildDigest(items, {
+          members: seedMembers,
+          branches,
+          slaHours,
+          nowMs: digestNow,
+        })
+      : null
+
+  const copyDigest = async () => {
+    if (!digest) return
+    const text = formatDigestText(digest, currency)
+    let ok = false
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text)
+        ok = true
+      }
+    } catch (error) {
+      console.error('Digest clipboard write failed:', error)
+    }
+    if (!ok) {
+      try {
+        const textarea = document.createElement('textarea')
+        textarea.value = text
+        textarea.style.position = 'fixed'
+        textarea.style.opacity = '0'
+        document.body.appendChild(textarea)
+        textarea.select()
+        ok = document.execCommand('copy')
+        document.body.removeChild(textarea)
+      } catch (error) {
+        console.error('Digest copy fallback failed:', error)
+      }
+    }
+    if (ok) {
+      setCopied(true)
+      window.setTimeout(() => setCopied(false), 2000)
+    }
+  }
 
   return (
     <div className="reports-page">
@@ -221,6 +285,18 @@ export default function Reports() {
             onClick={() => setView('team')}
           >
             Team
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={view === 'digest'}
+            className={view === 'digest' ? 'reports-tab active' : 'reports-tab'}
+            onClick={() => {
+              setDigestNow(Date.now())
+              setView('digest')
+            }}
+          >
+            Digest
           </button>
         </div>
 
@@ -259,6 +335,7 @@ export default function Reports() {
           </div>
         </section>
 
+        {view !== 'digest' && (
         <section className="reports-panel">
           <div className="reports-toolbar">
             <div>
@@ -352,6 +429,179 @@ export default function Reports() {
             </div>
           )}
         </section>
+        )}
+
+        {view === 'digest' && digest && (
+          <>
+            <section className="reports-panel digest-panel">
+              <div className="reports-toolbar">
+                <div>
+                  <h2>Manager digest</h2>
+                  <p>For {digest.generatedForDate}</p>
+                </div>
+                <button
+                  type="button"
+                  className="primary-button"
+                  onClick={copyDigest}
+                  disabled={showLoading || !!showError}
+                >
+                  {copied ? 'Copied' : 'Copy summary'}
+                </button>
+              </div>
+
+              {showLoading && <div className="reports-empty">Loading reports…</div>}
+
+              {!showLoading && showError && (
+                <div className="reports-empty">{showError}</div>
+              )}
+
+              {!showLoading && !showError && (
+                <>
+                  <section className="reports-stats digest-stats">
+                    <div className="reports-stat">
+                      <span>New inquiries (7 days)</span>
+                      <strong>{digest.newLast7Days}</strong>
+                      <small>Created in the last 7 days</small>
+                    </div>
+                    <div className="reports-stat">
+                      <span>Recovered</span>
+                      <strong>{digest.totals.recovered}</strong>
+                      <small>{formatMoney(digest.totals.recoveredRevenue, currency)} recovered revenue</small>
+                    </div>
+                    <div className="reports-stat">
+                      <span>Follow-ups due today</span>
+                      <strong>{digest.dueToday.count}</strong>
+                      <small>Open inquiries due today</small>
+                    </div>
+                    <div className="reports-stat">
+                      <span>Overdue follow-ups</span>
+                      <strong>{digest.overdue.count}</strong>
+                      <small>{formatMoney(digest.overdue.totalValue, currency)} in overdue value</small>
+                    </div>
+                    <div className="reports-stat">
+                      <span>SLA breaches</span>
+                      <strong>{digest.slaBreaches.count}</strong>
+                      <small>{slaHours > 0 ? `First response target ${slaHours}h` : 'SLA is off'}</small>
+                    </div>
+                    <div className="reports-stat">
+                      <span>Unassigned open</span>
+                      <strong>{digest.unassigned.count}</strong>
+                      <small>{formatMoney(digest.unassigned.value, currency)} in open value</small>
+                    </div>
+                    <div className="reports-stat">
+                      <span>Escalated</span>
+                      <strong>{digest.escalated.count}</strong>
+                      <small>Open inquiries escalated</small>
+                    </div>
+                  </section>
+
+                  {(digest.topBranch || digest.topRep) && (
+                    <div className="digest-highlights">
+                      {digest.topBranch && (
+                        <p>
+                          Top branch: <strong>{digest.topBranch.branch}</strong> —{' '}
+                          {formatMoney(digest.topBranch.recoveredRevenue, currency)} recovered
+                          ({digest.topBranch.recovered} recovered)
+                        </p>
+                      )}
+                      {digest.topRep && (
+                        <p>
+                          Top rep: <strong>{digest.topRep.name}</strong> —{' '}
+                          {formatMoney(digest.topRep.recoveredRevenue, currency)} recovered
+                          ({digest.topRep.recovered} recovered)
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="digest-lists">
+                    <div className="digest-list">
+                      <h3>Due today</h3>
+                      {digest.dueToday.top.length === 0 ? (
+                        <p className="digest-empty">No follow-ups due today.</p>
+                      ) : (
+                        <ul>
+                          {digest.dueToday.top.map((row, index) => (
+                            <li key={`${row.name}-${index}`}>
+                              <span>{row.name}</span>
+                              <strong>{formatMoney(row.value, currency)}</strong>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+
+                    <div className="digest-list">
+                      <h3>Overdue follow-ups</h3>
+                      {digest.overdue.top.length === 0 ? (
+                        <p className="digest-empty">Nothing overdue — the queue is clean.</p>
+                      ) : (
+                        <ul>
+                          {digest.overdue.top.map((row, index) => (
+                            <li key={`${row.name}-${index}`}>
+                              <span>{row.name}</span>
+                              <strong>
+                                {formatMoney(row.value, currency)} · {row.daysOverdue}d overdue
+                              </strong>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+
+                    <div className="digest-list">
+                      <h3>SLA breaches</h3>
+                      {digest.slaBreaches.top.length === 0 ? (
+                        <p className="digest-empty">No SLA breaches right now.</p>
+                      ) : (
+                        <ul>
+                          {digest.slaBreaches.top.map((row, index) => (
+                            <li key={`${row.name}-${index}`}>
+                              <span>{row.name}</span>
+                              <strong>{row.ageHours}h old</strong>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+
+                    <div className="digest-list">
+                      <h3>Unassigned</h3>
+                      {digest.unassigned.count === 0 ? (
+                        <p className="digest-empty">No unassigned open inquiries — everything open has an owner.</p>
+                      ) : (
+                        <p className="digest-empty">
+                          {digest.unassigned.count} open {digest.unassigned.count === 1 ? 'inquiry' : 'inquiries'} worth{' '}
+                          {formatMoney(digest.unassigned.value, currency)} have no assignee yet.
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="digest-list">
+                      <h3>Escalated</h3>
+                      {digest.escalated.names.length === 0 ? (
+                        <p className="digest-empty">Nothing escalated right now.</p>
+                      ) : (
+                        <ul>
+                          {digest.escalated.names.map((name, index) => (
+                            <li key={`${name}-${index}`}>
+                              <span>{name}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  </div>
+                </>
+              )}
+            </section>
+
+            <p className="reports-footnote">
+              This digest is generated in-app from live data when the tab is opened —
+              BackWon has no email scheduler, so nothing is sent automatically.
+            </p>
+          </>
+        )}
 
         <p className="reports-footnote">
           Recovery rate counts closed inquiries only (recovered ÷ recovered + lost) —

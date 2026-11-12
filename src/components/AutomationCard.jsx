@@ -14,6 +14,8 @@ import { loadAutomationDefaults } from '../utils/automation.js'
 export default function AutomationCard() {
   const { workspace, loading: wsLoading } = useWorkspace()
   const [days, setDays] = useState(0)
+  const [rescheduleDays, setRescheduleDays] = useState(0)
+  const [rescheduleMax, setRescheduleMax] = useState(3)
   const [error, setError] = useState('')
   const [saved, setSaved] = useState(false)
 
@@ -35,7 +37,11 @@ export default function AutomationCard() {
     if (!db) return undefined
     let cancelled = false
     loadAutomationDefaults(db, workspace.ownerUid).then(defaults => {
-      if (!cancelled) setDays(defaults.autoFollowupDays)
+      if (!cancelled) {
+        setDays(defaults.autoFollowupDays)
+        setRescheduleDays(defaults.autoRescheduleDays ?? 0)
+        setRescheduleMax(defaults.autoRescheduleMax ?? 3)
+      }
     })
     return () => {
       cancelled = true
@@ -51,8 +57,29 @@ export default function AutomationCard() {
       setError('Days must be a whole number from 0 to 30.')
       return
     }
+    const rescheduleValue = Number(rescheduleDays)
+    if (
+      !Number.isInteger(rescheduleValue) ||
+      rescheduleValue < 0 ||
+      rescheduleValue > 14
+    ) {
+      setError('Auto-reschedule days must be a whole number from 0 to 14 (0 = off).')
+      return
+    }
+    const maxValue = Number(rescheduleMax)
+    if (!Number.isInteger(maxValue) || maxValue < 1 || maxValue > 10) {
+      setError('Auto-reschedule max must be a whole number from 1 to 10.')
+      return
+    }
     try {
-      await automationRef().set({ autoFollowupDays: value }, { merge: true })
+      await automationRef().set(
+        {
+          autoFollowupDays: value,
+          autoRescheduleDays: rescheduleValue,
+          autoRescheduleMax: maxValue,
+        },
+        { merge: true }
+      )
       setSaved(true)
     } catch (err) {
       console.error('Automation defaults save failed:', err)
@@ -70,7 +97,10 @@ export default function AutomationCard() {
             New inquiries with no rule-scheduled follow-up automatically
             get one after this many days (10:00 AM). Rules always win:
             if a rule already scheduled a follow-up, this default does
-            nothing. Set 0 to turn it off.
+            nothing. Set 0 to turn it off. Missed follow-ups can also be
+            auto-rescheduled: when the sweep runs, a follow-up whose
+            date has passed is moved forward by the reschedule days
+            below, up to the max number of times per inquiry.
           </p>
         </div>
       </div>
@@ -88,6 +118,26 @@ export default function AutomationCard() {
                 onChange={e => setDays(e.target.value)}
               />
             </label>
+            <label>
+              <span>Auto-reschedule missed follow-ups after (days, 0 = off)</span>
+              <input
+                type="number"
+                min="0"
+                max="14"
+                value={rescheduleDays}
+                onChange={e => setRescheduleDays(e.target.value)}
+              />
+            </label>
+            <label>
+              <span>Auto-reschedule max times per inquiry (1–10)</span>
+              <input
+                type="number"
+                min="1"
+                max="10"
+                value={rescheduleMax}
+                onChange={e => setRescheduleMax(e.target.value)}
+              />
+            </label>
           </div>
           {error && <div className="form-error">{error}</div>}
           {saved && <p>Saved.</p>}
@@ -98,7 +148,11 @@ export default function AutomationCard() {
       ) : (
         <p>
           Auto follow-up: {days === 0 ? 'off' : `after ${days} days`}.
-          Only owners and admins can change automation defaults.
+          Auto-reschedule:{' '}
+          {rescheduleDays === 0
+            ? 'off'
+            : `missed follow-ups moved ${rescheduleDays} days forward, up to ${rescheduleMax} times per inquiry`}
+          . Only owners and admins can change automation defaults.
         </p>
       )}
     </section>

@@ -17,7 +17,7 @@ export const SITE = {
   /** Fallback title/description (also the defaults baked into index.html). */
   title: 'BackWon — Win Back Every Customer You Almost Lost',
   description:
-    'BackWon helps businesses of every size — from local shops to large sales teams — win back missed calls and cold inquiries with one-tap WhatsApp follow-ups, personal voice notes, and structured follow-up sequences.',
+    'BackWon helps businesses of every size win back missed calls and cold inquiries with one-tap WhatsApp follow-ups, personal voice notes, branch and team reporting, and CSV data export.',
 
   /** Absolute path (from the site root) of the social share image. */
   ogImage: '/og-image.png',

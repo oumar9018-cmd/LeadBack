@@ -11,6 +11,7 @@ import { canManageTeam, canViewSettings, roleLabel } from './utils/workspace.js'
 import { logAudit } from './utils/audit.js'
 import { useWorkspace } from './components/WorkspaceContext.jsx'
 import AppLoading from './components/AppLoading.jsx'
+import AutomationSweep from './components/AutomationSweep.jsx'
 import {
   IconMessage,
   IconClock,
@@ -431,7 +432,10 @@ export default function AppLayout() {
         {wsLoading ? (
           <AppLoading />
         ) : workspace ? (
-          <Outlet />
+          <>
+            <AutomationSweep />
+            <Outlet />
+          </>
         ) : (
           <AppLoading
             title="Couldn't load your workspace"

@@ -7,6 +7,7 @@ import CustomFieldsCard from './components/CustomFieldsCard.jsx'
 import RulesCard from './components/RulesCard.jsx'
 import AutomationCard from './components/AutomationCard.jsx'
 import SlaCard from './components/SlaCard.jsx'
+import EscalationCard from './components/EscalationCard.jsx'
 import { CURRENCIES, defaultCurrencyForBrowser } from './utils/money.js'
 
 const defaultSettings = {
@@ -456,6 +457,9 @@ export default function Settings() {
 
           {/* #8 — SLA targets: first-response target for new inquiries. */}
           <SlaCard />
+
+          {/* Auto-escalation: opt-in flagging/reassignment of overdue work. */}
+          <EscalationCard />
 
           <section className="settings-card settings-account-card">
             <div>

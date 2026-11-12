@@ -241,3 +241,116 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Manager Digest tab (Round 2) — appended only; the rules above are
+ * untouched. Same tokens as the rest of the page: #2563eb primary,
+ * #e5eaf0 hairlines, 14px cards, #f7f9fc-adjacent neutrals. */
+
+.digest-panel {
+  padding-bottom: 24px;
+}
+
+.digest-stats {
+  grid-template-columns: repeat(4, 1fr);
+  padding: 24px 24px 0;
+  margin-bottom: 18px;
+}
+
+.digest-highlights {
+  padding: 0 24px;
+  margin-bottom: 18px;
+}
+
+.digest-highlights p {
+  margin: 0 0 6px;
+  color: #334155;
+  font-size: 13px;
+}
+
+.digest-highlights p:last-child {
+  margin-bottom: 0;
+}
+
+.digest-highlights strong {
+  color: #172033;
+}
+
+.digest-lists {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  padding: 0 24px;
+}
+
+.digest-list {
+  padding: 18px 20px;
+  border: 1px solid #e5eaf0;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 4px 15px rgba(23, 32, 51, 0.03);
+}
+
+.digest-list h3 {
+  margin: 0 0 12px;
+  color: #172033;
+  font-size: 14px;
+}
+
+.digest-list ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.digest-list li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 0;
+  border-bottom: 1px solid #f1f5f9;
+  color: #334155;
+  font-size: 13px;
+}
+
+.digest-list li:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.digest-list li strong {
+  color: #172033;
+  white-space: nowrap;
+}
+
+.digest-empty {
+  margin: 0;
+  color: #8994a4;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+@media (max-width: 900px) {
+  .digest-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .digest-lists {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 620px) {
+  .digest-stats {
+    grid-template-columns: 1fr;
+    padding: 18px 16px 0;
+  }
+
+  .digest-highlights {
+    padding: 0 16px;
+  }
+
+  .digest-lists {
+    padding: 0 16px;
+  }
+}

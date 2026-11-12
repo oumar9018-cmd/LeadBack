@@ -65,6 +65,16 @@ const features = [
     title: 'See revenue come back',
     text: 'Know exactly which conversations turned into paying customers — and how much revenue your follow-ups recovered.',
   },
+  {
+    icon: 'trend',
+    title: 'Compare branches & team performance',
+    text: 'See per-branch recovery rates and recovered revenue, plus a scorecard for every team member — each person only sees the scope their role allows.',
+  },
+  {
+    icon: 'shield',
+    title: 'Take your data with you',
+    text: 'Owners and admins can download inquiries, customers and the audit log as CSV from the Export Center — your records are yours to keep.',
+  },
 ]
 
 const steps = [
@@ -128,6 +138,14 @@ const faqs = [
   {
     q: 'Which businesses is BackWon for?',
     a: 'Any business where one customer is worth real money — local shops like salons, spas, auto repair, clinics, coaching centers, photographers, home services and fitness studios, and larger teams that handle customer inquiries every day.',
+  },
+  {
+    q: 'Can I compare branches and see how each team member is doing?',
+    a: 'Yes. Reports shows per-branch totals, recovery rates and recovered revenue, plus per-person scorecards — and each role only sees its own scope: reps their own inquiries, branch managers their branch, owners and admins everything.',
+  },
+  {
+    q: 'Can I export my data?',
+    a: 'Yes. Owners and admins can download inquiries, customers and the audit log as CSV from the Export Center, with row counts shown before download.',
   },
 ]
 
@@ -439,6 +457,7 @@ function App() {
                       {feature.icon === 'message' && <IconMessage width={24} height={24} />}
                       {feature.icon === 'mic' && <IconMic width={24} height={24} />}
                       {feature.icon === 'trend' && <IconTrendUp width={24} height={24} />}
+                      {feature.icon === 'shield' && <IconShield width={24} height={24} />}
                     </div>
                     <h3>{feature.title}</h3>
                     <p>{feature.text}</p>

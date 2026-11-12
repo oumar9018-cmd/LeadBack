@@ -67,6 +67,14 @@ const home = {
       q: 'Do I need to connect my phone or Instagram?',
       a: 'No. You log inquiries manually with their source, so it works across calls, WhatsApp, Instagram and walk-ins without any integration.',
     },
+    {
+      q: 'Can I compare branches and see how each team member is doing?',
+      a: 'Yes. Reports shows per-branch totals, recovery rates and recovered revenue, plus per-person scorecards — and each role only sees its own scope: reps their own inquiries, branch managers their branch, owners and admins everything.',
+    },
+    {
+      q: 'Can I export my data?',
+      a: 'Yes. Owners and admins can download inquiries, customers and the audit log as CSV from the Export Center, with row counts shown before download.',
+    },
   ],
 }
 
@@ -82,13 +90,13 @@ const features = {
   description:
     'Explore BackWon features: one-tap WhatsApp follow-ups, voice-note win-backs, follow-up sequences, booking links, recovery analytics and unlimited seats.',
   keywords:
-    'WhatsApp follow up tool, voice note follow up, missed call recovery, follow up sequence software, booking link generator, customer win back features, unlimited team seats free, role based access, round robin lead routing, webhooks api, bulk csv import, activity log',
+    'WhatsApp follow up tool, voice note follow up, missed call recovery, follow up sequence software, booking link generator, customer win back features, unlimited team seats free, role based access, round robin lead routing, webhooks api, bulk csv import, activity log, branch reports, team scorecards, data export, csv export',
   eyebrow: 'FEATURES',
   heading: 'Every feature has one job: getting the customer back.',
   intro:
     'BackWon is deliberately narrow. It does the work that decides whether an interested customer becomes a paying one — and it leaves the rest alone.',
   stats: [
-    { value: '14', label: 'Features included' },
+    { value: '16', label: 'Features included' },
     { value: '0', label: 'Spreadsheets required' },
     { value: 'Free', label: 'Forever' },
   ],
@@ -126,7 +134,12 @@ const features = {
     {
       icon: 'layers',
       title: 'Built-in reporting',
-      text: 'Prebuilt views for inquiries, follow-ups and revenue — no report builder, no configuration project, no consultant.',
+      text: 'Ready-made views of your inquiry pipeline, follow-up queue and recovered revenue, alongside the recovery analytics above — no report builder, no configuration project, no consultant.',
+    },
+    {
+      icon: 'grid',
+      title: 'Branch & team reports',
+      text: 'Compare every branch side by side — totals, open, recovered and lost inquiries, recovery rate and recovered revenue — and see per-person scorecards with assigned, open, recovered and lost inquiries, recovery rate, recovered revenue and follow-ups due today. Each role sees only its scope: reps their own inquiries, branch managers their branch, owners and admins everything.',
     },
     {
       icon: 'zap',
@@ -159,6 +172,11 @@ const features = {
       text: 'Bring thousands of dead leads back in one import — map columns, preview what is valid, and blitz the good ones in a single pass.',
     },
     {
+      icon: 'file',
+      title: 'Export Center',
+      text: 'Owners and admins can download inquiries, customers and the audit log as CSV — newest first, up to 1,000 rows per export. Row counts are shown before you download, and every export is written to the audit log.',
+    },
+    {
       icon: 'check',
       title: 'Activity log',
       text: 'Every invite, role change, assignment and removal is time-stamped with who did it, so the business always has a clear record.',
@@ -179,7 +197,27 @@ const features = {
     },
     {
       q: 'Is my data exported if I cancel?',
-      a: 'Your records remain yours and cancelling never deletes the history you built. Export is not available in this version yet — you can view your inquiry, follow-up and revenue records in your workspace any time.',
+      a: 'Yes — you do not need to cancel to get your data out. Owners and admins can use the Export Center to download inquiries, customers and the audit log as CSV files, newest first, up to 1,000 rows per export, with row counts shown before download. Every export is also recorded in the audit log.',
+    },
+    {
+      q: 'Can I compare how my branches are performing?',
+      a: 'Yes. Reports has a Branches tab that shows each branch’s totals, open, recovered and lost inquiries, recovery rate and recovered revenue side by side. Branch managers see only their own branch; owners and admins see every branch.',
+    },
+    {
+      q: 'Can I bring my existing leads over from a spreadsheet or another tool?',
+      a: 'Yes. Bulk CSV import lets you map your columns to BackWon fields, preview what will come in before anything is saved, and flags duplicates so the same lead is not created twice. Imports are resume-safe, so an interrupted import can be picked up instead of started over.',
+    },
+    {
+      q: 'How do roles and permissions work for managers and reps?',
+      a: 'BackWon has four roles: owner, admin, branch manager and sales rep. Owners and admins see everything, branch managers see only their own branch, and sales reps see only inquiries assigned to them. Staff can never delete data.',
+    },
+    {
+      q: 'Is there an audit trail of what my team changed?',
+      a: 'Yes. The activity log records status changes, assignments, role changes and exports, time-stamped with who did them, so you can see what changed and when. Owners and admins can also download the audit log as CSV from the Export Center.',
+    },
+    {
+      q: 'Can BackWon receive leads automatically from my website or other tools?',
+      a: 'Yes. Webhooks and the API connect Shopify, Meta leads, IndiaMART or any website form — each website uses its own bearer token, and leads are deduplicated by source and external ID so a retried delivery does not create a second inquiry. See the Integrations page for how each source connects.',
     },
   ],
 }
@@ -334,6 +372,10 @@ const pricing = {
     {
       q: 'How do you make money if it is free?',
       a: 'Honest answer: right now, we do not. We would rather earn trust first — the same reason there are no ads, no resold data and no paywalls in the product.',
+    },
+    {
+      q: 'Can I export my data if I leave?',
+      a: 'Yes. Owners and admins can download inquiries, customers and the audit log as CSV from the Export Center — newest first, up to 1,000 rows per export, with row counts shown before you download. Every export is recorded in the audit log, so leaving never means losing your records.',
     },
   ],
 }
@@ -709,7 +751,7 @@ const howItWorks = {
     {
       icon: 'shield',
       title: 'Your data stays yours',
-      text: 'Your records stay in your workspace, and cancelling never means losing the history you built. Export is not available yet.',
+      text: 'Your records stay in your workspace, and cancelling never means losing the history you built. Owners and admins can download inquiries, customers and the audit log as CSV from the Export Center.',
     },
   ],
   faq: [
@@ -1317,7 +1359,7 @@ const clinics = {
     {
       icon: 'shield',
       title: 'Your records stay yours',
-      text: 'Enquiry and follow-up records stay in your workspace. No data hostage situations — cancelling never deletes your history. Export is not available yet.',
+      text: 'Enquiry and follow-up records stay in your workspace. No data hostage situations — cancelling never deletes your history, and owners and admins can download inquiries, customers and the audit log as CSV from the Export Center.',
     },
   ],
   faq: [
