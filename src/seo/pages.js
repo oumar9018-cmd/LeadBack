@@ -26,13 +26,13 @@ const home = {
   path: '/',
   title: 'BackWon — Win Back Every Customer You Almost Lost',
   description:
-    'BackWon helps local businesses win back missed calls and cold inquiries with one-tap WhatsApp follow-ups and personal voice notes. Start free.',
+    'BackWon helps businesses of every size win back missed calls and cold inquiries with one-tap WhatsApp follow-ups and personal voice notes. Start free.',
   keywords:
     'win back customers, missed call follow up, WhatsApp follow up tool, customer recovery software, voice note follow up, lead recovery, small business CRM',
   eyebrow: 'CUSTOMER WIN-BACK',
   heading: 'Win back every customer you almost lost.',
   intro:
-    'BackWon gives local businesses one simple workspace to catch every missed inquiry, follow up in one tap on WhatsApp — or with a personal voice note — and measure the revenue that comes back.',
+    'BackWon gives businesses of every size one simple workspace to catch every missed inquiry, follow up in one tap on WhatsApp — or with a personal voice note — and measure the revenue that comes back.',
   sections: [
     {
       icon: 'inbox',

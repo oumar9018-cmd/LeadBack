@@ -127,7 +127,7 @@ const faqs = [
   },
   {
     q: 'Which businesses is BackWon for?',
-    a: 'Any local business where one customer is worth real money: salons, spas, auto repair, clinics, coaching centers, photographers, home services, fitness studios.',
+    a: 'Any business where one customer is worth real money — local shops like salons, spas, auto repair, clinics, coaching centers, photographers, home services and fitness studios, and larger teams that handle customer inquiries every day.',
   },
 ]
 
@@ -417,7 +417,7 @@ function App() {
 
           <div className="footer-bottom">
             <span>© 2026 BackWon. All rights reserved.</span>
-            <span>Win-back software for local businesses.</span>
+            <span>Win-back software for businesses of every size.</span>
           </div>
         </div>
       </footer>
