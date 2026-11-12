@@ -209,6 +209,18 @@ export default function Settings() {
   // slug; before the first save it falls back to the name slug.
   const displaySlug = publishedSlug || slugify(settings.businessName)
 
+  // Until the settings doc lands, the form shows the blank defaults
+  // and a save in that window would overwrite the saved settings
+  // with them. saveSettings already refuses while !settingsLoaded;
+  // the form and save button are disabled too, with a loading note.
+  // Firebase absent (or workspace never resolved): the load effect
+  // no-ops and settingsLoaded stays false, so surface the
+  // unavailable state instead of disabling forever. (Reports.jsx
+  // pattern for the unavailable derivation.)
+  const dataUnavailable =
+    !wsLoading && (!workspace || !window.firebase?.firestore?.())
+  const showLoading = !settingsLoaded && !dataUnavailable
+
   if (!wsLoading && workspace && !canViewSettings(workspace.role)) {
     return (
       <div className="settings-page">
@@ -251,7 +263,11 @@ export default function Settings() {
         </header>
 
         <form onSubmit={saveSettings}>
-          <fieldset disabled={readOnly} style={{ border: 0, padding: 0, margin: 0 }}>
+          {showLoading && <p role="status">Loading settings…</p>}
+          {dataUnavailable && (
+            <div className="form-error">Workspace data is unavailable right now.</div>
+          )}
+          <fieldset disabled={readOnly || showLoading} style={{ border: 0, padding: 0, margin: 0 }}>
 
           <section className="settings-card">
             <div className="settings-card-header">
@@ -464,6 +480,7 @@ export default function Settings() {
               <button
                 type="submit"
                 className="settings-save-button"
+                disabled={showLoading}
               >
                 Save settings
               </button>

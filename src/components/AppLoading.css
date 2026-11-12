@@ -1,0 +1,134 @@
+/* AppLoading — shared branded loading / boot-failure state for the
+   authenticated shell. Light theme tokens match App.css :root
+   (--app-bg #F8FAFC, primary #2563EB, Inter + Manrope). The panel
+   fills the shell content area so a loading route never reads as a
+   bare white page. */
+
+.app-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52vh;
+  padding: 48px 20px 56px;
+  background: var(--app-bg, #f8fafc);
+  font-family: Inter, system-ui, sans-serif;
+  color: #0f172a;
+}
+
+.app-loading-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 380px;
+  text-align: center;
+}
+
+.app-loading-logo {
+  display: block;
+  margin-bottom: 18px;
+}
+
+.app-loading-spinner {
+  width: 34px;
+  height: 34px;
+  margin-bottom: 18px;
+  border-radius: 50%;
+  border: 3px solid #dbeafe;
+  border-top-color: #2563eb;
+  animation: app-loading-spin 0.85s linear infinite;
+}
+
+@keyframes app-loading-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.app-loading-title {
+  margin: 0;
+  font-family: Manrope, Inter, sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #0f172a;
+}
+
+.app-loading-message {
+  margin: 8px 0 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: #64748b;
+}
+
+.app-loading-action {
+  margin-top: 20px;
+}
+
+.app-loading-reload {
+  min-height: 42px;
+  padding: 0 18px;
+  border: 1px solid #2563eb;
+  border-radius: 10px;
+  background: #2563eb;
+  color: #fff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(21, 94, 239, 0.16);
+}
+
+.app-loading-reload:hover {
+  background: #1d4ed8;
+}
+
+/* Skeleton bars: a quiet hint of the page shape that is about to
+   arrive, so the content area never sits empty. */
+.app-loading-skeleton {
+  width: min(320px, 80vw);
+  margin-top: 28px;
+  display: grid;
+  gap: 10px;
+}
+
+.app-loading-skeleton span {
+  display: block;
+  height: 12px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #e8eef6 25%, #f4f7fb 50%, #e8eef6 75%);
+  background-size: 200% 100%;
+  animation: app-loading-shimmer 1.4s ease-in-out infinite;
+}
+
+.app-loading-skeleton span:nth-child(1) {
+  width: 55%;
+  margin: 0 auto;
+}
+
+.app-loading-skeleton span:nth-child(2) {
+  width: 100%;
+}
+
+.app-loading-skeleton span:nth-child(3) {
+  width: 82%;
+  margin: 0 auto;
+}
+
+@keyframes app-loading-shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-loading-spinner {
+    animation-duration: 2.4s;
+  }
+
+  .app-loading-skeleton span {
+    animation: none;
+  }
+}

@@ -48,6 +48,8 @@ export default function Recovery() {
   const [memberEmail, setMemberEmail] = useState({})
   const [currency, setCurrency] = useState('INR')
   const [businessName, setBusinessName] = useState('')
+  const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState('')
   // #21 — the inquiry a flash-fill offer is being built for (owner only).
   const [flashOffer, setFlashOffer] = useState(null)
 
@@ -78,7 +80,10 @@ export default function Recovery() {
         }
       } catch (error) {
         console.error('Recovery inquiries load failed:', error)
-        if (!cancelled) setItems([])
+        if (!cancelled) {
+          setItems([])
+          setLoadError('Unable to load recovery data. Please try again.')
+        }
       }
       try {
         const offersSnap = await db
@@ -133,6 +138,8 @@ export default function Recovery() {
         }
       } catch {
         // OfferBuilder falls back to a generic name.
+      } finally {
+        if (!cancelled) setLoading(false)
       }
     })()
     return () => {
@@ -163,6 +170,19 @@ export default function Recovery() {
   const opportunities = discoverOpportunities(items)
   const discoveries = discoverPatterns(items, LOSS_REASON_LABELS)
 
+  // Firebase absent (or workspace never resolved): the load effect
+  // above no-ops, so surface the unavailable state from render
+  // instead of spinning on "Loading…" forever. (Reports.jsx pattern;
+  // loading itself starts true and the effect's finally clears it,
+  // so a failed fetch lands on the error / empty states, never an
+  // infinite spinner.)
+  const dataUnavailable =
+    !wsLoading && (!workspace || !window.firebase?.firestore?.())
+  const showLoading = loading && !dataUnavailable
+  const showError = dataUnavailable
+    ? 'Workspace data is unavailable right now.'
+    : loadError
+
   return (
     <div className="settings-page">
       <div className="settings-inner">
@@ -179,6 +199,20 @@ export default function Recovery() {
           </div>
         </header>
 
+        {showLoading && (
+          <section className="settings-card">
+            <p>Loading recovery data…</p>
+          </section>
+        )}
+
+        {!showLoading && showError && (
+          <section className="settings-card">
+            <p>{showError}</p>
+          </section>
+        )}
+
+        {!showLoading && !showError && (
+          <>
         <section className="settings-card">
           <span className="settings-label">EARLY WARNINGS</span>
           <h2>About to rot (quiet 21–29 days)</h2>
@@ -525,6 +559,8 @@ export default function Recovery() {
             discount amounts on offers.
           </p>
         </section>
+          </>
+        )}
 
         {flashOffer && (
           <OfferBuilder

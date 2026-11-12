@@ -17,6 +17,7 @@ function siteNodes() {
       '@id': `${SITE_ORIGIN}/#organization`,
       name: SITE.name,
       url: `${SITE_ORIGIN}/`,
+      logo: `${SITE_ORIGIN}/favicon-192.png`,
       description: SITE.description,
       ...(SITE.sameAs.length ? { sameAs: SITE.sameAs } : {}),
     },

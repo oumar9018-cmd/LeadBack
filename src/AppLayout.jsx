@@ -10,6 +10,7 @@ import {
 import { canManageTeam, canViewSettings, roleLabel } from './utils/workspace.js'
 import { logAudit } from './utils/audit.js'
 import { useWorkspace } from './components/WorkspaceContext.jsx'
+import AppLoading from './components/AppLoading.jsx'
 import {
   IconMessage,
   IconClock,
@@ -50,7 +51,7 @@ export default function AppLayout() {
   const menuButtonRef = useRef(null)
   const profileButtonRef = useRef(null)
   // Batch 4: the workspace owner's settings + the member's role.
-  const { workspace, loading: wsLoading } = useWorkspace()
+  const { workspace, loading: wsLoading, error: wsError } = useWorkspace()
 
   useEffect(() => {
     if (wsLoading || !workspace) return
@@ -292,6 +293,9 @@ export default function AppLayout() {
           <NavLink to="/app/revenue" onClick={closeSidebar}>Revenue</NavLink>
           {/* Customers existed as a route but had no nav entry (audit). */}
           <NavLink to="/app/customers" onClick={closeSidebar}>Customers</NavLink>
+          {/* Reports self-scopes per role (reps see only their own row),
+              so the link is safe for every signed-in role. */}
+          <NavLink to="/app/reports" onClick={closeSidebar}>Reports</NavLink>
           {/* Team + Activity moved out of Settings (same move as API):
               owner/admin only, same gate the cards already had. */}
           {!wsLoading && canManageTeam(workspace?.role) && (
@@ -299,6 +303,9 @@ export default function AppLayout() {
           )}
           {!wsLoading && canManageTeam(workspace?.role) && (
             <NavLink to="/app/activity" onClick={closeSidebar}>Activity</NavLink>
+          )}
+          {!wsLoading && canManageTeam(workspace?.role) && (
+            <NavLink to="/app/exports" onClick={closeSidebar}>Export Center</NavLink>
           )}
           {/* Sales Reps get no settings page at all (rules deny it). */}
           {/* Role-gated links wait for the workspace so they never flicker
@@ -412,8 +419,31 @@ export default function AppLayout() {
           </div>
         </header>
 
-        {/* Render the actual page (Inquiries, Follow-ups, …) */}
-        <Outlet />
+        {/* Render the actual page (Inquiries, Follow-ups, …) — but
+            only once the workspace has resolved. Rendering <Outlet/>
+            while wsLoading was the "white page in between": every
+            page mounted with workspace=null and showed its pre-data
+            state (empty lists, zero stats, blank forms — and on
+            /app/inquiry a literally empty fragment) on the near-white
+            shell background until its Firestore fetch landed. The
+            shell chrome (sidebar/topbar/footer) stays mounted, so
+            there is no layout jump when the page swaps in. */}
+        {wsLoading ? (
+          <AppLoading />
+        ) : workspace ? (
+          <Outlet />
+        ) : (
+          <AppLoading
+            title="Couldn't load your workspace"
+            message={
+              wsError
+                ? 'BackWon could not reach its sign-in service. Check your connection, then reload.'
+                : 'Your workspace did not load. Reloading usually fixes it — your data is safe.'
+            }
+            showSpinner={false}
+            onReload={() => window.location.reload()}
+          />
+        )}
 
         <footer className="app-footer">
           BackWon · Revenue recovery workspace

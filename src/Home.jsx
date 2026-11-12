@@ -10,7 +10,7 @@ import {
   LogoMark,
   IconRadar, IconClock, IconTrendUp,
   IconArrowRight, IconPhoneMissed,
-  IconMessage, IconMic, IconShield,
+  IconMessage, IconMic, IconShield, IconCheck,
 } from './components/icons.jsx'
 
 /** SEO metadata for the homepage (title, description, canonical, JSON-LD…). */
@@ -193,6 +193,10 @@ function App() {
         <section className="hero">
           <div className="container hero-layout">
             <div className="hero-copy">
+              <span className="hero-eyebrow">
+                <span className="hero-dot" aria-hidden="true" />
+                Missed-inquiry recovery
+              </span>
               <h1>Win back every customer you almost lost</h1>
               <p className="hero-sub">
                 BackWon catches every missed call and cold inquiry, then helps you
@@ -211,6 +215,14 @@ function App() {
             </div>
 
             <div className="hero-visual" aria-label="How BackWon works">
+              <div className="float-card float-card--queue" aria-hidden="true">
+                <span className="float-icon"><IconClock width={16} height={16} /></span>
+                <span className="float-text">
+                  <strong>Follow up today</strong>
+                  <span>Queue is ready</span>
+                </span>
+              </div>
+
               <div className="browser-frame">
                 <div className="browser-bar">
                   <div className="browser-dots">
@@ -218,7 +230,117 @@ function App() {
                   </div>
                   <span className="browser-url">BackWon app</span>
                 </div>
-                <div className="browser-body flow-body">
+
+                <div className="dash-shell">
+                  <aside className="dash-side">
+                    <div className="dash-brand">
+                      <LogoMark width={22} height={22} />
+                      <span>BackWon</span>
+                    </div>
+                    <div className="dash-nav" aria-hidden="true">
+                      <span className="dash-nav-item is-active">
+                        <IconPhoneMissed width={15} height={15} /> Inquiries
+                      </span>
+                      <span className="dash-nav-item">
+                        <IconMessage width={15} height={15} /> Follow-ups
+                      </span>
+                      <span className="dash-nav-item">
+                        <IconMic width={15} height={15} /> Voice notes
+                      </span>
+                      <span className="dash-nav-item">
+                        <IconTrendUp width={15} height={15} /> Revenue
+                      </span>
+                      <span className="dash-nav-item">
+                        <IconRadar width={15} height={15} /> Win-Back Score
+                      </span>
+                    </div>
+                    <div className="dash-side-card">
+                      <IconShield width={15} height={15} />
+                      <span>Your data stays private</span>
+                    </div>
+                  </aside>
+
+                  <div className="dash-main">
+                    <div className="dash-main-head">
+                      <div>
+                        <strong className="dash-main-title">Inquiries</strong>
+                        <span className="dash-main-sub">Missed calls, messages &amp; quotes in one queue</span>
+                      </div>
+                      <span className="dash-add">+ New inquiry</span>
+                    </div>
+
+                    <div className="dash-filters" aria-hidden="true">
+                      <span className="is-active">All</span>
+                      <span>Needs follow-up</span>
+                      <span>Waiting</span>
+                      <span>Won back</span>
+                    </div>
+
+                    <div className="inq-list">
+                      <div className="inq-row">
+                        <span className="inq-avatar"><IconPhoneMissed width={16} height={16} /></span>
+                        <div className="inq-person">
+                          <strong>New inquiry</strong>
+                          <span>Missed call · Just now</span>
+                        </div>
+                        <span className="chip chip-amber">Needs follow-up</span>
+                        <span className="inq-action">Follow up</span>
+                      </div>
+                      <div className="inq-row">
+                        <span className="inq-avatar"><IconMessage width={16} height={16} /></span>
+                        <div className="inq-person">
+                          <strong>New inquiry</strong>
+                          <span>Message · 12 min ago</span>
+                        </div>
+                        <span className="chip chip-blue">Follow up today</span>
+                      </div>
+                      <div className="inq-row">
+                        <span className="inq-avatar"><IconMessage width={16} height={16} /></span>
+                        <div className="inq-person">
+                          <strong>New inquiry</strong>
+                          <span>Quote request · 1 hr ago</span>
+                        </div>
+                        <span className="chip chip-green">
+                          <IconCheck width={12} height={12} /> Won back
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="dash-bottom">
+                      <div className="dash-mini-card">
+                        <div className="dash-mini-head">
+                          <span className="dash-mini-icon"><IconClock width={13} height={13} /></span>
+                          <strong>Follow-up queue</strong>
+                        </div>
+                        <div className="bar-row">
+                          <span>Due today</span>
+                          <span className="bar"><i className="fill-1" /></span>
+                        </div>
+                        <div className="bar-row">
+                          <span>Tomorrow</span>
+                          <span className="bar"><i className="fill-2" /></span>
+                        </div>
+                        <div className="bar-row">
+                          <span>This week</span>
+                          <span className="bar"><i className="fill-3" /></span>
+                        </div>
+                      </div>
+
+                      <div className="dash-mini-card dash-score-card">
+                        <svg className="score-ring" viewBox="0 0 48 48" aria-hidden="true">
+                          <circle className="ring-bg" cx="24" cy="24" r="20" />
+                          <circle className="ring-fg" cx="24" cy="24" r="20" />
+                        </svg>
+                        <div className="dash-score-text">
+                          <strong>Win-Back Score</strong>
+                          <span>Built from your follow-ups</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flow-panel">
                   <div className="dash-top">
                     <div>
                       <span className="dash-eyebrow">How it works</span>
@@ -258,6 +380,17 @@ function App() {
                     <span>Revenue Forecast</span>
                   </div>
                 </div>
+              </div>
+
+              <div className="float-card float-card--voice" aria-hidden="true">
+                <span className="float-icon"><IconMic width={16} height={16} /></span>
+                <span className="wave">
+                  <i /><i /><i /><i /><i /><i /><i /><i /><i />
+                </span>
+                <span className="float-text">
+                  <strong>Voice note</strong>
+                  <span>0:10</span>
+                </span>
               </div>
             </div>
           </div>

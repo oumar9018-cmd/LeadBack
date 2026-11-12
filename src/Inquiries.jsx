@@ -61,6 +61,8 @@ export default function Inquiries() {
   const [items, setItems] = useState([])
   // Workspace currency (timezone default until Settings saves one).
   const [currency, setCurrency] = useState(() => defaultCurrencyForBrowser())
+  const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState('')
 
   // Loads from the workspace owner's data root. Gate 6 fix: Firestore
   // rules are NOT filters — an unfiltered collection get is denied
@@ -71,12 +73,18 @@ export default function Inquiries() {
   // for aggregates that read the whole list.
   useEffect(() => {
     if (wsLoading || !workspace) {
-      if (!wsLoading) setItems([])
+      if (!wsLoading) {
+        setItems([])
+        setLoading(false)
+        setLoadError('')
+      }
       return undefined
     }
     const db = window.firebase?.firestore?.()
     if (!db) return undefined
     let cancelled = false
+    setLoading(true)
+    setLoadError('')
     ;(async () => {
       try {
         const uid = window.firebase?.auth?.().currentUser?.uid
@@ -98,7 +106,10 @@ export default function Inquiries() {
         )
       } catch (error) {
         console.error('Inquiries load failed:', error)
-        if (!cancelled) setItems([])
+        if (!cancelled) {
+          setItems([])
+          setLoadError('Unable to load inquiries. Please try again.')
+        }
       }
 
       try {
@@ -114,6 +125,8 @@ export default function Inquiries() {
         if (!cancelled && CURRENCY_CODES.includes(savedCurrency)) setCurrency(savedCurrency)
       } catch (error) {
         console.error('Inquiries currency load failed:', error)
+      } finally {
+        if (!cancelled) setLoading(false)
       }
     })()
     return () => {
@@ -607,6 +620,16 @@ export default function Inquiries() {
   // still shows in the toolbar; only rendering is paged.
   const visible = displayed.slice(0, visibleCount)
 
+  // Firebase absent (or workspace never resolved): the load effect
+  // above no-ops, so surface the unavailable state from render
+  // instead of spinning on "Loading…" forever. (Reports.jsx pattern.)
+  const dataUnavailable =
+    !wsLoading && (!workspace || !window.firebase?.firestore?.())
+  const showLoading = loading && !dataUnavailable
+  const showError = dataUnavailable
+    ? 'Workspace data is unavailable right now.'
+    : loadError
+
   return (
     <div className="inquiries-page">
       <div className="inquiries-inner">
@@ -667,7 +690,9 @@ export default function Inquiries() {
             <div>
               <h2>All inquiries</h2>
               <p>
-                {`${filtered.length} ${filtered.length === 1 ? 'inquiry' : 'inquiries'}`}
+                {showLoading
+                  ? 'Loading…'
+                  : `${filtered.length} ${filtered.length === 1 ? 'inquiry' : 'inquiries'}`}
               </p>
             </div>
 
@@ -767,7 +792,19 @@ export default function Inquiries() {
               </div>
             ))}
 
-            {displayed.length === 0 && (
+            {showLoading && (
+              <div className="inquiries-empty">
+                Loading inquiries…
+              </div>
+            )}
+
+            {!showLoading && showError && (
+              <div className="inquiries-empty">
+                {showError}
+              </div>
+            )}
+
+            {!showLoading && !showError && displayed.length === 0 && (
               <div className="inquiries-empty">
                 No inquiries found.
               </div>

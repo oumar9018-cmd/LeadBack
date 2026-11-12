@@ -1016,13 +1016,38 @@ const resources = {
     },
   ],
   showcase: {
-    title: 'Try the missed-revenue calculator',
-    text: 'Put a number on what missed calls cost you each month — an honest estimate, in under a minute.',
+    title: 'Guides, templates and tools',
+    text: 'Practical, bookmarkable guides — plus the calculator that puts a number on what missed calls cost you each month.',
     items: [
       {
         to: '/resources/missed-revenue-calculator',
         title: 'Missed revenue calculator',
         text: 'Estimate the monthly revenue lost to missed calls, from your own deal value and close rate.',
+      },
+      {
+        to: '/resources/follow-up-messages-that-get-replies',
+        title: 'Follow-up messages that get replies',
+        text: 'The structure behind a reply-worthy follow-up, with word-for-word examples for WhatsApp, calls and DMs.',
+      },
+      {
+        to: '/resources/lead-response-time',
+        title: 'Lead response time',
+        text: 'Why minutes matter, what target a small team can actually hit, and the routine that gets you there.',
+      },
+      {
+        to: '/resources/follow-up-sequence-template',
+        title: 'Follow-up sequence template',
+        text: 'Five touches over two weeks — what to say at each step, when to stop, and how to run it manually.',
+      },
+      {
+        to: '/resources/recover-no-show-bookings',
+        title: 'How to recover no-show bookings',
+        text: 'What to say, when to send it, and how to rebook a missed appointment without the guilt trip.',
+      },
+      {
+        to: '/resources/whatsapp-follow-up-etiquette',
+        title: 'WhatsApp follow-up etiquette',
+        text: 'When to message, how often, and the habits that keep your business welcome instead of blocked.',
       },
     ],
   },
@@ -1596,6 +1621,1297 @@ const manifesto = {
 }
 
 /* ------------------------------------------------------------------ */
+/* Keyword landing pages — product-intent clusters not covered above   */
+/* ------------------------------------------------------------------ */
+
+/* ------------------- Missed call follow-up ------------------- */
+const missedCallFollowUp = {
+  type: 'missed-call-follow-up',
+  path: '/missed-call-follow-up',
+  title: 'Missed Call Follow-Up Software | BackWon',
+  description:
+    'Missed call follow-up software that turns every unanswered call into a tracked follow-up. One-tap WhatsApp replies, voice notes, daily queue. Free.',
+  keywords:
+    'missed call follow up software, missed call follow up, unanswered call follow up, call back software small business, missed call lead management, missed call recovery tool',
+  eyebrow: 'MISSED CALL FOLLOW-UP',
+  heading: 'Every missed call deserves a follow-up, not a shrug.',
+  intro:
+    'You miss calls because you are working — with a client, under a car, mid-appointment. The caller does not know that; they just know nobody answered, so they ring the next business. BackWon turns every missed call into a logged, owned follow-up, so the callback actually happens.',
+  stats: [
+    { value: '< 30s', label: 'To log a missed call' },
+    { value: '1 tap', label: 'To follow up on WhatsApp' },
+    { value: '0', label: 'Callers left unanswered' },
+  ],
+  steps: [
+    {
+      title: 'Log the call',
+      text: 'After a busy spell, add each missed number to BackWon with a name if you have one and what they likely wanted. Under thirty seconds per call.',
+    },
+    {
+      title: 'Give it an owner',
+      text: 'Every missed call gets one person responsible for the callback — no more "I thought you rang them".',
+    },
+    {
+      title: 'Follow up the same day',
+      text: 'Work the follow-up queue: call back, or send a one-tap WhatsApp message or a personal voice note straight from the record.',
+    },
+    {
+      title: 'Record what happened',
+      text: 'Booked, quoted, not interested, unreachable — log the outcome and the value, and the next callback list writes itself.',
+    },
+  ],
+  sections: [
+    {
+      icon: 'phone',
+      title: 'Built for calls you cannot take',
+      text: 'Missed calls cluster exactly when business is good — peak hours, jobs back to back. BackWon is designed for that reality: capture now, follow up in the first quiet ten minutes.',
+    },
+    {
+      icon: 'message',
+      title: 'One-tap WhatsApp follow-up',
+      text: 'Many callers would rather get a message than a call back from an unknown number. Open the WhatsApp chat from the inquiry record in one tap and reply while they still remember ringing you.',
+    },
+    {
+      icon: 'zap',
+      title: 'Voice notes when text feels cold',
+      text: 'A short personal voice note — your voice, their name, what they asked about — stands out from every automated text-back. It takes ten seconds and it sounds like a person, because it is one.',
+    },
+    {
+      icon: 'clock',
+      title: 'A callback queue, not a call log',
+      text: 'Your phone already has a call log; what it lacks is ownership and due dates. BackWon shows what is due today and what is overdue, ordered so the freshest callers get called first.',
+    },
+    {
+      icon: 'trending',
+      title: 'See what callbacks recover',
+      text: 'Attach a value when a callback becomes a booking. Over a month you will see exactly how much revenue your missed-call routine brings back — usually the most motivating number in the business.',
+    },
+  ],
+  showcase: {
+    title: 'Go deeper on missed inquiries',
+    text: 'The workflow, the cost calculator and the full feature list.',
+    items: [
+      {
+        to: '/use-cases/missed-inquiries',
+        title: 'Missed customer inquiries',
+        text: 'The full playbook for capturing and recovering every inquiry, not just calls.',
+      },
+      {
+        to: '/resources/missed-revenue-calculator',
+        title: 'Missed revenue calculator',
+        text: 'Put a number on what your missed calls could be worth each month.',
+      },
+      {
+        to: '/features',
+        title: 'All features',
+        text: 'Inbox, sequences, routing, webhooks and recovery analytics — all free.',
+      },
+    ],
+  },
+  faq: [
+    {
+      q: 'Does BackWon answer my calls or send automatic texts?',
+      a: 'No. BackWon does not answer calls and does not blast automated messages. It makes sure a person follows up — by call, WhatsApp or voice note — because for local services the personal reply is what wins the job. What it automates is the remembering.',
+    },
+    {
+      q: 'Do I need a new phone system or a virtual number?',
+      a: 'No. Keep your number and your phone. You log missed calls into BackWon manually in seconds, which also means it works for walk-ins, DMs and form enquiries in the same queue.',
+    },
+    {
+      q: 'How fast should I call back a missed call?',
+      a: 'The same day, and the sooner the better — callers typically try the next business within the hour. BackWon surfaces the newest open inquiries first so your first callbacks go to the warmest callers. See the lead response time guide in Resources for a realistic routine.',
+    },
+    {
+      q: 'What if the missed call was not a customer?',
+      a: 'Mark it closed with one tap. The point of the queue is that every number gets a decision — customer or not — instead of sitting in your call history making you feel vaguely guilty.',
+    },
+    {
+      q: 'Is missed call follow-up really free?',
+      a: 'Yes. BackWon is free forever — every feature, unlimited team seats, no credit card and no trial clock.',
+    },
+  ],
+}
+
+/* ------------------- WhatsApp follow-up tool ------------------- */
+const whatsappFollowUp = {
+  type: 'whatsapp-follow-up',
+  path: '/whatsapp-follow-up-tool',
+  title: 'WhatsApp Follow-Up Tool for Business | BackWon',
+  description:
+    'WhatsApp follow-up tool for businesses: turn quiet chats into customers with one-tap follow-ups, sequences and voice notes. Free forever, no card.',
+  keywords:
+    'WhatsApp follow up tool, WhatsApp follow up software, WhatsApp lead follow up, WhatsApp enquiry follow up, business WhatsApp follow up, WhatsApp CRM alternative',
+  eyebrow: 'WHATSAPP FOLLOW-UP',
+  heading: 'The chat went quiet. Your follow-up should not.',
+  intro:
+    'Most business chats do not end with a no — they end with nothing. The customer got busy, the chat scrolled down, and the sale quietly died. BackWon keeps every WhatsApp enquiry in a follow-up queue, so quiet chats get a timely, personal nudge instead of being forgotten.',
+  stats: [
+    { value: '1 tap', label: 'From record to WhatsApp chat' },
+    { value: '0', label: 'Quiet chats forgotten' },
+    { value: 'Free', label: 'Forever, every feature' },
+  ],
+  sections: [
+    {
+      icon: 'message',
+      title: 'One tap from record to chat',
+      text: 'Open the customer’s WhatsApp conversation straight from their BackWon record — with what they asked for, what you quoted and when you last spoke in front of you, not buried in your chat list.',
+    },
+    {
+      icon: 'refresh',
+      title: 'Sequences for the long quiet spells',
+      text: 'Some decisions take a week, not an hour. Put the enquiry on a follow-up sequence (a drip of timed reminders for your team) so touch two, three and four happen on schedule instead of by luck.',
+    },
+    {
+      icon: 'zap',
+      title: 'Voice notes that feel personal',
+      text: 'Send a short voice note when a typed message would feel like a template. Customers hear a real person from a real business — the follow-up format generic automation cannot copy.',
+    },
+    {
+      icon: 'users',
+      title: 'Every rep sees the same picture',
+      text: 'When three people share one business number, chats get answered twice or not at all. In BackWon every enquiry has one owner and a visible history, whoever picks it up.',
+    },
+    {
+      icon: 'bell',
+      title: 'Know who is still waiting',
+      text: 'The queue shows every open enquiry by due date. A customer who has not heard back in two days is visible at a glance — before they message your competitor.',
+    },
+    {
+      icon: 'trending',
+      title: 'Measure what chats recover',
+      text: 'Record the value when a followed-up chat becomes a booking, and see how much revenue your WhatsApp follow-ups bring back each month.',
+    },
+  ],
+  showcase: {
+    title: 'Related pages',
+    text: 'Etiquette, message examples and the features behind the follow-up queue.',
+    items: [
+      {
+        to: '/resources/whatsapp-follow-up-etiquette',
+        title: 'WhatsApp follow-up etiquette',
+        text: 'When to message, how often, and the habits that keep you welcome instead of blocked.',
+      },
+      {
+        to: '/resources/follow-up-messages-that-get-replies',
+        title: 'Follow-up messages that get replies',
+        text: 'Word-for-word openers and nudges for WhatsApp, calls and DMs.',
+      },
+      {
+        to: '/features',
+        title: 'All features',
+        text: 'Sequences, booking links, routing and recovery analytics — free.',
+      },
+    ],
+  },
+  faq: [
+    {
+      q: 'Does BackWon send WhatsApp messages automatically?',
+      a: 'No — and that is deliberate. BackWon prompts the follow-up and opens the chat in one tap; a person writes or records the message. Automated blasts get businesses blocked and ignored; personal follow-ups get replies.',
+    },
+    {
+      q: 'Do I need the WhatsApp Business API or a special setup?',
+      a: 'No. BackWon works with the WhatsApp you already use. There is no API approval, no template pre-approval and no per-message fee — you log enquiries, and follow-ups open in your normal WhatsApp.',
+    },
+    {
+      q: 'Can I follow up with enquiries that started elsewhere?',
+      a: 'Yes. Log enquiries from calls, Instagram, your website form, IndiaMART or walk-ins, and still follow up on WhatsApp if that is the channel the customer prefers. The queue is channel-agnostic; the follow-up goes where the customer is.',
+    },
+    {
+      q: 'How is this different from a WhatsApp CRM?',
+      a: 'A WhatsApp CRM tries to manage every conversation you have. BackWon manages the ones that would otherwise go cold: enquiries with an owner, a next step and a due date, plus a record of what each recovered chat was worth.',
+    },
+    {
+      q: 'What does it cost?',
+      a: 'Nothing. BackWon is free forever — unlimited seats, sequences, webhooks and API included, with no credit card.',
+    },
+  ],
+}
+
+/* ------------------- Lead follow-up software ------------------- */
+const leadFollowUpSoftware = {
+  type: 'lead-follow-up-software',
+  path: '/lead-follow-up-software',
+  title: 'Lead Follow-Up Software for Every Business Size | BackWon',
+  description:
+    'Lead follow-up software that gives every lead an owner, a next step and a due date — so interested buyers stop going cold. Free forever.',
+  keywords:
+    'lead follow up software, lead follow-up tool, sales follow up software, lead follow up system, follow up leads app, lead follow up for small business',
+  eyebrow: 'LEAD FOLLOW-UP SOFTWARE',
+  heading: 'Leads do not go cold. Follow-ups just never happen.',
+  intro:
+    'Ask any owner why a lead was lost and the honest answer is rarely price or competition — it is that nobody followed up a second time. BackWon is lead follow-up software built around that single failure: every lead gets an owner, a next step and a due date, and the queue makes sure all three happen.',
+  stats: [
+    { value: '1', label: 'Queue for every lead' },
+    { value: '10 min', label: 'A day to work it' },
+    { value: 'Free', label: 'Forever, unlimited seats' },
+  ],
+  steps: [
+    {
+      title: 'Capture every lead',
+      text: 'Log leads manually in seconds, import a list by CSV, or connect Shopify, Meta Ads, IndiaMART and website forms so new leads land in the inbox automatically.',
+    },
+    {
+      title: 'Assign an owner',
+      text: 'Round-robin routing shares new leads fairly across reps, least-loaded first — or assign them yourself. Nobody wonders whose lead it is.',
+    },
+    {
+      title: 'Always set the next step',
+      text: 'Call Thursday, send the quote, check stock — one concrete action with a date. A lead without a next step is a lead being lost slowly.',
+    },
+    {
+      title: 'Work the queue daily',
+      text: 'Open BackWon each morning: today’s follow-ups and everything overdue, in one list. Ten minutes replaces the spreadsheet, the notebook and the memory test.',
+    },
+  ],
+  sections: [
+    {
+      icon: 'inbox',
+      title: 'Every lead source, one inbox',
+      text: 'Calls, WhatsApp, walk-ins, marketplace enquiries and web forms in a single list, each tagged with its source so you can see which channels actually produce buyers.',
+    },
+    {
+      icon: 'clock',
+      title: 'Next step and due date, always',
+      text: 'The record will not let a lead just sit there. Every open lead carries its next action and the date it is due — the two fields most CRMs bury and most spreadsheets lose.',
+    },
+    {
+      icon: 'refresh',
+      title: 'Sequences for multi-touch follow-up',
+      text: 'Most leads need more than one touch. Follow-up sequences schedule the series of nudges a decision usually takes, and stop being necessary the moment the lead replies or buys.',
+    },
+    {
+      icon: 'grid',
+      title: 'Webhooks & API included',
+      text: 'Connect the tools that generate your leads and skip the copy-paste entirely. Webhooks and API are free, like everything else in BackWon.',
+    },
+    {
+      icon: 'shield',
+      title: 'Roles that match your team',
+      text: 'Owner, admin, manager and rep roles mean reps see their own leads, managers see their branch, and staff can never delete the data the business runs on.',
+    },
+    {
+      icon: 'trending',
+      title: 'Follow-up you can measure',
+      text: 'See follow-ups done, leads gone cold and revenue recovered, by week, source and team member — so you coach the habit with numbers, not hunches.',
+    },
+  ],
+  showcase: {
+    title: 'Keep exploring',
+    text: 'The follow-up routine, the response-time guide and the full feature list.',
+    items: [
+      {
+        to: '/use-cases/follow-up-management',
+        title: 'Follow-up management',
+        text: 'How to build a follow-up routine your team actually keeps.',
+      },
+      {
+        to: '/resources/lead-response-time',
+        title: 'Lead response time',
+        text: 'Why the first follow-up’s timing matters, and a target a small team can hit.',
+      },
+      {
+        to: '/pricing',
+        title: 'Pricing',
+        text: 'Free forever — every feature, unlimited seats, no card.',
+      },
+    ],
+  },
+  faq: [
+    {
+      q: 'How is lead follow-up software different from a CRM?',
+      a: 'A CRM records everything about a customer relationship. Lead follow-up software concentrates on the narrow stretch where money is won or lost: the days between a lead arriving and a decision being made. BackWon does that stretch — owner, next step, due date, outcome — and leaves the rest alone.',
+    },
+    {
+      q: 'How many follow-ups does a lead usually need?',
+      a: 'Plan for several touches across a couple of weeks rather than one heroic attempt. Each follow-up should add something — an answer, a smaller first step, a reason to decide now — and the sequence ends with a polite close that makes a no easy to say. The follow-up sequence template in Resources walks through a five-touch version.',
+    },
+    {
+      q: 'Can leads arrive automatically, or do I type them in?',
+      a: 'Both. Manual logging takes under thirty seconds and covers calls and walk-ins. For digital sources, connect Shopify, Meta lead ads, IndiaMART or any website form via webhooks/API and leads arrive on their own, deduplicated and routed.',
+    },
+    {
+      q: 'We are a team of two. Is this overkill?',
+      a: 'Two people is exactly where leads start falling between stools — each assuming the other replied. One shared queue with named owners fixes that on day one.',
+    },
+    {
+      q: 'Is it really free for a whole sales team?',
+      a: 'Yes. Unlimited seats are free, and there are no per-seat charges, paid plans or trial clocks.',
+    },
+  ],
+}
+
+/* ------------------- Win back customers ------------------- */
+const winBackCustomers = {
+  type: 'win-back-customers',
+  path: '/win-back-customers',
+  title: 'Win Back Lost Customers Software | BackWon',
+  description:
+    'Win back customers software for lost leads and quiet buyers: find who went cold, follow up personally, track the revenue that returns. Free.',
+  keywords:
+    'win back customers software, lost lead recovery, win back lost customers, customer win back tool, re-engage lost customers, dead lead recovery',
+  eyebrow: 'WIN-BACK SOFTWARE',
+  heading: 'Your cheapest new customer is a lost one.',
+  intro:
+    'Somewhere in your old enquiries, sent quotes and lapsed buyers is a list of people who already know you, already wanted what you sell, and never got the follow-up that would have closed it. BackWon helps you find them, contact them personally, and track exactly how much revenue comes back.',
+  stats: [
+    { value: '0', label: 'Ad spend to reach them' },
+    { value: '1 list', label: 'Every lost customer, ranked' },
+    { value: 'Free', label: 'To run your first win-back' },
+  ],
+  steps: [
+    {
+      title: 'Gather the lost list',
+      text: 'Import old enquiries by CSV or log them from your message history — quotes that went quiet, buyers who paused, customers who never reordered.',
+    },
+    {
+      title: 'Rank by warmth',
+      text: 'Start with the most recent and the highest value. A quote from last month beats a cold enquiry from two years ago, every time.',
+    },
+    {
+      title: 'Send a personal reason to return',
+      text: 'One message that references what they originally wanted, plus one new reason — new availability, a simpler option, a seasonal prompt. Sent by a person, in one tap.',
+    },
+    {
+      title: 'Track what returns',
+      text: 'Record every reply, booking and value. Win-back stops being a hope and becomes a number you can repeat monthly.',
+    },
+  ],
+  sections: [
+    {
+      icon: 'search',
+      title: 'Find the ones worth winning back',
+      text: 'Search and filter your history by source, status and value. The win-back list builds itself from records you already have instead of a spreadsheet archaeology project.',
+    },
+    {
+      icon: 'file',
+      title: 'Bulk CSV import for old lists',
+      text: 'Dead leads sitting in an old spreadsheet or a previous tool come across in one import — map the columns, preview what is valid, then work the list.',
+    },
+    {
+      icon: 'message',
+      title: 'A personal message, not a blast',
+      text: 'Win-back works because it is specific: what they asked about, what has changed, one easy next step. BackWon opens the WhatsApp chat or call from the record so the message stays human.',
+    },
+    {
+      icon: 'refresh',
+      title: 'A routine, not a one-off campaign',
+      text: 'New customers go quiet every month. A short monthly win-back pass over the newly-cold list keeps the pipeline topped up without a single ad.',
+    },
+    {
+      icon: 'dollar',
+      title: 'Revenue that came back, counted',
+      text: 'Every recovered customer’s value lands in your recovery analytics, so you can see what the win-back routine earns and justify the hour it takes.',
+    },
+  ],
+  showcase: {
+    title: 'Related pages',
+    text: 'Reactivation for older lists, revenue recovery reporting and message examples.',
+    items: [
+      {
+        to: '/dormant-lead-reactivation',
+        title: 'Dormant lead reactivation',
+        text: 'For the older, colder end of the list — segmentation and a respectful cadence.',
+      },
+      {
+        to: '/use-cases/revenue-recovery',
+        title: 'Revenue recovery',
+        text: 'Measure the money your follow-ups recover, week by week.',
+      },
+      {
+        to: '/resources/follow-up-messages-that-get-replies',
+        title: 'Messages that get replies',
+        text: 'Word-for-word win-back openers that do not sound like a campaign.',
+      },
+    ],
+  },
+  faq: [
+    {
+      q: 'How old is too old for a win-back attempt?',
+      a: 'There is no hard expiry, but warmth decays: last quarter’s quiet quote is a much better bet than a three-year-old enquiry. Work newest first, and for very old contacts keep the message light — a check-in, not a pitch — and accept silence as the answer.',
+    },
+    {
+      q: 'What should the first win-back message say?',
+      a: 'Name what they originally wanted, give one genuine reason to reconsider, and make the next step tiny. For example: "Hi Priya, you asked about a full detail in March — we have two Saturday slots opened up. Want me to hold one?" Specific beats clever, every time.',
+    },
+    {
+      q: 'Is win-back just spamming people who said no?',
+      a: 'No — win-back targets people who never actually said no: they went quiet, got busy or were never followed up. Anyone who clearly declined is marked lost and left alone. One or two personal messages to a past enquirer is service; endless blasts are spam, and BackWon’s human-sent model is built to stay on the right side of that line.',
+    },
+    {
+      q: 'How is win-back different from lead reactivation?',
+      a: 'Win-back focuses on people close to buying — sent quotes, paused buyers, lapsed customers. Reactivation works the older, colder database. BackWon handles both in the same queue; the reactivation page covers segmentation and cadence for old lists.',
+    },
+    {
+      q: 'Does win-back cost anything to try?',
+      a: 'No. BackWon is free forever, including CSV import and recovery analytics.',
+    },
+  ],
+}
+
+/* ------------------- No-show follow-up ------------------- */
+const noShowFollowUp = {
+  type: 'no-show-follow-up',
+  path: '/no-show-follow-up',
+  title: 'No-Show Follow-Up Software | BackWon',
+  description:
+    'No-show follow-up software: rebook missed appointments with one respectful message and a booking link, and track every recovered slot. Free.',
+  keywords:
+    'no-show follow up software, missed appointment follow up, no-show recovery, rebook no-show clients, appointment no-show management, no-show rebooking tool',
+  eyebrow: 'NO-SHOW FOLLOW-UP',
+  heading: 'A no-show is not a lost customer. It is an unmade follow-up.',
+  intro:
+    'Most no-shows are not rude — something came up, they forgot, and now they feel awkward about it. If nobody reaches out, the awkwardness wins and they book somewhere else next time. BackWon turns every missed appointment into a tracked follow-up with a booking link, so the slot — and the customer — come back.',
+  stats: [
+    { value: 'Same day', label: 'When the follow-up lands' },
+    { value: '1 tap', label: 'To send the rebooking message' },
+    { value: '0', label: 'Missed slots written off' },
+  ],
+  steps: [
+    {
+      title: 'Mark the no-show',
+      text: 'When a customer does not arrive, log them in BackWon as a no-show follow-up instead of just an empty slot in the diary.',
+    },
+    {
+      title: 'Message the same day',
+      text: 'Send one short, blame-free message from the record: we missed you, here is the booking link, pick any time that suits.',
+    },
+    {
+      title: 'Offer, do not interrogate',
+      text: 'No "where were you?" — two concrete new times or the booking link does the work. Most people rebook themselves once the awkward first step is taken for them.',
+    },
+    {
+      title: 'Track recovered slots',
+      text: 'Record each rebooking and its value. Your no-show recovery rate becomes a number you can improve, not a feeling.',
+    },
+  ],
+  sections: [
+    {
+      icon: 'calendar',
+      title: 'Every no-show becomes a task',
+      text: 'Missed appointments stop depending on whoever was on reception noticing. Each one sits in the follow-up queue with an owner and a due date until it is rebooked or closed.',
+    },
+    {
+      icon: 'message',
+      title: 'One message, one booking link',
+      text: 'BackWon includes booking links, so the follow-up carries its own next step: tap, pick a time, done. No phone tag, no "let me check the diary" chain of messages.',
+    },
+    {
+      icon: 'heart',
+      title: 'No blame, no guilt trip',
+      text: 'The message assumes a good reason. That tone is not just polite — it is what makes people rebook with you instead of quietly choosing a competitor they have not embarrassed themselves in front of.',
+    },
+    {
+      icon: 'clock',
+      title: 'Same day beats next week',
+      text: 'A no-show followed up within hours is still thinking about the appointment. A week later it is ancient history. The queue puts today’s no-shows at the top of today’s list.',
+    },
+    {
+      icon: 'refresh',
+      title: 'Repeat no-shows get a human touch',
+      text: 'A second or third miss is a pattern, not an accident. BackWon’s history shows it at a glance, so you can switch from a link to a personal call — or apply a fair deposit policy with evidence behind it.',
+    },
+    {
+      icon: 'trending',
+      title: 'Count what comes back',
+      text: 'Recovered appointments and their value show up in your recovery analytics, alongside missed-call and quote recoveries, so you see the full picture of follow-up revenue.',
+    },
+  ],
+  showcase: {
+    title: 'Related pages',
+    text: 'The step-by-step rebooking guide and the industries where no-shows bite hardest.',
+    items: [
+      {
+        to: '/resources/recover-no-show-bookings',
+        title: 'How to recover no-show bookings',
+        text: 'The exact first message, timing, and how to handle repeat no-shows fairly.',
+      },
+      {
+        to: '/industries/salons',
+        title: 'Salons & spas',
+        text: 'Rebook no-shows and bring lapsed clients back, chair by chair.',
+      },
+      {
+        to: '/industries/clinics',
+        title: 'Clinics',
+        text: 'A respectful no-show routine that keeps the diary full.',
+      },
+    ],
+  },
+  faq: [
+    {
+      q: 'When should I follow up after a no-show?',
+      a: 'The same day, ideally within a few hours of the missed slot, while the appointment is still on their mind and the reason is fresh. One message that day, one gentle nudge a few days later if there is no reply, then close the record.',
+    },
+    {
+      q: 'What should the no-show message say?',
+      a: 'Short, warm and blame-free, with the rebooking step built in. For example: "Hi Alex, we missed you at 11 today — no worries at all. Here is the link to grab another time that suits you better." The recover-no-show-bookings guide in Resources has more examples.',
+    },
+    {
+      q: 'Does BackWon replace my booking or calendar app?',
+      a: 'No. Your calendar keeps handling bookings. BackWon handles what calendars ignore: the follow-up after a booking fails, until the customer is rebooked or the record is closed.',
+    },
+    {
+      q: 'Can I track no-shows across a team?',
+      a: 'Yes. Every no-show has an owner, a status and a history, with role-based access — reps see their own, managers see their branch. Unlimited seats are free.',
+    },
+    {
+      q: 'Will this stop no-shows happening?',
+      a: 'Follow-up recovers no-shows after they happen; preventing them is reminders and deposits, which live in your booking tool. Used together, you prevent the preventable and recover the rest instead of writing the slot off.',
+    },
+  ],
+}
+
+/* ------------------- CRM alternative ------------------- */
+const crmAlternative = {
+  type: 'crm-alternative',
+  path: '/crm-alternative',
+  title: 'CRM Alternative — Simple Follow-Up Tool | BackWon',
+  description:
+    'A simple CRM alternative built only for follow-up: no pipelines to configure, no per-seat fees, no implementation project. Free forever.',
+  keywords:
+    'CRM alternative, simple CRM alternative, follow up CRM, lightweight CRM small business, CRM too complicated, free CRM alternative, small business CRM alternative',
+  eyebrow: 'CRM ALTERNATIVE',
+  heading: 'You do not need a CRM. You need to follow up.',
+  intro:
+    'Most small businesses that buy a CRM use a fraction of it for a month, then quietly go back to memory and notebooks — while paying per seat for pipelines nobody maintains. BackWon is the narrower alternative: it does the follow-up part, the part that actually recovers revenue, and nothing you have to configure, learn or feed.',
+  stats: [
+    { value: '1 day', label: 'To be fully running' },
+    { value: '0', label: 'Settings to configure first' },
+    { value: 'Free', label: 'Per seat, forever' },
+  ],
+  sections: [
+    {
+      icon: 'zap',
+      title: 'Running this afternoon',
+      text: 'Sign in with Google and log your first inquiry in the same sitting. There is no implementation phase, no data model to design and no consultant between you and your first follow-up.',
+    },
+    {
+      icon: 'check',
+      title: 'Only the features that recover revenue',
+      text: 'Inquiry inbox, follow-up queue with owners and due dates, one-tap WhatsApp follow-ups, voice notes, sequences, booking links, CSV import, webhooks and recovery analytics. Each one exists because it closes the gap between an enquiry and a customer.',
+    },
+    {
+      icon: 'users',
+      title: 'Unlimited seats, no per-seat maths',
+      text: 'CRM pricing punishes you for giving the whole team access — so owners ration seats and follow-ups fall between the people left out. BackWon seats are unlimited and free, so everyone who talks to customers is in the queue.',
+    },
+    {
+      icon: 'shield',
+      title: 'Structure without the admin burden',
+      text: 'Roles (owner, admin, manager, rep), round-robin routing and a full activity log give you the control a growing team needs — without a CRM admin to maintain it.',
+    },
+    {
+      icon: 'layers',
+      title: 'What it deliberately leaves out',
+      text: 'No marketing automation suite, no forecasting dashboards, no hundred-field contact records. If a feature does not help an interested customer get a follow-up, it is not here — which is exactly why teams keep using it.',
+    },
+    {
+      icon: 'trending',
+      title: 'Proof it is working',
+      text: 'One number tells you whether the tool earns its place: revenue recovered from follow-ups. BackWon tracks it live, next to the inquiries and follow-ups that produced it.',
+    },
+  ],
+  showcase: {
+    title: 'Compare for yourself',
+    text: 'The feature list, the pricing (there is none) and how the workflow runs.',
+    items: [
+      {
+        to: '/features',
+        title: 'All features',
+        text: 'Everything BackWon includes — the whole list fits on one page.',
+      },
+      {
+        to: '/pricing',
+        title: 'Pricing',
+        text: 'Free forever, every feature, unlimited seats. That is the whole page, too.',
+      },
+      {
+        to: '/how-it-works',
+        title: 'How it works',
+        text: 'The four-step loop from missed inquiry to paying customer.',
+      },
+    ],
+  },
+  faq: [
+    {
+      q: 'Is BackWon a CRM?',
+      a: 'It covers the slice of a CRM that small service businesses actually use — contacts, follow-ups, outcomes — and skips the rest. If you think of it as a follow-up system with a memory, you have the right picture.',
+    },
+    {
+      q: 'When do I genuinely need a full CRM instead?',
+      a: 'When you have a multi-stage sales pipeline with several stakeholders per deal, formal forecasting, or marketing automation across thousands of contacts. Most local and service businesses never hit that point; their leak is follow-up, not pipeline management.',
+    },
+    {
+      q: 'Can I move my contacts from a spreadsheet or another tool?',
+      a: 'Yes — bulk CSV import brings lists across with column mapping and a validity preview, so old leads and customer lists become a working follow-up queue in one pass.',
+    },
+    {
+      q: 'What happens if we outgrow BackWon?',
+      a: 'Your records stay in your workspace and your history is never deleted if you leave. A business that outgrows a follow-up tool because follow-up is now handled by a bigger team is a good problem — and the recovery numbers you built will justify the bigger tool.',
+    },
+    {
+      q: 'Why is the alternative free?',
+      a: 'BackWon is free forever, every feature included. The honest answer is on the pricing page: trust first, and any future paid option would be for something new — the free core stays free.',
+    },
+  ],
+}
+
+/* ------------------- Quote follow-up ------------------- */
+const quoteFollowUp = {
+  type: 'quote-follow-up',
+  path: '/quote-follow-up',
+  title: 'Quote Follow-Up Software — Chase Every Quote | BackWon',
+  description:
+    'Quote follow-up software that tracks every quote to a yes or a no — owners, due dates and one-tap nudges, so sent quotes stop going silent. Free.',
+  keywords:
+    'quote follow up software, quotation follow up system, chase quotes software, proposal follow up tool, quote tracking software, follow up on quotes',
+  eyebrow: 'QUOTE FOLLOW-UP',
+  heading: 'A sent quote is not a finished job. It is a pending decision.',
+  intro:
+    'You did the site visit, the measuring, the maths — then the quote went out and the conversation stopped. Most of those quotes were never rejected; they were just never decided, because life got busy on both sides. BackWon tracks every quote to a clear yes or no, with a nudge scheduled the moment it is sent.',
+  stats: [
+    { value: 'Every', label: 'Quote tracked to a decision' },
+    { value: '1 tap', label: 'To send the nudge' },
+    { value: '0', label: 'Quotes dying in silence' },
+  ],
+  steps: [
+    {
+      title: 'Log the quote when you send it',
+      text: 'Customer, value, what was quoted and when. Ten seconds now saves the "did we ever hear back?" conversation later.',
+    },
+    {
+      title: 'Set the nudge date immediately',
+      text: 'Decide the follow-up date while the quote is fresh — two or three days for most jobs — instead of relying on remembering next week.',
+    },
+    {
+      title: 'Nudge with a reason',
+      text: 'Each follow-up adds something: an availability window, a smaller first phase, an answer to the objection they have not said out loud yet.',
+    },
+    {
+      title: 'Close it honestly',
+      text: 'Won, lost or parked for a future date — every quote ends with a recorded outcome, so your quote-to-job rate is a fact, not a vibe.',
+    },
+  ],
+  sections: [
+    {
+      icon: 'file',
+      title: 'Every open quote on one list',
+      text: 'See all outstanding quotes, their values and their ages in one view. The total still waiting on a decision is usually the most surprising number in a service business.',
+    },
+    {
+      icon: 'clock',
+      title: 'A due date on every quote',
+      text: 'Quotes enter the same follow-up queue as calls and enquiries, ordered by what is due. The three-week-old quote stops being invisible.',
+    },
+    {
+      icon: 'message',
+      title: 'One-tap WhatsApp nudges',
+      text: 'Open the chat from the quote record and send a personal nudge or voice note with the quote’s context in front of you — no hunting through email threads to remember what you priced.',
+    },
+    {
+      icon: 'dollar',
+      title: 'Know your quote-to-job rate',
+      text: 'With outcomes recorded, you can see conversion by source, value band or team member — and fix the real problem, whether that is pricing, timing or follow-up.',
+    },
+    {
+      icon: 'users',
+      title: 'Quotes survive staff changes',
+      text: 'When the person who sent the quote is away, the record is not. Anyone can see what was quoted, what was said and what happens next, and pick the thread up cleanly.',
+    },
+  ],
+  showcase: {
+    title: 'Related pages',
+    text: 'Win back the quotes that already went cold, and the messages that revive them.',
+    items: [
+      {
+        to: '/win-back-customers',
+        title: 'Win back customers',
+        text: 'For quotes and buyers who went quiet weeks or months ago.',
+      },
+      {
+        to: '/resources/follow-up-sequence-template',
+        title: 'Follow-up sequence template',
+        text: 'A five-touch cadence that works for quotes as well as enquiries.',
+      },
+      {
+        to: '/industries/auto-repair',
+        title: 'Auto repair',
+        text: 'Chase every service quote to a decision, job by job.',
+      },
+    ],
+  },
+  faq: [
+    {
+      q: 'How soon should I follow up on a quote?',
+      a: 'For most local services, a first nudge two to three days after sending works well — long enough for them to read it properly, soon enough that the job is still current. Larger or considered purchases can run longer; the sequence template in Resources gives a full cadence.',
+    },
+    {
+      q: 'How many times should I chase a quote?',
+      a: 'Until you get a clear answer — typically three to five touches over two to three weeks, each adding a reason rather than repeating "just checking in". End with a polite close that makes a no easy; a definite no is more valuable than endless silence because it frees the slot and the headspace.',
+    },
+    {
+      q: 'What if they chose a competitor?',
+      a: 'Record it as lost with the reason if you know it. Lost-quote data is how you learn whether you are losing on price, timing or follow-up itself — and those customers are prime candidates for a light win-back touch when the competitor’s work disappoints.',
+    },
+    {
+      q: 'Does BackWon create or send the quotes themselves?',
+      a: 'No. Your existing quoting or invoicing tool keeps that job. BackWon tracks the quote’s follow-up life — owner, nudges, outcome and value — which is the part that usually has no system at all.',
+    },
+    {
+      q: 'Is quote follow-up free?',
+      a: 'Yes — BackWon is free forever, with unlimited seats and every feature included.',
+    },
+  ],
+}
+
+/* ------------------- Dormant lead reactivation ------------------- */
+const dormantReactivation = {
+  type: 'dormant-lead-reactivation',
+  path: '/dormant-lead-reactivation',
+  title: 'Dormant Lead Reactivation Software | BackWon',
+  description:
+    'Dormant lead reactivation software: import old enquiries, segment who to contact, work a respectful sequence, track what comes back. Free.',
+  keywords:
+    'dormant lead reactivation, reactivate old leads, lead reactivation software, cold lead reactivation, old enquiry follow up, database reactivation',
+  eyebrow: 'LEAD REACTIVATION',
+  heading: 'Your old enquiries are a pipeline you already paid for.',
+  intro:
+    'Every business sits on the same hidden asset: months or years of enquiries that were never properly followed up. They cost real money to generate and nothing to contact again. BackWon turns that dormant list into a structured reactivation — segmented, personal and measured — instead of a desperate one-off blast.',
+  stats: [
+    { value: '0', label: 'New ad spend required' },
+    { value: '1 import', label: 'To bring the old list in' },
+    { value: 'Free', label: 'To run the whole campaign' },
+  ],
+  steps: [
+    {
+      title: 'Import the dormant list',
+      text: 'Bring old enquiries in by bulk CSV import from spreadsheets, old tools or marketplace exports — mapped, previewed and deduplicated as they land.',
+    },
+    {
+      title: 'Segment before you send anything',
+      text: 'Group by what happened: never answered, quoted and went quiet, booked then no-showed, bought once and lapsed. Each group gets a different, relevant opener.',
+    },
+    {
+      title: 'Work a short, respectful sequence',
+      text: 'Two or three personal touches across about two weeks per segment, sent by a person from the record. Anyone who declines is closed and never contacted again.',
+    },
+    {
+      title: 'Measure and repeat quarterly',
+      text: 'Record replies, bookings and value per segment. Next quarter you start from evidence about which old lists are worth working, not guesses.',
+    },
+  ],
+  sections: [
+    {
+      icon: 'file',
+      title: 'Bulk import, cleaned as it lands',
+      text: 'Thousands of old leads come across in one import. Column mapping and a validity preview mean the campaign starts from a clean list, not a data-cleaning weekend.',
+    },
+    {
+      icon: 'search',
+      title: 'Segmentation that changes the message',
+      text: 'A person who never got a reply deserves an apology and an answer. A lapsed customer deserves a reason to return. BackWon’s source, status and history fields make those segments a filter, not a research project.',
+    },
+    {
+      icon: 'message',
+      title: 'Personal openers, sent by people',
+      text: 'Reactivation fails when it looks like a blast. In BackWon each message is sent by a person from the customer’s record — referencing what they originally asked about — which is why it reads as service, not spam.',
+    },
+    {
+      icon: 'refresh',
+      title: 'Sequences keep the cadence honest',
+      text: 'Follow-up sequences schedule the second and third touches with sensible gaps, so a big list gets worked evenly instead of the first fifty getting attention and the rest getting forgotten — again.',
+    },
+    {
+      icon: 'shield',
+      title: 'Respect is built into the process',
+      text: 'Clear declines are recorded and honoured, quiet contacts get a polite close rather than endless nudges, and the activity log shows exactly who was contacted, when and by whom.',
+    },
+    {
+      icon: 'trending',
+      title: 'Reactivation revenue, proven',
+      text: 'Every revived enquiry that converts lands in recovery analytics with its value, so the campaign’s return is a number — the number that decides whether next quarter’s list gets worked too.',
+    },
+  ],
+  showcase: {
+    title: 'Related pages',
+    text: 'Win-back for warmer leads, plus the message and sequence guides behind a good campaign.',
+    items: [
+      {
+        to: '/win-back-customers',
+        title: 'Win back customers',
+        text: 'For the warm end: quiet quotes, paused buyers and lapsed customers.',
+      },
+      {
+        to: '/resources/follow-up-messages-that-get-replies',
+        title: 'Messages that get replies',
+        text: 'Openers and nudges that sound like a person, not a campaign.',
+      },
+      {
+        to: '/resources/follow-up-sequence-template',
+        title: 'Follow-up sequence template',
+        text: 'The five-touch cadence, adaptable to any reactivation segment.',
+      },
+    ],
+  },
+  faq: [
+    {
+      q: 'What counts as a dormant lead?',
+      a: 'Anyone who enquired, quoted, booked or bought and then went quiet without a clear no — typically for a month or more. The list most businesses underestimate is the simplest one: enquiries that were never answered properly in the first place.',
+    },
+    {
+      q: 'How should I segment an old list before contacting it?',
+      a: 'By what happened last, not by demographics. Never-answered enquiries, unclosed quotes, no-shows and lapsed buyers each need a different first message. Within each segment, work newest first — warmth decays with time.',
+    },
+    {
+      q: 'Is reactivating old leads legal and fair?',
+      a: 'These are people who contacted your business first, and a small number of personal, relevant follow-ups with a clear way to decline is normal business practice in most places. Keep it personal, keep it few, honour every no immediately, and check the rules that apply in your country for marketing messages.',
+    },
+    {
+      q: 'What response should I honestly expect?',
+      a: 'Expect a minority to reply and a smaller minority to buy — and expect it to still be worth it, because the list cost nothing to reach. Anyone promising a specific reactivation rate for your list is guessing; BackWon’s job is to measure your real one.',
+    },
+    {
+      q: 'How often should I run a reactivation?',
+      a: 'A quarterly pass works for most businesses: work the newly-dormant each time, plus one older segment on rotation. More often than that and you are contacting the same quiet people too frequently.',
+    },
+  ],
+}
+
+/* ------------------------------------------------------------------ */
+/* Resource articles — practical guides under /resources/              */
+/* ------------------------------------------------------------------ */
+
+/* ------------- Follow-up messages that get replies ------------- */
+const followUpMessagesGuide = {
+  type: 'follow-up-messages-guide',
+  path: '/resources/follow-up-messages-that-get-replies',
+  title: 'Follow-Up Messages That Get Replies | BackWon',
+  description:
+    'How to write follow-up messages that get replies: the structure, word-for-word examples for WhatsApp, calls and DMs, timing, and mistakes to avoid.',
+  keywords:
+    'follow up messages that get replies, follow up message templates, WhatsApp follow up message examples, how to write a follow up message, follow up text examples',
+  eyebrow: 'RESOURCES · GUIDE',
+  heading: 'Follow-up messages that get replies.',
+  intro:
+    'Most follow-ups fail for one boring reason: they ask the customer to do all the work. "Just checking in" gives them nothing to answer. A follow-up that gets a reply does the opposite — it reconnects to what they wanted, adds one new thing, and asks one question that takes five seconds to answer. Here is how to write that message, with examples you can copy.',
+  sections: [
+    {
+      icon: 'target',
+      title: 'Start from their last message, not your pitch',
+      text: 'Open by referencing the specific thing they asked about — the service, the date they mentioned, the problem they described. "Hi Sam, you asked about getting the scratches on the bonnet sorted" instantly proves this is a conversation, not a campaign. Generic openers get generic treatment: ignored.',
+    },
+    {
+      icon: 'message',
+      title: 'The structure: context, reason, one easy question',
+      text: 'Three short parts. Context: who you are and what they enquired about. Reason: one new piece of information — a slot that opened, a question answered, a smaller option. Question: a single, easy ask with a built-in answer path. Example: "Hi Sam, it’s Jo at Bright Shine — you asked about a full detail last week. Two Saturday slots have opened up. Want me to hold the 10am one for you?"',
+    },
+    {
+      icon: 'clock',
+      title: 'Timing beats wording',
+      text: 'The best-crafted message sent nine days late loses to a plain message sent the same day. Send the first follow-up while they still remember enquiring — the same day for calls and chats, within a day or two for quotes. If you only fix one thing, fix the timing; the words matter less than the clock.',
+    },
+    {
+      icon: 'zap',
+      title: 'Give them something new every time',
+      text: 'Each follow-up must earn its place with something the last one did not have: new availability, a photo of similar work, a shorter first step ("we can start with just the front seats"), or a straight answer to the objection they are probably holding — price, timing or trust. A follow-up with nothing new is just a reminder that you want their money.',
+    },
+    {
+      icon: 'heart',
+      title: 'Make saying no easy — replies go up',
+      text: 'It feels backwards, but a graceful exit increases replies: "And if you’ve sorted it already, no problem at all — just let me know and I’ll close this off." People reply to release the pressure, and a clear no today is worth more than silence forever: it frees your list and occasionally turns into "not yet — try me next month".',
+    },
+    {
+      icon: 'check',
+      title: 'Three examples, ready to adapt',
+      text: 'Missed call: "Hi, it’s Ana from City Cuts — sorry we missed your call earlier, we were with clients. Were you looking to book in this week?" Quiet quote: "Hi Rob, your bathroom quote from Tuesday is still open on my side. We’ve had a cancellation, so I could start a week earlier than I quoted — does that help?" Lapsed customer: "Hi Meera, it’s been a few months since your last service and the car’s probably due. Want me to check what it needs before the rush?" Each one names the person, the history and one easy next step.',
+    },
+  ],
+  showcase: {
+    title: 'Put the messages on a system',
+    text: 'The tools and templates that make sure these messages actually get sent.',
+    items: [
+      {
+        to: '/resources/follow-up-sequence-template',
+        title: 'Follow-up sequence template',
+        text: 'How these messages chain into a five-touch cadence over two weeks.',
+      },
+      {
+        to: '/whatsapp-follow-up-tool',
+        title: 'WhatsApp follow-up tool',
+        text: 'One-tap follow-ups and voice notes from every enquiry record.',
+      },
+      {
+        to: '/resources/whatsapp-follow-up-etiquette',
+        title: 'WhatsApp follow-up etiquette',
+        text: 'How often to message before welcome turns into blocked.',
+      },
+    ],
+  },
+  faq: [
+    {
+      q: 'How many follow-ups should I send before stopping?',
+      a: 'For most enquiries, three to five touches across about two weeks, each adding something new, then a final polite close. After the close, stop — the record stays in BackWon for a future reactivation pass rather than an endless drip of nudges.',
+    },
+    {
+      q: 'They read my message and did not reply. Now what?',
+      a: 'Do not resend the same message louder. Change the angle: a voice note instead of text, a smaller offer, or a genuinely useful piece of information. If two different angles get silence, send the graceful-exit message — it converts a surprising share of silent readers into a reply, even if the reply is "not now".',
+    },
+    {
+      q: 'Should I use templates or write every message fresh?',
+      a: 'Use templates for structure, personalise for real. Keep the skeleton — context, reason, easy question — and always write the first line from the actual conversation. A template with a specific first line outperforms both a blank page and a copy-paste blast.',
+    },
+    {
+      q: 'Which channel gets the best replies?',
+      a: 'The channel the customer chose first. If they enquired on WhatsApp, follow up on WhatsApp; if they called, call or message the number they called from. Switching channels without permission feels like surveillance, not service.',
+    },
+  ],
+}
+
+/* ------------- Lead response time ------------- */
+const leadResponseTimeGuide = {
+  type: 'lead-response-time-guide',
+  path: '/resources/lead-response-time',
+  title: 'Lead Response Time: Why Speed Wins | BackWon',
+  description:
+    'Lead response time explained: why minutes matter, what a realistic target is for a small team, and the routine that gets you there without new hires.',
+  keywords:
+    'lead response time, speed to lead, how fast should you respond to a lead, lead response time best practices, inquiry response time, speed to lead guide',
+  eyebrow: 'RESOURCES · GUIDE',
+  heading: 'Lead response time: the clock starts when they contact you.',
+  intro:
+    'Lead response time is the gap between a customer contacting you and your first real reply. It is the least glamorous number in sales and one of the most consequential: the customer who hears back first usually frames the comparison every later reply is judged against. This guide covers why the gap matters, where it actually leaks, and a target a small, busy team can genuinely hold.',
+  sections: [
+    {
+      icon: 'clock',
+      title: 'Why minutes matter more than hours',
+      text: 'An enquiry is made in a moment of intent — the car is making the noise now, the event is this month, the problem is on their mind today. Research on online leads has pointed the same way for years: the odds of reaching and qualifying a lead fall steeply as the first response stretches from minutes into hours, because the customer moves on to the next business or simply cools off. You do not need the exact multiplier to act on the direction.',
+    },
+    {
+      icon: 'search',
+      title: 'Where response time actually leaks',
+      text: 'Rarely in the reply itself — writing one takes a minute. It leaks in noticing: the enquiry sits in an app nobody opened, a shared inbox everyone assumed someone else had, or a phone that was busy for three straight hours. Audit your last twenty enquiries honestly: when did each arrive, when did a human first reply, and where did the gap live? The fix is almost always a noticing system, not faster typing.',
+    },
+    {
+      icon: 'target',
+      title: 'Pick a target your team can hit',
+      text: 'A five-minute target that collapses every busy day is worse than a one-hour target that holds. For most small teams a workable standard is: every enquiry gets a first human response within the hour during working hours, and first thing next morning outside them. Write the target down, assign who owns it at each time of day, and review it weekly until it is boring.',
+    },
+    {
+      icon: 'users',
+      title: 'Cover the gaps: rota and handover',
+      text: 'Response time dies at shift changes, lunch and days off. Two habits fix most of it: a named person owns new enquiries for each block of the day, and every open enquiry carries its next step in a shared queue — so cover never starts from "what did we tell them?" BackWon’s round-robin routing and shared follow-up queue exist precisely for this handover problem.',
+    },
+    {
+      icon: 'bell',
+      title: 'Measure first response separately',
+      text: 'Track two numbers, not one: time to first response, and time to resolution. Teams that only track "dealt with" hide slow first replies behind fast closes. A simple weekly glance at first-response times on new enquiries — BackWon keeps the timestamps on every record — tells you whether the routine is working or just feeling busy.',
+    },
+    {
+      icon: 'refresh',
+      title: 'The second response matters as much',
+      text: 'Speed gets the glory, but persistence closes the deal: most enquiries that convert need more than one exchange. A fast first reply followed by silence is just a quicker way to lose. Pair the response-time target with a follow-up cadence — every open enquiry always has a next step and a date — and the two habits compound.',
+    },
+  ],
+  showcase: {
+    title: 'Build the routine',
+    text: 'The software and the cadence that make fast first responses normal.',
+    items: [
+      {
+        to: '/lead-follow-up-software',
+        title: 'Lead follow-up software',
+        text: 'Owners, due dates and routing — the noticing system this guide describes.',
+      },
+      {
+        to: '/resources/follow-up-sequence-template',
+        title: 'Follow-up sequence template',
+        text: 'What happens after the first reply: five touches over two weeks.',
+      },
+      {
+        to: '/missed-call-follow-up',
+        title: 'Missed call follow-up',
+        text: 'The response-time problem in its purest form — and its fix.',
+      },
+    ],
+  },
+  faq: [
+    {
+      q: 'What is a good lead response time for a small business?',
+      a: 'Within the hour during working hours is a strong, achievable standard for most small teams; within a few minutes is better where someone can genuinely watch the inbox. The right target is the fastest one your team can hold on its busiest day, not its quietest.',
+    },
+    {
+      q: 'Does an automatic acknowledgement count as a response?',
+      a: 'It counts as a receipt, not a response. An instant "thanks, we’ll be in touch" buys goodwill and confirms the enquiry arrived, but customers judge you on the first substantive reply from a person. Use automation to acknowledge, then make sure the human reply follows inside your target.',
+    },
+    {
+      q: 'We are too busy to reply within the hour. What then?',
+      a: 'Shrink the reply, not the standard. A two-line holding reply from a phone — "Got your enquiry about the gearbox, I’m under a car until 3, will confirm times right after" — is a real response and takes twenty seconds. Busy is exactly when enquiries leak; the holding reply is the busy team’s version of speed.',
+    },
+    {
+      q: 'Does response time matter for walk-ins and referrals too?',
+      a: 'Yes, in a different form: the "we’ll call you back with a time" promise is a response-time commitment. Log it in the follow-up queue with a due date, and the same discipline applies — the customer experiences a kept promise instead of a forgotten one.',
+    },
+  ],
+}
+
+/* ------------- Follow-up sequence template ------------- */
+const followUpSequenceGuide = {
+  type: 'follow-up-sequence-guide',
+  path: '/resources/follow-up-sequence-template',
+  title: 'Follow-Up Sequence Template That Works | BackWon',
+  description:
+    'A follow-up sequence template walkthrough: five touches over two weeks, what to say at each step, when to stop, and how to run it without automation.',
+  keywords:
+    'follow up sequence template, follow up sequence examples, sales follow up sequence, follow up cadence, drip sequence template, follow up email sequence small business',
+  eyebrow: 'RESOURCES · TEMPLATE',
+  heading: 'A follow-up sequence you can run this week.',
+  intro:
+    'A follow-up sequence is simply a pre-decided series of touches, so no enquiry depends on you remembering — or feeling like — chasing it. This template runs five touches over roughly two weeks. It works for enquiries, quotes and bookings, it can be run entirely by hand, and every touch has a job. Adapt the wording to your trade; keep the rhythm and the rules.',
+  sections: [
+    {
+      icon: 'message',
+      title: 'Touch 1 — Same day: recap and reassure',
+      text: 'Send within hours of the enquiry or quote. Job: prove a human received it and restate the next step. "Hi Dan, it’s Priya at Lane Motors — thanks for asking about the clutch. I’ve got your details and I’ll confirm the earliest slot by tomorrow morning." Short, specific, ends with a promise you then keep.',
+    },
+    {
+      icon: 'zap',
+      title: 'Touch 2 — Day 2–3: add something useful',
+      text: 'Job: give them a reason to decide that they did not have before. New information beats repetition — a photo of a similar job, the answer to the question people usually ask at this point, or genuine availability news. "Quick update — a Thursday morning slot has opened up if the weekend is tricky."',
+    },
+    {
+      icon: 'layers',
+      title: 'Touch 3 — Day 5–6: make the step smaller',
+      text: 'Job: lower the commitment. Many stalls are about size, not interest. Offer the first phase, the inspection, the trial session, the deposit-free hold. "If the full job feels like a lot to decide, we can start with the diagnostic — 30 minutes, and you’ll know exactly where you stand."',
+    },
+    {
+      icon: 'phone',
+      title: 'Touch 4 — Around day 9: change the channel',
+      text: 'Job: break the pattern. If texts went unanswered, make one real call — or send a short voice note, which carries tone that text cannot. Keep it light: "Hi, it’s Priya again — just wanted to check the clutch is still on your list before I release the slot I’ve been holding in mind for you."',
+    },
+    {
+      icon: 'heart',
+      title: 'Touch 5 — Around day 14: the polite close',
+      text: 'Job: end well and invite the honest answer. "I’ll close this off my end so I stop nudging you — if things change, you know where we are." The close is not a failure state: it produces replies ("not yet — try me in June"), keeps your name clean, and parks the record for a future reactivation pass instead of an awkward silence.',
+    },
+    {
+      icon: 'check',
+      title: 'The rules that keep it welcome',
+      text: 'One touch per step, never two channels on the same day. Stop the sequence the moment they reply — it has done its job. Every message references the actual enquiry; the day it could be sent to anyone, it stops working. And record the outcome of each step, so next quarter’s sequence is tuned by your own results, not by a template — including this one.',
+    },
+  ],
+  showcase: {
+    title: 'Run the sequence without the memory work',
+    text: 'BackWon sequences schedule these touches for your team automatically — the messages stay personal.',
+    items: [
+      {
+        to: '/features',
+        title: 'Follow-up sequences in BackWon',
+        text: 'Drip reminders, owners and due dates on every enquiry — free.',
+      },
+      {
+        to: '/resources/follow-up-messages-that-get-replies',
+        title: 'Messages that get replies',
+        text: 'The wording principles behind every touch in this template.',
+      },
+      {
+        to: '/lead-follow-up-software',
+        title: 'Lead follow-up software',
+        text: 'The queue that keeps sequences running alongside new leads.',
+      },
+    ],
+  },
+  faq: [
+    {
+      q: 'Can I run this sequence without any software?',
+      a: 'Yes — a notebook with dates works, and this template was written to be runnable by hand. Software earns its place when the list grows: BackWon’s follow-up sequences create the reminder for each touch automatically, so step four still happens in a week when you are too busy to remember step one.',
+    },
+    {
+      q: 'Should the sequence differ for quotes versus new enquiries?',
+      a: 'The rhythm holds; the content shifts. Quote sequences lean on decision help — smaller phases, availability, validity dates. Enquiry sequences lean on speed and information. Keep five touches over two weeks as the default and adjust the middle touches to the situation.',
+    },
+    {
+      q: 'What if they reply in the middle of the sequence?',
+      a: 'Stop the sequence immediately and continue as a normal conversation. A scheduled nudge landing after a reply is the fastest way to look automated and careless — the exact impression this template is designed to avoid.',
+    },
+    {
+      q: 'Is five touches too pushy?',
+      a: 'Not when each touch adds something and the last one closes politely. What people experience as pushy is repetition without value — the same "just checking in" five times. Five varied, useful, well-spaced touches read as professional persistence, which most customers quietly respect.',
+    },
+  ],
+}
+
+/* ------------- Recover no-show bookings ------------- */
+const recoverNoShowGuide = {
+  type: 'recover-no-show-bookings-guide',
+  path: '/resources/recover-no-show-bookings',
+  title: 'How to Recover No-Show Bookings | BackWon',
+  description:
+    'How to recover no-show bookings: what to say in the first message, when to send it, how to offer new times, and how to handle repeat no-shows fairly.',
+  keywords:
+    'how to recover no-show bookings, no-show rebooking message, missed appointment message template, no-show follow up guide, rebook missed appointment',
+  eyebrow: 'RESOURCES · GUIDE',
+  heading: 'How to recover a no-show booking (without the guilt trip).',
+  intro:
+    'A no-show feels like rejection, but it is usually just life: traffic, a sick child, a meeting that ran over, a calendar that lied. The customer often feels worse about it than you do — which is why a blame-free, same-day message recovers so many of them. This guide covers the exact approach: what to say, when to send it, and what to do when it keeps happening.',
+  sections: [
+    {
+      icon: 'heart',
+      title: 'Assume a good reason first',
+      text: 'Your tone decides everything. A message that implies fault ("You missed your appointment") makes rebooking feel like an apology tour, and many customers quietly choose a competitor instead. A message that assumes life happened ("We missed you — hope everything’s okay") makes rebooking feel like what it is: a small, normal admin task.',
+    },
+    {
+      icon: 'clock',
+      title: 'Send it the same day',
+      text: 'Message within a few hours of the missed slot, while they are still aware they missed it and the need is unresolved. Next-day is acceptable; next-week is archaeology. If your booking tool can flag the no-show, act on the flag the same day — or log it in a follow-up queue so the same-day message never depends on someone remembering.',
+    },
+    {
+      icon: 'message',
+      title: 'The first message, word for word',
+      text: 'Keep it to three short parts: warmth, zero blame, one easy action. "Hi Jess, we missed you at 2pm today — no worries at all, these things happen. If you’d still like to come in, here’s the link to pick a new time: [booking link]. Any questions, just reply here." That is the whole message. No policy lecture, no fee mention in the recovery message — that conversation, if needed, comes later and separately.',
+    },
+    {
+      icon: 'calendar',
+      title: 'Offer two times, not an open question',
+      text: '"When suits you?" puts the work on the person who already failed to organise once. If you are messaging personally rather than sending a link, name two concrete options: "I can do Thursday 10:30 or Friday 4 — either any good?" A choice between two is easy to answer; an open diary is homework.',
+    },
+    {
+      icon: 'refresh',
+      title: 'One nudge, then stop',
+      text: 'If the first message gets no reply, send one shorter nudge two or three days later — "Still happy to rebook you, Jess — the link works whenever." Then close the record. Two messages say "we value you"; five say "we are desperate", and desperation is the one message that reliably loses the customer for good.',
+    },
+    {
+      icon: 'shield',
+      title: 'Handle repeat no-shows fairly',
+      text: 'A pattern is different from an accident. After a second or third miss, a brief personal call beats another link: ask whether something is making the times unworkable, and if your business uses deposits or prepayment for repeat bookers, explain it kindly and once. Whatever policy you choose, apply it from a written record of the misses — BackWon keeps that history on the customer — not from a frustrated memory.',
+    },
+  ],
+  showcase: {
+    title: 'Make same-day recovery a system',
+    text: 'The software that turns every no-show into a tracked follow-up.',
+    items: [
+      {
+        to: '/no-show-follow-up',
+        title: 'No-show follow-up software',
+        text: 'Booking links, owners and due dates for every missed appointment.',
+      },
+      {
+        to: '/industries/salons',
+        title: 'Salons & spas',
+        text: 'The no-show routine applied to chairs, clients and quiet days.',
+      },
+      {
+        to: '/industries/clinics',
+        title: 'Clinics',
+        text: 'Respectful no-show recovery for patient diaries.',
+      },
+    ],
+  },
+  faq: [
+    {
+      q: 'Should I charge a no-show fee?',
+      a: 'That is a business decision this guide will not make for you — fees deter some no-shows but add friction for everyone else. What is not optional is separating the two conversations: recover the booking with warmth first; discuss policy calmly later if a pattern forms. Mixing them into one message recovers neither the booking nor the goodwill.',
+    },
+    {
+      q: 'What if the customer never replies to either message?',
+      a: 'Close the follow-up and keep the record. Silence after two kind messages usually means the need passed or they booked elsewhere. The record earns its keep later: if they enquire again in six months, you will greet them with context instead of a blank slate.',
+    },
+    {
+      q: 'How do I stop no-shows before they happen?',
+      a: 'Recovery is the second line; reminders are the first. A confirmation at booking and a short reminder the day before — ideally with an easy reschedule option — prevent the forgetful majority. This guide covers the rest: the ones who miss anyway, who are far too valuable to write off.',
+    },
+    {
+      q: 'Does this work for classes and group bookings?',
+      a: 'Yes, with the group twist: a same-day message to a class no-show doubles as a waitlist trigger — recover the person for next week, and offer today’s freed spot onward. The tone rules are identical.',
+    },
+  ],
+}
+
+/* ------------- WhatsApp follow-up etiquette ------------- */
+const whatsappEtiquetteGuide = {
+  type: 'whatsapp-follow-up-etiquette',
+  path: '/resources/whatsapp-follow-up-etiquette',
+  title: 'WhatsApp Follow-Up Etiquette for Business | BackWon',
+  description:
+    'WhatsApp follow-up etiquette for businesses: when to message, how often, what a good first message looks like, and the habits that get you blocked.',
+  keywords:
+    'WhatsApp follow up etiquette, WhatsApp business messaging etiquette, how to follow up on WhatsApp professionally, WhatsApp business follow up rules, WhatsApp follow up mistakes',
+  eyebrow: 'RESOURCES · GUIDE',
+  heading: 'WhatsApp follow-up etiquette: welcome, not watched.',
+  intro:
+    'WhatsApp is not email. Your message lands between their family group and their best friend, on the device they check last at night. That intimacy is exactly why WhatsApp follow-ups get replies other channels never see — and why clumsy ones get you muted or blocked. These are the working rules businesses that live on WhatsApp follow.',
+  sections: [
+    {
+      icon: 'message',
+      title: 'You are in their personal inbox — act like it',
+      text: 'Write like a person from a business they contacted, not like a campaign. One short message, in your own words, about their actual enquiry. If a message could be sent unchanged to five hundred people, it will feel that way to each of them — and WhatsApp punishes that feeling with blocks that quietly kill your number’s reach.',
+    },
+    {
+      icon: 'check',
+      title: 'Introduce yourself in every first message',
+      text: 'Your number may not be saved in their phone, and an unidentified "Hi, following up" reads as a scam. First messages should carry your name and business in the opening line: "Hi Arun, it’s Deepak from Shine Studio — you asked about ceramic coating yesterday." It takes four seconds and changes the entire read of the message.',
+    },
+    {
+      icon: 'clock',
+      title: 'Timing: inside the day, inside the hours',
+      text: 'Follow up the same day where you can — that is responsiveness, not pressure. Outside working hours, queue it for the morning; a 10pm sales nudge feels like surveillance even when it is innocent. The exception is a reply to their message: answering a customer who wrote to you at 9pm, at 9pm, is simply good service.',
+    },
+    {
+      icon: 'target',
+      title: 'One message, one question',
+      text: 'Each follow-up should contain exactly one ask, phrased so it can be answered in a few words — ideally yes, no, or a choice between two options. Three questions in one message gets answered with none. If you need more information, earn it across the conversation, one easy reply at a time.',
+    },
+    {
+      icon: 'zap',
+      title: 'Voice notes: short, named, optional',
+      text: 'A voice note can be the warmest follow-up on WhatsApp — a real voice resets a stalled chat — but keep it under thirty seconds, say their name early, and make sure the same information exists in text for people who cannot listen right now. Never send a long voice note as a first contact; it asks for effort before you have earned it.',
+    },
+    {
+      icon: 'shield',
+      title: 'Permission, persistence and the graceful exit',
+      text: 'Follow up only with people who contacted you or clearly agreed to hear from you, keep the count low — a handful of touches across two weeks is the outer limit for an enquiry — and make stopping effortless. A customer who says no, or asks you to stop, is closed immediately and permanently on that topic. Handled well, even the exit leaves your name in good standing for the day their need returns.',
+    },
+  ],
+  showcase: {
+    title: 'Etiquette, on a system',
+    text: 'The tool that keeps follow-ups personal, owned and on schedule.',
+    items: [
+      {
+        to: '/whatsapp-follow-up-tool',
+        title: 'WhatsApp follow-up tool',
+        text: 'One-tap follow-ups, sequences and voice notes from every record.',
+      },
+      {
+        to: '/resources/follow-up-messages-that-get-replies',
+        title: 'Messages that get replies',
+        text: 'The structure and examples behind a welcome follow-up.',
+      },
+      {
+        to: '/resources/follow-up-sequence-template',
+        title: 'Follow-up sequence template',
+        text: 'How the touches space out over two weeks without crowding.',
+      },
+    ],
+  },
+  faq: [
+    {
+      q: 'How many WhatsApp follow-ups is too many?',
+      a: 'For a single enquiry, three to five messages across about two weeks is a reasonable outer boundary — provided each adds something new and the last is a polite close. Beyond that, or daily at any count, you are no longer following up; you are crowding, and blocks follow.',
+    },
+    {
+      q: 'Is it okay to follow up with someone who only called me?',
+      a: 'Yes — they contacted your business and a message to that number about that enquiry is expected, especially a "sorry we missed your call" the same day. Introduce yourself clearly, keep it about their enquiry, and stop if they ask. Following up is expected; marketing blasts to callers are a different thing entirely.',
+    },
+    {
+      q: 'Should I use WhatsApp broadcast lists for follow-ups?',
+      a: 'Not for follow-ups. Broadcasts are one-to-many by design and read that way; follow-ups work because they are one-to-one and specific. Broadcasts have legitimate uses for opted-in announcements — a follow-up about someone’s own enquiry is not one of them.',
+    },
+    {
+      q: 'What do I do if a customer blocks or reports us?',
+      a: 'Treat it as data, not insult. Review what was sent, how many touches and how fast — the cause is almost always frequency or a message that felt generic. Tighten the cadence, personalise the first line, and make sure every sequence ends with a graceful close.',
+    },
+  ],
+}
+
+/* ------------------------------------------------------------------ */
 /* Exports                                                             */
 /* ------------------------------------------------------------------ */
 
@@ -1613,6 +2929,14 @@ export const SEO_PAGES = [
   missedInquiries,
   followUpManagement,
   revenueRecovery,
+  missedCallFollowUp,
+  whatsappFollowUp,
+  leadFollowUpSoftware,
+  winBackCustomers,
+  noShowFollowUp,
+  crmAlternative,
+  quoteFollowUp,
+  dormantReactivation,
   industries,
   carDetailing,
   salons,
@@ -1625,6 +2949,11 @@ export const SEO_PAGES = [
   manifesto,
   resources,
   missedRevenueCalculator,
+  followUpMessagesGuide,
+  leadResponseTimeGuide,
+  followUpSequenceGuide,
+  recoverNoShowGuide,
+  whatsappEtiquetteGuide,
 ]
 
 /** Look up a page by its `type` key. */
@@ -1666,6 +2995,25 @@ export const FOOTER_GROUPS = [
       { to: missedInquiries.path, label: 'Missed inquiries' },
       { to: followUpManagement.path, label: 'Follow-up management' },
       { to: revenueRecovery.path, label: 'Revenue recovery' },
+      { to: missedCallFollowUp.path, label: 'Missed call follow-up' },
+      { to: whatsappFollowUp.path, label: 'WhatsApp follow-up tool' },
+      { to: leadFollowUpSoftware.path, label: 'Lead follow-up software' },
+      { to: winBackCustomers.path, label: 'Win back customers' },
+      { to: noShowFollowUp.path, label: 'No-show follow-up' },
+      { to: quoteFollowUp.path, label: 'Quote follow-up' },
+      { to: dormantReactivation.path, label: 'Lead reactivation' },
+      { to: crmAlternative.path, label: 'CRM alternative' },
+    ],
+  },
+  {
+    title: 'Guides & articles',
+    links: [
+      { to: missedRevenueCalculator.path, label: 'Missed revenue calculator' },
+      { to: followUpMessagesGuide.path, label: 'Messages that get replies' },
+      { to: leadResponseTimeGuide.path, label: 'Lead response time' },
+      { to: followUpSequenceGuide.path, label: 'Follow-up sequence template' },
+      { to: recoverNoShowGuide.path, label: 'Recover no-show bookings' },
+      { to: whatsappEtiquetteGuide.path, label: 'WhatsApp etiquette' },
     ],
   },
   {

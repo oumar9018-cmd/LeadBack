@@ -1,0 +1,243 @@
+/* Reports page — #115/#70 branch comparison + #116/#89 team
+ * scorecards. Light theme matching Revenue/Customers: #2563EB
+ * primary, hairline borders, 16px panels on the #f7f9fc backdrop. */
+
+.reports-page {
+  min-height: 100vh;
+  padding: 42px 24px 60px;
+  background:
+    radial-gradient(circle at top right, rgba(37, 99, 235, 0.045), transparent 28%),
+    #f7f9fc;
+}
+
+.reports-inner {
+  width: min(1120px, 100%);
+  margin: 0 auto;
+}
+
+.reports-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+
+.reports-header h1 {
+  margin: 6px 0 7px;
+  color: #172033;
+  font-size: 30px;
+  line-height: 1.15;
+  letter-spacing: -0.7px;
+}
+
+.reports-header p {
+  margin: 0;
+  color: #718096;
+  font-size: 14px;
+}
+
+.reports-tabs {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  margin-bottom: 14px;
+  border: 1px solid #e5eaf0;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.reports-tab {
+  min-height: 38px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: #536174;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.reports-tab.active {
+  background: #2563eb;
+  color: #fff;
+}
+
+.reports-scope-note {
+  margin: 0 0 14px;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.reports-stats {
+  display: grid;
+  grid-template-columns: 1.35fr repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.reports-stat {
+  min-height: 118px;
+  padding: 20px;
+  border: 1px solid #e5eaf0;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 4px 15px rgba(23, 32, 51, 0.03);
+}
+
+.reports-stat.featured {
+  border-color: #d9e5ff;
+  background:
+    radial-gradient(circle at top right, rgba(37, 99, 235, 0.08), transparent 50%),
+    #fff;
+}
+
+.reports-stat span {
+  display: block;
+  margin-bottom: 10px;
+  color: #7c8899;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.reports-stat strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #172033;
+  font-size: 25px;
+  letter-spacing: -0.6px;
+}
+
+.reports-stat.featured strong {
+  color: #2563eb;
+}
+
+.reports-stat small {
+  color: #8994a4;
+  font-size: 11px;
+}
+
+.reports-panel {
+  overflow: visible;
+  border: 1px solid #e5eaf0;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 5px 18px rgba(23, 32, 51, 0.035);
+}
+
+.reports-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+  padding: 24px;
+  border-bottom: 1px solid #edf0f4;
+}
+
+.reports-toolbar h2 {
+  margin: 0 0 5px;
+  color: #172033;
+  font-size: 17px;
+}
+
+.reports-toolbar p {
+  margin: 0;
+  color: #8994a4;
+  font-size: 12px;
+}
+
+.reports-table-wrap {
+  overflow-x: auto;
+}
+
+.reports-table {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.reports-table th {
+  padding: 12px 16px;
+  border-bottom: 1px solid #edf0f4;
+  color: #7c8899;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-align: right;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.reports-table th:first-child {
+  text-align: left;
+}
+
+.reports-table td {
+  padding: 13px 16px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #334155;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.reports-table td:first-child {
+  text-align: left;
+}
+
+.reports-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.reports-table strong {
+  color: #172033;
+}
+
+.reports-row-unassigned td {
+  background: #fafbfd;
+  color: #64748b;
+}
+
+.reports-role {
+  display: block;
+  color: #8994a4;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.reports-empty {
+  padding: 38px 24px;
+  color: #8994a4;
+  font-size: 13px;
+  text-align: center;
+}
+
+.reports-footnote {
+  margin: 14px 2px 0;
+  color: #8994a4;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+@media (max-width: 900px) {
+  .reports-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 620px) {
+  .reports-page {
+    padding: 28px 16px 48px;
+  }
+
+  .reports-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .reports-stats {
+    grid-template-columns: 1fr;
+  }
+}

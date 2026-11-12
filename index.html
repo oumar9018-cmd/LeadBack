@@ -2,8 +2,11 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <meta name="theme-color" content="#2563eb" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -24,6 +27,7 @@
     />
     <meta property="og:url" content="https://backwon.qd.je/" />
     <meta property="og:site_name" content="BackWon" />
+    <meta property="og:image" content="https://backwon.qd.je/og-image.png" />
 
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -37,6 +41,7 @@
       name="twitter:description"
       content="Recover missed customer inquiries and turn more conversations into customers."
     />
+    <meta name="twitter:image" content="https://backwon.qd.je/og-image.png" />
   <script src="https://www.gstatic.com/firebasejs/12.19.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.19.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore-compat.js"></script>
@@ -51,7 +56,12 @@
     appId: "1:469238593875:web:a83795cfd62ace047409a6"
   };
 
-  if (!firebase.apps.length) {
+  // Guarded: if the Firebase CDN scripts above failed to load (slow or
+  // blocked network), `firebase` is undefined and an unguarded call would
+  // throw a ReferenceError that breaks the rest of this page's parsing.
+  // Skipping init lets the app boot and surface its own "sign-in service
+  // unavailable" state instead of dying silently here.
+  if (window.firebase && !firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
   }
 </script>
@@ -108,6 +118,25 @@
           // sessionStorage can be blocked; ignore and fall through to the root.
         }
       })();
+    </script>
+    <script>
+      // Last-resort splash watchdog: if the app bundle itself never arrives
+      // (e.g. a stale cached page pointing at an old bundle hash after a
+      // deploy), neither React nor main.jsx's own watchdog can run. After
+      // 20s with the splash still on screen, offer a reload instead of
+      // leaving the splash up forever. If the app mounted, React has
+      // already replaced the splash and this does nothing.
+      setTimeout(function () {
+        var splash = document.getElementById('backwon-splash');
+        if (!splash) return;
+        splash.innerHTML =
+          '<div style="text-align:center;max-width:420px;padding:24px;">' +
+          '<div style="width:56px;height:56px;margin:0 auto 16px;border-radius:16px;background:#2563EB;color:#fff;font-weight:700;font-size:28px;display:flex;align-items:center;justify-content:center;">B</div>' +
+          '<div style="font-weight:600;color:#0f172a;font-size:17px;">Couldn\u2019t load BackWon</div>' +
+          '<div style="font-size:13px;color:#64748b;margin:6px 0 18px;">The app took too long to load. Your data is safe \u2014 reloading usually fixes it.</div>' +
+          '<button type="button" onclick="window.location.reload()" style="background:#2563EB;color:#fff;border:none;border-radius:10px;padding:10px 20px;font-size:14px;font-weight:600;cursor:pointer;">Reload BackWon</button>' +
+          '</div>';
+      }, 20000);
     </script>
     <script type="module" src="/src/main.jsx"></script>
   </body>

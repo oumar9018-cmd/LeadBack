@@ -22,6 +22,8 @@ import Login from './Login.jsx'
 import Inquiries from './Inquiries.jsx'
 import Followups from './Followups.jsx'
 import Revenue from './Revenue.jsx'
+import Reports from './Reports.jsx'
+import ExportCenter from './ExportCenter.jsx'
 import CEO from './CEO.jsx'
 import AppLayout from './AppLayout.jsx'
 import { ROUTER_BASENAME } from './basePath.js'
@@ -83,6 +85,7 @@ import {
   inScope,
 } from './utils/workspace.js'
 import { WorkspaceProvider, useWorkspace } from './components/WorkspaceContext.jsx'
+import AppLoading from './components/AppLoading.jsx'
 import AcceptInvite from './components/AcceptInvite.jsx'
 import LossIntelligence from './components/LossIntelligence.jsx'
 import StreakWidget from './components/StreakWidget.jsx'
@@ -1061,6 +1064,31 @@ function Dashboard() {
     detailLoadedId !== searchParams.get('inquiry')
   ) {
     return <Navigate to="/app/inquiries" replace />
+  }
+
+  // White-page fix: while the workspace is still resolving, this
+  // component used to fall through to the return below and paint the
+  // Overview with zeroed stats (or, in detail-only mode, a literally
+  // empty fragment — only the modals render there, and none is open
+  // yet). AppLayout already gates <Outlet/> on the same flag; this
+  // keeps Dashboard correct if it is ever rendered without the gate.
+  if (wsLoading) {
+    return <AppLoading />
+  }
+
+  // Detail-only mode (/app/inquiry): until the deep-linked inquiry
+  // has been resolved — from the loaded list or the single-doc
+  // fetch — there is nothing to show yet. Render the branded
+  // loading state instead of the empty fragment; the guards above
+  // take over (Navigate to the list) once the load has finished and
+  // the inquiry turns out not to exist.
+  if (detailOnly && !detailInquiry) {
+    return (
+      <AppLoading
+        title="Opening inquiry…"
+        message="Just a moment — loading this customer's details."
+      />
+    )
   }
 
   return (
@@ -2309,6 +2337,8 @@ function App() {
           <Route path="/app/api" element={<Api />} />
           <Route path="/app/team" element={<Team />} />
           <Route path="/app/activity" element={<Activity />} />
+          <Route path="/app/reports" element={<Reports />} />
+          <Route path="/app/exports" element={<ExportCenter />} />
           <Route path="/app/workflows" element={<Workflows />} />
           <Route path="/app/recovery" element={<Recovery />} />
           <Route path="/app/profile" element={<Profile />} />
