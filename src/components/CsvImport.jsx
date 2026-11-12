@@ -3,6 +3,11 @@ import { useNavigate } from 'react-router-dom'
 import Modal from './Modal.jsx'
 import { parseCsv, guessMapping } from '../utils/csv.js'
 import { normalizePhone } from '../utils/whatsapp.js'
+import {
+  buildImportedCustomValues,
+  guessCustomFieldMapping,
+  loadCustomFieldDefinitions,
+} from '../utils/customFields.js'
 import './CsvImport.css'
 
 /**
@@ -25,6 +30,10 @@ import './CsvImport.css'
  *   unparseable → 0, flagged.
  * - A failed import keeps an "imported X of Y, resume" state; resume
  *   re-dedupes against what already landed, so it never duplicates.
+ * - Custom fields defined in Settings can be mapped like the core
+ *   columns. A value that does not fit its field (a dropdown option
+ *   that does not exist, an unparseable number/date) is left blank
+ *   and counted in the preview — never guessed.
  */
 
 const MAX_ROWS_PER_FILE = 10000
@@ -45,6 +54,8 @@ export default function CsvImport({ open, onClose, workspace, existingItems, onI
   const [headers, setHeaders] = useState([])
   const [dataRows, setDataRows] = useState([])
   const [mapping, setMapping] = useState({ name: -1, phone: -1, service: -1, value: -1, lastContact: -1 })
+  const [customFields, setCustomFields] = useState([])
+  const [customMapping, setCustomMapping] = useState({})
   const [results, setResults] = useState(null)
   const [importedCount, setImportedCount] = useState(0)
   const [importedIds, setImportedIds] = useState([])
@@ -59,6 +70,7 @@ export default function CsvImport({ open, onClose, workspace, existingItems, onI
     setHeaders([])
     setDataRows([])
     setMapping({ name: -1, phone: -1, service: -1, value: -1, lastContact: -1 })
+    setCustomMapping({})
     setResults(null)
     setImportedCount(0)
     setImportedIds([])
@@ -66,6 +78,21 @@ export default function CsvImport({ open, onClose, workspace, existingItems, onI
     setImportError('')
     setImporting(false)
   }, [open ])
+
+  // Custom-field definitions for this workspace (#13) — loaded when
+  // the modal opens so the mapping step can offer one column pick per
+  // field. Workspaces without definitions see no change at all.
+  useEffect(() => {
+    if (!open || !workspace?.ownerUid) return undefined
+    let cancelled = false
+    const db = window.firebase?.firestore?.()
+    loadCustomFieldDefinitions(db, workspace.ownerUid).then(list => {
+      if (!cancelled) setCustomFields(list)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [open, workspace ])
 
   const existingPhones = useMemo(() => {
     const set = new Set()
@@ -94,9 +121,11 @@ export default function CsvImport({ open, onClose, workspace, existingItems, onI
         )
         return
       }
-      setHeaders(rows[0].map(h => String(h || '').trim()))
+      const trimmedHeaders = rows[0].map(h => String(h || '').trim())
+      setHeaders(trimmedHeaders)
       setDataRows(data)
-      setMapping(guessMapping(rows[0].map(h => String(h || '').trim())))
+      setMapping(guessMapping(trimmedHeaders))
+      setCustomMapping(guessCustomFieldMapping(customFields, trimmedHeaders))
       setStep('mapping')
     } catch (error) {
       console.error('CSV read failed:', error)
@@ -128,6 +157,11 @@ export default function CsvImport({ open, onClose, workspace, existingItems, onI
         }
       }
       const lastContact = mapping.lastContact >= 0 ? cell(row, mapping.lastContact) : ''
+      const { custom, flagged: customFlagged } = buildImportedCustomValues(
+        customFields,
+        customMapping,
+        row
+      )
       let status = 'ready'
       let reason = ''
       if (!name) {
@@ -146,12 +180,16 @@ export default function CsvImport({ open, onClose, workspace, existingItems, onI
         status = 'flagged'
         reason = 'Value did not parse — will import as 0'
       }
-      return { index, name, phoneRaw, normalized, service, value, lastContact, status, reason }
+      return { index, name, phoneRaw, normalized, service, value, lastContact, custom, customFlagged, status, reason }
     })
     setResults(built)
     setStep('preview')
   }
 
+  const customFlaggedCells = (results || []).reduce(
+    (sum, r) => sum + (r.customFlagged || 0),
+    0
+  )
   const readyRows = (results || []).filter(r => r.status === 'ready')
   const flaggedRows = (results || []).filter(r => r.status === 'flagged')
   const duplicateRows = (results || []).filter(r => r.status === 'duplicate')
@@ -190,6 +228,7 @@ export default function CsvImport({ open, onClose, workspace, existingItems, onI
             branchId,
             importedAt: new Date().toISOString(),
             lastContact: r.lastContact || '',
+            custom: r.custom || {},
             date: 'Imported',
             createdAt: Date.now(),
           })
@@ -215,6 +254,7 @@ export default function CsvImport({ open, onClose, workspace, existingItems, onI
         branchId,
         importedAt: new Date().toISOString(),
         lastContact: r.lastContact || '',
+        custom: r.custom || {},
         date: 'Imported',
         createdAt: Date.now(),
       }))
@@ -263,6 +303,23 @@ export default function CsvImport({ open, onClose, workspace, existingItems, onI
     )
   }
 
+  function customFieldMappingSelect(field) {
+    return (
+      <label className="csv-mapping-row" key={field.id}>
+        <span>{field.label}</span>
+        <select
+          value={customMapping[field.id] ?? -1}
+          onChange={e => setCustomMapping(m => ({ ...m, [field.id]: Number(e.target.value) }))}
+        >
+          <option value={-1}>Not mapped</option>
+          {headers.map((h, i) => (
+            <option key={i} value={i}>{h || `Column ${i + 1}`}</option>
+          ))}
+        </select>
+      </label>
+    )
+  }
+
   const mappingValid = mapping.name >= 0 && mapping.phone >= 0
   const progress = readyRows.length ? Math.round((importedCount / readyRows.length) * 100) : 0
 
@@ -297,6 +354,12 @@ export default function CsvImport({ open, onClose, workspace, existingItems, onI
             {mappingSelect('Service', 'service', false)}
             {mappingSelect('Value', 'value', false)}
             {mappingSelect('Last contact (optional)', 'lastContact', false)}
+            {customFields.length > 0 && (
+              <>
+                <p className="csv-note">Custom fields (optional) — match a column to each of your Settings fields, or leave it unmapped.</p>
+                {customFields.map(field => customFieldMappingSelect(field))}
+              </>
+            )}
             {!mappingValid && <p className="csv-error">Name and Phone must both be mapped to continue.</p>}
             <div className="csv-actions">
               <button type="button" className="ghost-button" onClick={() => setStep('upload')}>Back</button>
@@ -338,6 +401,9 @@ export default function CsvImport({ open, onClose, workspace, existingItems, onI
             </div>
             {flaggedRows.length > 0 && (
               <p className="csv-note">Flagged rows are NOT imported in this run. Fix the sheet and re-import, or import the ready rows now.</p>
+            )}
+            {customFlaggedCells > 0 && (
+              <p className="csv-note">{customFlaggedCells} custom-field {customFlaggedCells === 1 ? 'value does' : 'values do'} not fit {customFlaggedCells === 1 ? 'its' : 'their'} field (for example, a dropdown option that does not exist) and will be left blank — the rows still import.</p>
             )}
             <div className="csv-actions">
               <button type="button" className="ghost-button" onClick={() => setStep('mapping')}>Back to mapping</button>

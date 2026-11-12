@@ -9,6 +9,7 @@ import AutomationCard from './components/AutomationCard.jsx'
 import SlaCard from './components/SlaCard.jsx'
 import EscalationCard from './components/EscalationCard.jsx'
 import WorkflowsCard from './components/WorkflowsCard.jsx'
+import TargetsCard from './components/TargetsCard.jsx'
 import { CURRENCIES, defaultCurrencyForBrowser } from './utils/money.js'
 
 const defaultSettings = {
@@ -464,6 +465,9 @@ export default function Settings() {
 
           {/* Workflows: opt-in time-based trigger → action rules (Round 3). */}
           <WorkflowsCard />
+
+          {/* Monthly targets: per-rep and per-branch quotas (Round 4). */}
+          <TargetsCard />
 
           <section className="settings-card settings-account-card">
             <div>

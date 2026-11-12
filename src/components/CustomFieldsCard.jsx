@@ -115,7 +115,8 @@ export default function CustomFieldsCard() {
           <p>
             Add your own fields to inquiries — for example, budget range,
             preferred language, or lead source detail. They appear on the
-            add-inquiry form, the inquiry details, and CSV exports.
+            add-inquiry form, the inquiry details, the CSV import column
+            mapping, and CSV exports.
           </p>
         </div>
       </div>

@@ -88,15 +88,15 @@ const features = {
   navLabel: 'Features',
   title: 'BackWon Features — One-Tap WhatsApp Follow-ups & Voice Notes',
   description:
-    'Explore BackWon features: one-tap WhatsApp follow-ups, voice-note win-backs, follow-up sequences, booking links, recovery analytics, SLA breach tracking, workflow automations and unlimited seats.',
+    'Explore BackWon features: one-tap WhatsApp follow-ups, voice-note win-backs, follow-up sequences, booking links, recovery analytics, SLA breach tracking, workflow automations, custom fields, monthly sales targets and unlimited seats.',
   keywords:
-    'WhatsApp follow up tool, voice note follow up, missed call recovery, follow up sequence software, booking link generator, customer win back features, unlimited team seats free, role based access, round robin lead routing, webhooks api, bulk csv import, activity log, branch reports, team scorecards, data export, csv export, sla breach tracking, workflow automation rules, blitz follow up sequence, offer ladder',
+    'WhatsApp follow up tool, voice note follow up, missed call recovery, follow up sequence software, booking link generator, customer win back features, unlimited team seats free, role based access, round robin lead routing, webhooks api, bulk csv import, activity log, branch reports, team scorecards, data export, csv export, sla breach tracking, workflow automation rules, blitz follow up sequence, offer ladder, custom fields, sales targets, sales quotas, revenue forecast',
   eyebrow: 'FEATURES',
   heading: 'Every feature has one job: getting the customer back.',
   intro:
     'BackWon is deliberately narrow. It does the work that decides whether an interested customer becomes a paying one — and it leaves the rest alone.',
   stats: [
-    { value: '20', label: 'Features included' },
+    { value: '22', label: 'Features included' },
     { value: '0', label: 'Spreadsheets required' },
     { value: 'Free', label: 'Forever' },
   ],
@@ -201,6 +201,16 @@ const features = {
       title: 'Offer ladder checklist',
       text: 'A 3-step win-back checklist on each inquiry: write the first small offer, the stronger second one and your best final offer, and tick each off as you make it — so the team can see what has already been tried on a customer before offering more.',
     },
+    {
+      icon: 'file',
+      title: 'Custom fields',
+      text: 'Define up to 10 fields of your own in Settings — text, number, date, or a dropdown with your options — for the details your business tracks, like budget range or preferred language. They appear on the add-inquiry form and on each inquiry’s details, can be filled from a mapped column during CSV import, and are included in CSV exports. Removing a field hides it; values already saved on inquiries are kept.',
+    },
+    {
+      icon: 'trending',
+      title: 'Monthly targets & pace forecast',
+      text: 'Set a monthly recovered-revenue and recovery-count target for each person and each branch in Settings. The branch and team scorecards in Reports then show this month’s progress against each target, and a pace estimate scales this month’s daily recovery rate to the full month — labelled in the app as an estimate, not a promise.',
+    },
   ],
   faq: [
     {
@@ -254,6 +264,14 @@ const features = {
     {
       q: 'How does the offer ladder work?',
       a: 'Each open inquiry carries a 3-step offer ladder checklist: a first small offer, a stronger second offer and your best final offer. Your team writes each offer on the inquiry and ticks it off as it is made, so nobody repeats an offer that already failed or jumps straight to the biggest discount.',
+    },
+    {
+      q: 'Can I add my own fields to inquiries?',
+      a: 'Yes. Owners and admins can define up to 10 custom fields in Settings — text, number, date, or a dropdown with your own options. They appear on the add-inquiry form and on each inquiry’s details, a matching column can be mapped to them during CSV import, and they are included in CSV exports. Removing a field hides it from forms, but values already saved on inquiries are kept.',
+    },
+    {
+      q: 'Can I set monthly targets for my team or branches?',
+      a: 'Yes. Settings has monthly targets: a recovered-revenue target and a recovery-count target for each person and each branch, applying every month until you change them. Reports shows this month’s progress against each target on the branch comparison and team scorecards, counting inquiries by the date they were marked recovered. Reports also shows a pace estimate — this month’s recoveries scaled to the full month at the current daily rate — and labels it as an estimate, not a promise.',
     },
   ],
 }

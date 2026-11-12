@@ -14,6 +14,15 @@ import {
 } from './utils/reports.js'
 import { getSlaAnalytics, loadSlaSettings } from './utils/sla.js'
 import { buildDigest, formatDigestText } from './utils/digest.js'
+import {
+  loadTargets,
+  monthKeyFromMs,
+  monthLabelFromMs,
+  monthlyRecoveryByBranch,
+  monthlyRecoveryByMember,
+  paceForecast,
+  targetProgress,
+} from './utils/targets.js'
 import './Reports.css'
 
 /**
@@ -45,6 +54,8 @@ export default function Reports() {
   const [copied, setCopied] = useState(false)
   const [digestNow, setDigestNow] = useState(null)
   const [slaNow, setSlaNow] = useState(null)
+  const [targets, setTargets] = useState({ reps: {}, branches: {} })
+  const [monthNow, setMonthNow] = useState(null)
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState('')
 
@@ -126,6 +137,16 @@ export default function Reports() {
         console.error('Reports SLA settings load failed:', error)
       }
 
+      // Monthly targets (settings/targets doc) for the this-month
+      // progress columns. No doc yet = no targets; progress then
+      // shows actuals only.
+      try {
+        const loadedTargets = await loadTargets(db, workspace.ownerUid)
+        if (!cancelled) setTargets(loadedTargets)
+      } catch (error) {
+        console.error('Reports targets load failed:', error)
+      }
+
       try {
         const settingsSnap = await db
           .collection('users')
@@ -142,7 +163,12 @@ export default function Reports() {
       } catch (error) {
         console.error('Reports currency load failed:', error)
       } finally {
-        if (!cancelled) setLoading(false)
+        if (!cancelled) {
+          setLoading(false)
+          // Pin the "this month" snapshot to the load moment (the
+          // digest/sla pattern) so month math stays stable in render.
+          setMonthNow(Date.now())
+        }
       }
     })()
     return () => {
@@ -197,6 +223,54 @@ export default function Reports() {
   })
   if (role === 'sales_rep') {
     teamRows = teamRows.filter(row => row.memberId === myUid)
+  }
+
+  // This-month progress vs targets (settings/targets). Month figures
+  // count inquiries marked recovered in the current month, by their
+  // recoveredAt date — the same items/scope as the scorecards, just
+  // bucketed by month. The snapshot is pinned at load / tab-open
+  // (monthNow) so the math is stable while viewing.
+  const monthKey = monthNow !== null ? monthKeyFromMs(monthNow) : null
+  const monthLabel = monthNow !== null ? monthLabelFromMs(monthNow) : ''
+  const monthMemberById = new Map(
+    (monthKey
+      ? monthlyRecoveryByMember(items, seedMembers, {
+          ownerUid: canManageTeam(role) ? workspace?.ownerUid : undefined,
+          ownerEmail: canManageTeam(role) ? user?.email || '' : undefined,
+          monthKey,
+        })
+      : []
+    ).map(row => [row.memberId, row])
+  )
+  const monthBranchById = new Map(
+    (monthKey ? monthlyRecoveryByBranch(items, branches, monthKey) : []).map(
+      row => [row.branchId, row]
+    )
+  )
+  const pace = monthNow !== null ? paceForecast(items, monthNow) : null
+
+  /** One cell of month progress: actuals always; a percentage only
+   *  when a target exists for that part. */
+  const monthProgressText = (month, target) => {
+    const revenue = month?.recoveredRevenue || 0
+    const count = month?.recoveredCount || 0
+    if (!target) {
+      return `${formatMoney(revenue, currency)} · ${count} recovered · no target set`
+    }
+    const parts = []
+    if (target.revenue > 0) {
+      parts.push(
+        `${formatMoney(revenue, currency)} of ${formatMoney(target.revenue, currency)} (${targetProgress(revenue, target.revenue)}%)`
+      )
+    } else {
+      parts.push(formatMoney(revenue, currency))
+    }
+    if (target.count > 0) {
+      parts.push(`${count} of ${target.count} recoveries`)
+    } else {
+      parts.push(`${count} recovered`)
+    }
+    return parts.join(' · ')
   }
 
   const rows =
@@ -293,7 +367,10 @@ export default function Reports() {
             role="tab"
             aria-selected={view === 'branches'}
             className={view === 'branches' ? 'reports-tab active' : 'reports-tab'}
-            onClick={() => setView('branches')}
+            onClick={() => {
+              setMonthNow(Date.now())
+              setView('branches')
+            }}
           >
             Branches
           </button>
@@ -302,7 +379,10 @@ export default function Reports() {
             role="tab"
             aria-selected={view === 'team'}
             className={view === 'team' ? 'reports-tab active' : 'reports-tab'}
-            onClick={() => setView('team')}
+            onClick={() => {
+              setMonthNow(Date.now())
+              setView('team')
+            }}
           >
             Team
           </button>
@@ -380,6 +460,27 @@ export default function Reports() {
             </div>
           </div>
 
+          {pace && !showLoading && !showError && (
+            <div className="digest-highlights">
+              <p>
+                {monthLabel} pace:{' '}
+                <strong>{formatMoney(pace.recoveredRevenue, currency)}</strong>{' '}
+                recovered in the first {pace.daysElapsed} of {pace.daysInMonth}{' '}
+                days.{' '}
+                {pace.ready ? (
+                  <>
+                    At this pace, the month projects to about{' '}
+                    <strong>{formatMoney(pace.projectedRevenue, currency)}</strong>{' '}
+                    ({pace.projectedCount} recoveries) — a pace estimate, not a
+                    promise.
+                  </>
+                ) : (
+                  <>No recoveries yet this month, so there is no pace to project.</>
+                )}
+              </p>
+            </div>
+          )}
+
           {showLoading && <div className="reports-empty">Loading reports…</div>}
 
           {!showLoading && showError && (
@@ -406,6 +507,7 @@ export default function Reports() {
                     <th>Lost</th>
                     <th>Recovery rate</th>
                     <th>Recovered revenue</th>
+                    <th>This month vs target</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -418,6 +520,7 @@ export default function Reports() {
                       <td>{row.lost}</td>
                       <td>{rateLabel(row.recoveryRate)}</td>
                       <td><strong>{formatMoney(row.recoveredRevenue, currency)}</strong></td>
+                      <td>{monthProgressText(monthBranchById.get(row.branchId), row.isUnassigned ? null : targets.branches[row.branchId])}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -438,6 +541,7 @@ export default function Reports() {
                     <th>Recovery rate</th>
                     <th>Recovered revenue</th>
                     <th>Follow-ups due today</th>
+                    <th>This month vs target</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -454,6 +558,7 @@ export default function Reports() {
                       <td>{rateLabel(row.recoveryRate)}</td>
                       <td><strong>{formatMoney(row.recoveredRevenue, currency)}</strong></td>
                       <td>{row.followupsDueToday}</td>
+                      <td>{monthProgressText(monthMemberById.get(row.memberId), row.isUnassigned ? null : targets.reps[row.memberId])}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -766,6 +871,13 @@ export default function Reports() {
           Recovery rate counts closed inquiries only (recovered ÷ recovered + lost) —
           open inquiries have not had their chance yet, so they are excluded rather
           than counted as failures. Recovered revenue is the value of recovered inquiries.
+        </p>
+
+        <p className="reports-footnote">
+          “This month” counts inquiries marked recovered in the current month, by
+          their recovery date. Monthly targets are set in Settings and apply every
+          month until changed. The pace projection simply scales this month’s
+          daily recovery rate to the full month — an estimate, not a promise.
         </p>
       </div>
     </div>

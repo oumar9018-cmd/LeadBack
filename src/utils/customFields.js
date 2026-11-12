@@ -87,6 +87,95 @@ export function normalizeCustomValue(type, raw) {
 }
 
 /**
+ * Guess which CSV column feeds each custom field during import.
+ * Exact header match against the field label (case-insensitive)
+ * first — a sheet exported from BackWon carries the label as its
+ * header, so re-imports map themselves — then against the field id
+ * (the label's slug). Returns { [fieldId]: columnIndex | -1 }.
+ * Pure.
+ */
+export function guessCustomFieldMapping(defs, headers) {
+  const normalized = (headers || []).map(h =>
+    String(h || '').trim().toLowerCase()
+  )
+  const mapping = {}
+  for (const field of Array.isArray(defs) ? defs : []) {
+    if (!field?.id) continue
+    let index = normalized.indexOf(
+      String(field.label || '').trim().toLowerCase()
+    )
+    if (index < 0) index = normalized.indexOf(field.id)
+    mapping[field.id] = index
+  }
+  return mapping
+}
+
+/**
+ * Coerce one imported CSV cell into a storable custom value.
+ * Returns { value, flagged }: `value` is '' when nothing should be
+ * stored; `flagged` is true only when the cell HAD content that
+ * could not be used (a dropdown value matching no option, a number
+ * or date that does not parse) — the import preview surfaces the
+ * count instead of silently dropping data. Dropdown matches are
+ * case-insensitive and store the canonical option text. Pure.
+ */
+export function coerceImportedCustomValue(field, raw) {
+  const text = String(raw ?? '').trim()
+  if (!text) return { value: '', flagged: false }
+  if (!field || !CUSTOM_FIELD_TYPES.some(t => t.id === field.type)) {
+    return { value: '', flagged: true }
+  }
+  if (field.type === 'number') {
+    const cleaned = text.replace(/[^0-9.-]/g, '')
+    const n =
+      cleaned && cleaned !== '-' && cleaned !== '.'
+        ? Number(cleaned)
+        : NaN
+    return Number.isFinite(n)
+      ? { value: n, flagged: false }
+      : { value: '', flagged: true }
+  }
+  if (field.type === 'date') {
+    const parsed = new Date(text)
+    if (Number.isNaN(parsed.getTime())) return { value: '', flagged: true }
+    return { value: parsed.toISOString().slice(0, 10), flagged: false }
+  }
+  if (field.type === 'select') {
+    const match = (field.options || []).find(
+      option => String(option).toLowerCase() === text.toLowerCase()
+    )
+    return match
+      ? { value: match, flagged: false }
+      : { value: '', flagged: true }
+  }
+  return { value: text, flagged: false }
+}
+
+/**
+ * Build the `custom` map for one imported CSV row. `mapping` is
+ * { [fieldId]: columnIndex } (-1 or missing = not mapped); `row` is
+ * the raw cell array. Empty values are dropped, mirroring manual
+ * creation, so imported and hand-added inquiries keep the same
+ * shape. Returns { custom, flagged } — flagged counts cells that
+ * had content but could not be used. Pure.
+ */
+export function buildImportedCustomValues(defs, mapping, row) {
+  const custom = {}
+  let flagged = 0
+  for (const field of Array.isArray(defs) ? defs : []) {
+    const index = mapping?.[field.id]
+    if (typeof index !== 'number' || index < 0) continue
+    const result = coerceImportedCustomValue(
+      field,
+      Array.isArray(row) ? row[index] : ''
+    )
+    if (result.flagged) flagged += 1
+    if (result.value !== '') custom[field.id] = result.value
+  }
+  return { custom, flagged }
+}
+
+/**
  * Load definitions for a workspace. Returns [] when the doc does not
  * exist yet, and drops any malformed entries instead of crashing.
  * Firestore-touching (not pure) — tested through the UI path, not node.
