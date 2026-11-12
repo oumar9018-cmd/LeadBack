@@ -218,21 +218,13 @@ function buildRobots() {
 Allow: /
 
 # Private / app surfaces — no value in the index, and they need auth anyway.
-# Both the root paths and the GitHub Pages base-path variants are listed:
-# the live site serves under /LeadBack/, so the unprefixed lines alone
-# would not actually disallow the real app/login URLs.
+# The live site serves from the root of backwon.qd.je.
 Disallow: /app
 Disallow: /app/
 Disallow: /ceo
 Disallow: /trial
 Disallow: /login
 Disallow: /accept
-Disallow: /LeadBack/app
-Disallow: /LeadBack/app/
-Disallow: /LeadBack/ceo
-Disallow: /LeadBack/trial
-Disallow: /LeadBack/login
-Disallow: /LeadBack/accept
 
 Sitemap: ${SITE_ORIGIN}/sitemap.xml
 `

@@ -8,7 +8,7 @@
  */
 
 /** Canonical origin — MUST match the real deployment URL or Google ignores every canonical. */
-export const SITE_ORIGIN = 'https://oumar9018-cmd.github.io/LeadBack'
+export const SITE_ORIGIN = 'https://backwon.qd.je'
 
 export const SITE = {
   name: 'BackWon',

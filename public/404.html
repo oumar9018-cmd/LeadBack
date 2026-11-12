@@ -10,9 +10,9 @@
       // path + query + hash in sessionStorage so our bootstrap script in
       // index.html can replace the URL without a history entry.
       // Keep SITE_BASE in sync with `base` in vite.config.js: the directory
-      // the site is deployed to. On the GitHub Pages project site that is
-      // '/LeadBack/', not the origin root.
-      var SITE_BASE = '/LeadBack/';
+      // the site is deployed to. The site serves from the root of the
+      // custom domain backwon.qd.je, so SITE_BASE is '/'.
+      var SITE_BASE = '/';
 
       (function () {
         var location = window.location;
