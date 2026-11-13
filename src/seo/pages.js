@@ -88,15 +88,15 @@ const features = {
   navLabel: 'Features',
   title: 'BackWon Features — One-Tap WhatsApp Follow-ups & Voice Notes',
   description:
-    'Explore BackWon features: one-tap WhatsApp follow-ups, voice-note win-backs, follow-up sequences, booking links, recovery analytics, SLA breach tracking, workflow automations, custom fields, monthly sales targets, workspace backup and restore, Zapier and Make webhooks, email follow-up steps and unlimited seats.',
+    'Explore BackWon features: one-tap WhatsApp follow-ups, voice-note win-backs, follow-up sequences, booking links, recovery analytics, SLA breach tracking, workflow automations, custom fields, monthly sales targets, workspace backup and restore, Zapier and Make webhooks, email follow-up steps, explained rule-based lead scores, territory reports and unlimited seats.',
   keywords:
-    'WhatsApp follow up tool, voice note follow up, missed call recovery, follow up sequence software, booking link generator, customer win back features, unlimited team seats free, role based access, round robin lead routing, webhooks api, bulk csv import, activity log, branch reports, team scorecards, data export, csv export, sla breach tracking, workflow automation rules, blitz follow up sequence, offer ladder, custom fields, sales targets, sales quotas, revenue forecast, workspace backup, data restore, zapier webhook, make webhook, email follow up sequence',
+    'WhatsApp follow up tool, voice note follow up, missed call recovery, follow up sequence software, booking link generator, customer win back features, unlimited team seats free, role based access, round robin lead routing, webhooks api, bulk csv import, activity log, branch reports, team scorecards, data export, csv export, sla breach tracking, workflow automation rules, blitz follow up sequence, offer ladder, custom fields, sales targets, sales quotas, revenue forecast, workspace backup, data restore, zapier webhook, make webhook, email follow up sequence, lead scoring, priority score, territory reporting, regional sales reports',
   eyebrow: 'FEATURES',
   heading: 'Every feature has one job: getting the customer back.',
   intro:
     'BackWon is deliberately narrow. It does the work that decides whether an interested customer becomes a paying one — and it leaves the rest alone.',
   stats: [
-    { value: '25', label: 'Features included' },
+    { value: '27', label: 'Features included' },
     { value: '0', label: 'Spreadsheets required' },
     { value: 'Free', label: 'Forever' },
   ],
@@ -226,6 +226,16 @@ const features = {
       title: 'Email steps in follow-up sequences',
       text: 'Each step of a drip or blitz sequence can be WhatsApp or Email. An email step appears in your follow-up queue on its day as a pre-filled email — subject and message written from the same templates — that opens in your own mail app, where you press send; BackWon prepares the email but does not send it by itself yet. A step whose customer has no email address on their inquiry is shown as skipped, with the reason, instead of failing silently.',
     },
+    {
+      icon: 'trending',
+      title: 'Lead score (explained, rule-based)',
+      text: 'Every open inquiry gets a lead score from 0 to 100, worked out by fixed rules from the inquiry’s own data — its value, how long ago it came in, when the customer was last contacted, whether a follow-up is due, overdue or missing, where the inquiry came from, whether it has passed your first-response target, and how many win-back offers have already been made. The inquiry list sorts by it, and the inquiry’s details list every reason behind the number, so it is never a black box. It is a priority guide from rules — not a prediction, and not AI. Recovered and lost inquiries are not scored.',
+    },
+    {
+      icon: 'layers',
+      title: 'Territories (branch groups)',
+      text: 'Group your branches into territories — regions like North and South — in Settings, and Reports gains a Territories view that rolls each region up with the same numbers as the branch view: totals, open, recovered and lost inquiries, recovery rate and recovered revenue. A branch can belong to one territory; branches in none report under “No territory”. Territories only change reporting — they never move a lead — and they are separate from the territory routing rules that assign new inquiries by service.',
+    },
   ],
   faq: [
     {
@@ -299,6 +309,14 @@ const features = {
     {
       q: 'Can follow-up sequences use email instead of WhatsApp?',
       a: 'Yes — each step of a drip or blitz sequence can be set to WhatsApp or Email. On its day, an email step appears in your follow-up queue as a pre-filled email (subject and message from the step’s template) that opens in your own mail app; you review it and press send there. BackWon prepares the email — it does not send email by itself yet. Email steps use the customer’s email address on the inquiry (an optional field when you add one); if an inquiry has no email address, that step is shown as skipped with the reason, and you can still mark it sent to clear it or follow up on WhatsApp instead.',
+    },
+    {
+      q: 'How does the lead score work?',
+      a: 'It is a fixed set of rules — not a learned model, and not AI. Every open inquiry starts from the same baseline and gains or loses points for facts already on the inquiry: its value, how long ago it came in, when the customer was last contacted, whether a follow-up is due, overdue or not scheduled at all, its source (booking-link inquiries score higher, bulk-imported ones lower), whether a new inquiry has passed your first-response target, and how many offer-ladder steps have been completed. 70 and above is Hot, 40 to 69 is Warm, below 40 is Cold, and recovered or lost inquiries are not scored. Open any inquiry and its details list the exact reasons behind its score. The score says where to look first — it does not promise the customer will buy.',
+    },
+    {
+      q: 'Can I report on regions, not just individual branches?',
+      a: 'Yes. In Settings you can group branches into territories — regions such as North and South; a branch can belong to only one. The Territories tab in Reports then rolls each region up with the same numbers as the branch view: totals, open, recovered and lost inquiries, recovery rate and recovered revenue, with branches that are in no territory shown as “No territory”. Territories are for reporting only — they never change who sees or receives a lead. They are also a different thing from the territory routing rules on the Team page, which assign new inquiries to a branch by the service asked for.',
     },
   ],
 }

@@ -46,6 +46,7 @@ import OfferPage from './OfferPage.jsx'
 import Offers from './Offers.jsx'
 import WinbackScoreBadge from './components/WinbackScore.jsx'
 import { winbackScore, bandLabel } from './utils/winbackScore.js'
+import { leadBandLabel, leadScore } from './utils/scoring.js'
 import {
   nextBestAction,
   recoveryProbability,
@@ -1729,6 +1730,38 @@ function Dashboard() {
                             : ''}
                         </li>
                       )}
+                    </ul>
+                  </div>
+                )
+              })()}
+
+              {/* Lead score (Round 6) — the explained, rule-based
+                  priority score (utils/scoring.js), distinct from
+                  the win-back score above: this one ranks OPEN
+                  inquiries by how much attention they deserve now.
+                  Closed inquiries have no score and show nothing. */}
+              {(() => {
+                const lead = leadScore(detailInquiry, {
+                  firstResponseHours: slaHours,
+                })
+                if (!lead) return null
+                return (
+                  <div className="detail-card">
+                    <span>Lead score · rules-based</span>
+                    <p>
+                      <strong>
+                        {lead.score} ({leadBandLabel(lead.band)})
+                      </strong>{' '}
+                      — worked out from this inquiry&rsquo;s own value,
+                      age, contact history, follow-ups, source, SLA
+                      state and offers already made. Every point is
+                      explained below; it is a priority guide, not a
+                      prediction.
+                    </p>
+                    <ul>
+                      {lead.reasons.map(reason => (
+                        <li key={reason}>{reason}</li>
+                      ))}
                     </ul>
                   </div>
                 )

@@ -10,6 +10,7 @@ import SlaCard from './components/SlaCard.jsx'
 import EscalationCard from './components/EscalationCard.jsx'
 import WorkflowsCard from './components/WorkflowsCard.jsx'
 import TargetsCard from './components/TargetsCard.jsx'
+import TerritoryGroupsCard from './components/TerritoryGroupsCard.jsx'
 import { CURRENCIES, defaultCurrencyForBrowser } from './utils/money.js'
 
 const defaultSettings = {
@@ -468,6 +469,9 @@ export default function Settings() {
 
           {/* Monthly targets: per-rep and per-branch quotas (Round 4). */}
           <TargetsCard />
+
+          {/* Territories: branch groups for the Reports rollup (Round 6). */}
+          <TerritoryGroupsCard />
 
           <section className="settings-card settings-account-card">
             <div>

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import WinbackScoreBadge from './components/WinbackScore.jsx'
+import LeadScoreBadge from './components/LeadScoreBadge.jsx'
 import Modal from './components/Modal.jsx'
 import VoiceInput from './components/VoiceInput.jsx'
 import OwnerBookings from './components/OwnerBookings.jsx'
@@ -11,6 +12,8 @@ import { logAudit } from './utils/audit.js'
 import CsvImport from './components/CsvImport.jsx'
 import { IconPlus, IconX } from './components/icons.jsx'
 import { rankByWinback } from './utils/winbackScore.js'
+import { rankByLeadScore } from './utils/scoring.js'
+import { loadSlaSettings } from './utils/sla.js'
 import { findOpenDuplicates } from './utils/detectors.js'
 import { toCsv, downloadCsv } from './utils/csv.js'
 import CustomFieldInputs from './components/CustomFieldInputs.jsx'
@@ -137,7 +140,12 @@ export default function Inquiries() {
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [showMenu, setShowMenu] = useState(false)
-  const [sortByScore, setSortByScore] = useState(false)
+  // Score-column sort: 'none' | 'winback' | 'lead' — one at a time.
+  const [sortMode, setSortMode] = useState('none')
+  // SLA first-response target (settings/sla) — one of the lead
+  // score's signals. 0 until loaded/off, so the signal stays silent
+  // rather than guessing (utils/scoring.js).
+  const [slaHours, setSlaHours] = useState(0)
 
   const [showAddInquiry, setShowAddInquiry] = useState(false)
   const [showCsvImport, setShowCsvImport] = useState(false)
@@ -189,6 +197,9 @@ export default function Inquiries() {
     })
     loadTerritories(db, workspace.ownerUid).then(list => {
       if (!cancelled) setTerritories(list)
+    })
+    loadSlaSettings(db, workspace.ownerUid).then(settings => {
+      if (!cancelled) setSlaHours(settings.firstResponseHours)
     })
     return () => {
       cancelled = true
@@ -612,9 +623,14 @@ export default function Inquiries() {
     return matchesSearch && matchesStatus
   })
 
-  const displayed = sortByScore
-    ? rankByWinback(filtered).map(r => r.inquiry)
-    : filtered
+  const displayed =
+    sortMode === 'winback'
+      ? rankByWinback(filtered).map(r => r.inquiry)
+      : sortMode === 'lead'
+        ? rankByLeadScore(filtered, { firstResponseHours: slaHours }).map(
+            r => r.inquiry
+          )
+        : filtered
 
   // Batch 5: render cap (see visibleCount). The full filtered count
   // still shows in the toolbar; only rendering is paged.
@@ -747,14 +763,26 @@ export default function Inquiries() {
             <span>Customer</span>
             <span>Service</span>
             <span>Value</span>
-            <span>
+            <span className="score-sort-stack">
               <button
                 type="button"
-                className={sortByScore ? 'score-sort active' : 'score-sort'}
-                onClick={() => setSortByScore(v => !v)}
+                className={sortMode === 'winback' ? 'score-sort active' : 'score-sort'}
+                onClick={() =>
+                  setSortMode(mode => (mode === 'winback' ? 'none' : 'winback'))
+                }
                 title="Sort by win-back score"
               >
-                Win-back {sortByScore ? '↓' : '↕'}
+                Win-back {sortMode === 'winback' ? '↓' : '↕'}
+              </button>
+              <button
+                type="button"
+                className={sortMode === 'lead' ? 'score-sort active' : 'score-sort'}
+                onClick={() =>
+                  setSortMode(mode => (mode === 'lead' ? 'none' : 'lead'))
+                }
+                title="Sort by lead score"
+              >
+                Lead {sortMode === 'lead' ? '↓' : '↕'}
               </button>
             </span>
             <span>Status</span>
@@ -783,7 +811,13 @@ export default function Inquiries() {
                   {formatMoney(item.value, currency)}
                 </strong>
 
-                <WinbackScoreBadge inquiry={item} />
+                <div className="inquiry-score-cell">
+                  <WinbackScoreBadge inquiry={item} />
+                  <LeadScoreBadge
+                    inquiry={item}
+                    firstResponseHours={slaHours}
+                  />
+                </div>
 
                 <span className={`status status-${item.status}`}>
                   {statusLabels[item.status]}

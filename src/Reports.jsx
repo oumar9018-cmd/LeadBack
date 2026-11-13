@@ -13,6 +13,10 @@ import {
   summarizeInquiries,
 } from './utils/reports.js'
 import { getSlaAnalytics, loadSlaSettings } from './utils/sla.js'
+import {
+  aggregateByTerritory,
+  loadTerritoryGroups,
+} from './utils/territoryGroups.js'
 import { buildDigest, formatDigestText } from './utils/digest.js'
 import {
   loadTargets,
@@ -55,6 +59,7 @@ export default function Reports() {
   const [digestNow, setDigestNow] = useState(null)
   const [slaNow, setSlaNow] = useState(null)
   const [targets, setTargets] = useState({ reps: {}, branches: {} })
+  const [territoryGroups, setTerritoryGroups] = useState([])
   const [monthNow, setMonthNow] = useState(null)
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState('')
@@ -147,6 +152,16 @@ export default function Reports() {
         console.error('Reports targets load failed:', error)
       }
 
+      // Territory groups (settings/territoryGroups doc) for the
+      // Territories rollup. No doc yet = no groups; branches then
+      // report under "No territory".
+      try {
+        const loadedGroups = await loadTerritoryGroups(db, workspace.ownerUid)
+        if (!cancelled) setTerritoryGroups(loadedGroups)
+      } catch (error) {
+        console.error('Reports territory groups load failed:', error)
+      }
+
       try {
         const settingsSnap = await db
           .collection('users')
@@ -216,6 +231,13 @@ export default function Reports() {
 
   const totals = summarizeInquiries(items)
   const branchRows = aggregateByBranch(items, branches)
+  const territoryRows = aggregateByTerritory(
+    items,
+    territoryGroups,
+    branches
+      .map(b => (typeof b === 'string' ? b : b?.name || ''))
+      .filter(Boolean)
+  )
 
   let teamRows = aggregateByMember(items, seedMembers, {
     ownerUid: canManageTeam(role) ? workspace?.ownerUid : undefined,
@@ -389,6 +411,18 @@ export default function Reports() {
           <button
             type="button"
             role="tab"
+            aria-selected={view === 'territories'}
+            className={view === 'territories' ? 'reports-tab active' : 'reports-tab'}
+            onClick={() => {
+              setMonthNow(Date.now())
+              setView('territories')
+            }}
+          >
+            Territories
+          </button>
+          <button
+            type="button"
+            role="tab"
             aria-selected={view === 'digest'}
             className={view === 'digest' ? 'reports-tab active' : 'reports-tab'}
             onClick={() => {
@@ -451,11 +485,19 @@ export default function Reports() {
         <section className="reports-panel">
           <div className="reports-toolbar">
             <div>
-              <h2>{view === 'branches' ? 'Branch comparison' : 'Team scorecards'}</h2>
+              <h2>
+                {view === 'branches'
+                  ? 'Branch comparison'
+                  : view === 'territories'
+                    ? 'Territory comparison'
+                    : 'Team scorecards'}
+              </h2>
               <p>
                 {view === 'branches'
                   ? `${branchRows.length} ${branchRows.length === 1 ? 'branch' : 'branches'}`
-                  : `${teamRows.length} ${teamRows.length === 1 ? 'person' : 'people'}`}
+                  : view === 'territories'
+                    ? `${territoryRows.length} ${territoryRows.length === 1 ? 'territory' : 'territories'}`
+                    : `${teamRows.length} ${teamRows.length === 1 ? 'person' : 'people'}`}
               </p>
             </div>
           </div>
@@ -487,13 +529,19 @@ export default function Reports() {
             <div className="reports-empty">{showError}</div>
           )}
 
-          {!showLoading && !showError && rows.length === 0 && (
-            <div className="reports-empty">
-              {view === 'branches'
-                ? 'No branches or inquiries yet. Branches are managed on the Team page; inquiries appear here as they are created.'
-                : 'No team activity yet. Scorecards appear once inquiries are assigned.'}
-            </div>
-          )}
+          {!showLoading &&
+            !showError &&
+            (view === 'territories'
+              ? territoryRows.length === 0
+              : rows.length === 0) && (
+              <div className="reports-empty">
+                {view === 'branches'
+                  ? 'No branches or inquiries yet. Branches are managed on the Team page; inquiries appear here as they are created.'
+                  : view === 'territories'
+                    ? 'No territories yet. Group branches into territories in Settings — each region then rolls up here with the same numbers as the branch view.'
+                    : 'No team activity yet. Scorecards appear once inquiries are assigned.'}
+              </div>
+            )}
 
           {!showLoading && !showError && rows.length > 0 && view === 'branches' && (
             <div className="reports-table-wrap">
@@ -559,6 +607,39 @@ export default function Reports() {
                       <td><strong>{formatMoney(row.recoveredRevenue, currency)}</strong></td>
                       <td>{row.followupsDueToday}</td>
                       <td>{monthProgressText(monthMemberById.get(row.memberId), row.isUnassigned ? null : targets.reps[row.memberId])}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {!showLoading && !showError && territoryRows.length > 0 && view === 'territories' && (
+            <div className="reports-table-wrap">
+              <table className="reports-table">
+                <thead>
+                  <tr>
+                    <th>Territory</th>
+                    <th>Branches</th>
+                    <th>Total</th>
+                    <th>Open</th>
+                    <th>Recovered</th>
+                    <th>Lost</th>
+                    <th>Recovery rate</th>
+                    <th>Recovered revenue</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {territoryRows.map(row => (
+                    <tr key={row.territoryId || '__no_territory__'} className={row.isUnassigned ? 'reports-row-unassigned' : undefined}>
+                      <td><strong>{row.territory}</strong></td>
+                      <td>{row.branches.length > 0 ? row.branches.join(', ') : '—'}</td>
+                      <td>{row.total}</td>
+                      <td>{row.open}</td>
+                      <td>{row.recovered}</td>
+                      <td>{row.lost}</td>
+                      <td>{rateLabel(row.recoveryRate)}</td>
+                      <td><strong>{formatMoney(row.recoveredRevenue, currency)}</strong></td>
                     </tr>
                   ))}
                 </tbody>

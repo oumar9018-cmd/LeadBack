@@ -541,6 +541,15 @@ a {
   color: #2563EB;
 }
 
+/* Round 6: the score column header carries both sort toggles
+   (win-back + lead), stacked to fit the 120px track. */
+.score-sort-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+}
+
 /* ==============================
    BOTTOM PANELS
 ============================== */

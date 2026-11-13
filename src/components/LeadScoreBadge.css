@@ -1,0 +1,45 @@
+.lead-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid #e8ecf5;
+  background: #f6f8fd;
+  white-space: nowrap;
+  cursor: default;
+  line-height: 1.15;
+}
+
+.lead-badge-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #8a93ad;
+}
+
+.lead-badge strong {
+  font-size: 13px;
+  color: #1c2333;
+}
+
+.lead-badge small {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #8a93ad;
+}
+
+.lead-hot { color: #e5484d; background: #fff1f1; border-color: #ffd9d9; }
+.lead-warm { color: #f5a524; background: #fffaeb; border-color: #f5e6b8; }
+.lead-cold { color: #8a93ad; background: #f6f8fd; border-color: #e8ecf5; }
+
+/* Stacked under the win-back ring in the Inquiries score column. */
+.inquiry-score-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
