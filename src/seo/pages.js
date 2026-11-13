@@ -88,15 +88,15 @@ const features = {
   navLabel: 'Features',
   title: 'BackWon Features — One-Tap WhatsApp Follow-ups & Voice Notes',
   description:
-    'Explore BackWon features: one-tap WhatsApp follow-ups, voice-note win-backs, follow-up sequences, booking links, recovery analytics, SLA breach tracking, workflow automations, custom fields, monthly sales targets and unlimited seats.',
+    'Explore BackWon features: one-tap WhatsApp follow-ups, voice-note win-backs, follow-up sequences, booking links, recovery analytics, SLA breach tracking, workflow automations, custom fields, monthly sales targets, workspace backup and restore, Zapier and Make webhooks, email follow-up steps and unlimited seats.',
   keywords:
-    'WhatsApp follow up tool, voice note follow up, missed call recovery, follow up sequence software, booking link generator, customer win back features, unlimited team seats free, role based access, round robin lead routing, webhooks api, bulk csv import, activity log, branch reports, team scorecards, data export, csv export, sla breach tracking, workflow automation rules, blitz follow up sequence, offer ladder, custom fields, sales targets, sales quotas, revenue forecast',
+    'WhatsApp follow up tool, voice note follow up, missed call recovery, follow up sequence software, booking link generator, customer win back features, unlimited team seats free, role based access, round robin lead routing, webhooks api, bulk csv import, activity log, branch reports, team scorecards, data export, csv export, sla breach tracking, workflow automation rules, blitz follow up sequence, offer ladder, custom fields, sales targets, sales quotas, revenue forecast, workspace backup, data restore, zapier webhook, make webhook, email follow up sequence',
   eyebrow: 'FEATURES',
   heading: 'Every feature has one job: getting the customer back.',
   intro:
     'BackWon is deliberately narrow. It does the work that decides whether an interested customer becomes a paying one — and it leaves the rest alone.',
   stats: [
-    { value: '22', label: 'Features included' },
+    { value: '25', label: 'Features included' },
     { value: '0', label: 'Spreadsheets required' },
     { value: 'Free', label: 'Forever' },
   ],
@@ -189,7 +189,7 @@ const features = {
     {
       icon: 'refresh',
       title: 'Workflow automations',
-      text: 'Time-based rules you switch on yourself (off by default): when a new inquiry waits too long, an inquiry goes stale, or the SLA is breached, a workflow can assign it to the branch manager or a team member, create a follow-up task for today, or flag it as priority. Workflows run when an owner, admin or branch manager opens the app, act on an inquiry at most once until there is new activity on it, and are written to the activity log. Nothing is ever sent to customers automatically.',
+      text: 'Time-based rules you switch on yourself (off by default): when a new inquiry waits too long, an inquiry goes stale, or the SLA is breached, a workflow can assign it to the branch manager or a team member, create a follow-up task for today, flag it as priority, or send a webhook to a URL you configure. Workflows run when an owner, admin or branch manager opens the app, act on an inquiry at most once until there is new activity on it, and are written to the activity log. Nothing is ever sent to customers automatically.',
     },
     {
       icon: 'zap',
@@ -210,6 +210,21 @@ const features = {
       icon: 'trending',
       title: 'Monthly targets & pace forecast',
       text: 'Set a monthly recovered-revenue and recovery-count target for each person and each branch in Settings. The branch and team scorecards in Reports then show this month’s progress against each target, and a pace estimate scales this month’s daily recovery rate to the full month — labelled in the app as an estimate, not a promise.',
+    },
+    {
+      icon: 'shield',
+      title: 'Full workspace backup & restore',
+      text: 'Owners and admins can download the whole workspace as one JSON file — every inquiry, the customer directory, the team list, branches, and the SLA, workflow, escalation, targets and custom-field settings. The owner can restore a backup into any workspace, and restore is a safe merge: inquiries come back as new copies marked as restored, branches are added only if missing, and settings only gain keys they do not have yet. Nothing is ever overwritten or deleted, and team members are not restored — their records are created when they accept an invite.',
+    },
+    {
+      icon: 'zap',
+      title: 'Outbound webhooks (Zapier & Make)',
+      text: 'A workflow rule can POST an inquiry’s details — name, phone, email, service, status and value — to a webhook URL you configure, which is exactly what “Webhooks by Zapier” and Make’s “Custom webhook” consume, so BackWon events can drive the thousands of apps those platforms connect. Webhooks fire only while the app is open, like every BackWon automation; a failed send is counted in the activity log and is never retried quietly. The URL must be https.',
+    },
+    {
+      icon: 'message',
+      title: 'Email steps in follow-up sequences',
+      text: 'Each step of a drip or blitz sequence can be WhatsApp or Email. An email step appears in your follow-up queue on its day as a pre-filled email — subject and message written from the same templates — that opens in your own mail app, where you press send; BackWon prepares the email but does not send it by itself yet. A step whose customer has no email address on their inquiry is shown as skipped, with the reason, instead of failing silently.',
     },
   ],
   faq: [
@@ -255,7 +270,7 @@ const features = {
     },
     {
       q: 'Can BackWon assign or chase inquiries automatically?',
-      a: 'Yes, with workflow automations — and they are off until you switch them on. A workflow pairs a time-based trigger (a new inquiry waiting too long, an inquiry going stale, or an SLA breach) with one action: assign to the branch manager or a team member, create a follow-up task for today, or flag the inquiry as priority. Workflows run when an owner, admin or branch manager opens the app, act at most once per inquiry until there is new activity on it, and every action is recorded in the activity log. They never send anything to customers. Separately, rules can act the moment an inquiry is created — for example assigning it by service or source.',
+      a: 'Yes, with workflow automations — and they are off until you switch them on. A workflow pairs a time-based trigger (a new inquiry waiting too long, an inquiry going stale, or an SLA breach) with one action: assign to the branch manager or a team member, create a follow-up task for today, flag the inquiry as priority, or send a webhook to a URL you configure (see the Zapier and Make question below). Workflows run when an owner, admin or branch manager opens the app, act at most once per inquiry until there is new activity on it, and every action is recorded in the activity log. They never send anything to customers. Separately, rules can act the moment an inquiry is created — for example assigning it by service or source.',
     },
     {
       q: 'What is a blitz sequence?',
@@ -272,6 +287,18 @@ const features = {
     {
       q: 'Can I set monthly targets for my team or branches?',
       a: 'Yes. Settings has monthly targets: a recovered-revenue target and a recovery-count target for each person and each branch, applying every month until you change them. Reports shows this month’s progress against each target on the branch comparison and team scorecards, counting inquiries by the date they were marked recovered. Reports also shows a pace estimate — this month’s recoveries scaled to the full month at the current daily rate — and labels it as an estimate, not a promise.',
+    },
+    {
+      q: 'Can I back up my whole workspace and restore it later?',
+      a: 'Yes. In the Export Center, owners and admins can download a full workspace backup as one JSON file: all inquiries, the customer directory, the team members list, branches, and the SLA, workflow, escalation, targets and custom-field settings. (The workspace profile — business name and currency — is not part of a backup.) Restoring is owner-only and always a safe merge: you preview the counts and the backup date first and confirm before anything happens; inquiries are added as new copies marked as restored, branches are added only if missing, and settings only gain keys they do not already have. Nothing is overwritten or deleted — which also means restoring the same file twice duplicates the inquiries. Team members are listed in the backup for reference but are not restored, because a member’s record is created when they accept their invite.',
+    },
+    {
+      q: 'Can BackWon send data to Zapier or Make?',
+      a: 'Yes. Give a workflow rule the “Send a webhook” action and paste the hook URL from Zapier (Webhooks by Zapier → Catch Hook) or Make (Webhooks → Custom webhook). When the rule’s trigger fires, BackWon POSTs the inquiry’s name, phone, email, service, status and value as JSON to that URL, and your Zap or scenario takes it from there. Two honest limits: webhooks fire only while BackWon is open in a browser, like every BackWon automation, and if a send fails it is counted in the activity log rather than retried quietly — the rule can fire again only when the inquiry has new activity. The URL must start with https://, which Zapier and Make hook URLs always do.',
+    },
+    {
+      q: 'Can follow-up sequences use email instead of WhatsApp?',
+      a: 'Yes — each step of a drip or blitz sequence can be set to WhatsApp or Email. On its day, an email step appears in your follow-up queue as a pre-filled email (subject and message from the step’s template) that opens in your own mail app; you review it and press send there. BackWon prepares the email — it does not send email by itself yet. Email steps use the customer’s email address on the inquiry (an optional field when you add one); if an inquiry has no email address, that step is shown as skipped with the reason, and you can still mark it sent to clear it or follow up on WhatsApp instead.',
     },
   ],
 }

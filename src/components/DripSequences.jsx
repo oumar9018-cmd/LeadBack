@@ -4,15 +4,21 @@ import { IconRepeat, IconMessage, IconCheck, IconClock } from './icons.jsx'
 import './DripSequences.css'
 
 const DEFAULT_STEPS = [
-  { day: 1, templateId: 'firstFollowup', enabled: true },
-  { day: 3, templateId: 'bookingNudge', enabled: true },
-  { day: 7, templateId: 'winBack', enabled: true },
+  { day: 1, templateId: 'firstFollowup', enabled: true, channel: 'whatsapp' },
+  { day: 3, templateId: 'bookingNudge', enabled: true, channel: 'whatsapp' },
+  { day: 7, templateId: 'winBack', enabled: true, channel: 'whatsapp' },
 ]
 
 /**
  * Drip sequence builder — the owner defines a Day 1/3/7 follow-up
  * sequence. Each step becomes a scheduled reminder with the
  * WhatsApp message ready to send in one tap.
+ *
+ * Round 5: each step also picks a channel — WhatsApp (the default)
+ * or Email. An email step opens in the follow-up queue as a
+ * pre-filled email in the user's own mail app (utils/
+ * sequenceEmail.js); BackWon prepares it, the user presses send.
+ * Steps saved before channels existed read back as WhatsApp.
  *
  * Props:
  * - inquiry: the inquiry this sequence is for
@@ -24,7 +30,12 @@ const DEFAULT_STEPS = [
 export default function DripSequences({ inquiry, businessName, initialSteps, onSave }) {
   const [steps, setSteps] = useState(() =>
     Array.isArray(initialSteps) && initialSteps.length
-      ? initialSteps.map(s => ({ day: s.day, templateId: s.templateId, enabled: true }))
+      ? initialSteps.map(s => ({
+          day: s.day,
+          templateId: s.templateId,
+          enabled: true,
+          channel: s.channel === 'email' ? 'email' : 'whatsapp',
+        }))
       : DEFAULT_STEPS
   )
   const [saved, setSaved] = useState(false)
@@ -39,6 +50,13 @@ export default function DripSequences({ inquiry, businessName, initialSteps, onS
   function changeTemplate(index, templateId) {
     setSteps(current =>
       current.map((s, i) => (i === index ? { ...s, templateId } : s))
+    )
+    setSaved(false)
+  }
+
+  function changeChannel(index, channel) {
+    setSteps(current =>
+      current.map((s, i) => (i === index ? { ...s, channel } : s))
     )
     setSaved(false)
   }
@@ -66,7 +84,11 @@ export default function DripSequences({ inquiry, businessName, initialSteps, onS
         <h3><IconRepeat width={18} height={18} /> Follow-up drip sequence</h3>
         <p>
           BackWon reminds you on each day with the message ready to send.
-          Set it once — never forget a follow-up again.
+          Set it once — never forget a follow-up again. A step set to
+          Email opens as a pre-filled email in your own mail app, and
+          you press send there — BackWon does not send email by itself
+          yet. An email step needs the customer&rsquo;s email address on
+          the inquiry; without one, that step is skipped in the queue.
         </p>
       </div>
 
@@ -105,6 +127,17 @@ export default function DripSequences({ inquiry, businessName, initialSteps, onS
                 .map((t) => (
                   <option key={t.id} value={t.id}>{t.label}</option>
                 ))}
+            </select>
+
+            <select
+              value={step.channel || 'whatsapp'}
+              disabled={!step.enabled}
+              onChange={(e) => changeChannel(i, e.target.value)}
+              className="drip-template-select"
+              aria-label="Step channel"
+            >
+              <option value="whatsapp">WhatsApp</option>
+              <option value="email">Email</option>
             </select>
           </div>
         ))}

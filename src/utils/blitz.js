@@ -49,8 +49,13 @@ export function isBlitzEligible(inquiry, nowMs = Date.now()) {
  * `day` is 1-based (day 1 = today) and dueDate = today + (day - 1),
  * computed with local setDate arithmetic exactly as the drip
  * builder's save handler does.
+ *
+ * Round 5: `options.channel` may be 'email' — every touch is then
+ * stamped channel:'email' and surfaces in the queue as a pre-filled
+ * email step (utils/sequenceEmail.js). The default keeps the
+ * historical shape untouched (no channel field = WhatsApp).
  */
-export function planBlitzSequence(inquiry, nowMs = Date.now()) {
+export function planBlitzSequence(inquiry, nowMs = Date.now(), options = {}) {
   if (!isBlitzEligible(inquiry, nowMs)) return null
   const base = new Date(nowMs)
   return BLITZ_TOUCHES.map(touch => {
@@ -62,6 +67,7 @@ export function planBlitzSequence(inquiry, nowMs = Date.now()) {
       dueDate: due.toISOString().slice(0, 10),
       sent: false,
       blitz: true,
+      ...(options.channel === 'email' ? { channel: 'email' } : {}),
     }
   })
 }

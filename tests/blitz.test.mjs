@@ -100,4 +100,14 @@ check('active blitz: unsent blitz steps block a second blitz; sent ones do not',
   assert.equal(hasActiveBlitz(plainDrip), false) // hand-built drips are not blitzes
 })
 
+check('planBlitzSequence channel option stamps email touches only', () => {
+  const byDefault = planBlitzSequence(stale, NOW)
+  assert.ok(byDefault.every(step => !('channel' in step)))
+  const byEmail = planBlitzSequence(stale, NOW, { channel: 'email' })
+  assert.equal(byEmail.length, 3)
+  assert.ok(byEmail.every(step => step.channel === 'email' && step.blitz === true))
+  const byWhatsapp = planBlitzSequence(stale, NOW, { channel: 'whatsapp' })
+  assert.ok(byWhatsapp.every(step => !('channel' in step)))
+})
+
 console.log(`\n${passed} checks passed`)

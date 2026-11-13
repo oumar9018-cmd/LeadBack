@@ -17,7 +17,8 @@ import './BlitzSequence.css'
  * case it says so instead of offering a second one. Starting writes
  * the touches as drip steps (utils/blitz.js), so they surface in
  * the Follow-ups queue on their days with the message ready to
- * send by hand — nothing is auto-sent.
+ * send by hand — nothing is auto-sent. Round 5: the touches can be
+ * WhatsApp (default) or Email steps, chosen before starting.
  *
  * Props:
  * - inquiry: the inquiry in the detail panel
@@ -26,6 +27,7 @@ import './BlitzSequence.css'
  */
 export default function BlitzSequence({ inquiry, onStart }) {
   const [started, setStarted] = useState(false)
+  const [channel, setChannel] = useState('whatsapp')
 
   if (!inquiry) return null
   const blitzSteps = (inquiry.dripSteps || []).filter(
@@ -38,7 +40,7 @@ export default function BlitzSequence({ inquiry, onStart }) {
   const remaining = blitzSteps.filter(step => !step.sent).length
 
   function handleStart() {
-    const steps = planBlitzSequence(inquiry)
+    const steps = planBlitzSequence(inquiry, Date.now(), { channel })
     if (!steps) return
     onStart?.(steps)
     setStarted(true)
@@ -70,10 +72,25 @@ export default function BlitzSequence({ inquiry, onStart }) {
 
       {!active && !started && (
         <div className="blitz-seq-actions">
+          <select
+            value={channel}
+            onChange={event => setChannel(event.target.value)}
+            aria-label="Blitz channel"
+          >
+            <option value="whatsapp">WhatsApp touches</option>
+            <option value="email">Email touches</option>
+          </select>
           <button type="button" className="save-button" onClick={handleStart}>
             <IconZap width={16} height={16} />
             Start blitz (today · +2 days · +5 days)
           </button>
+          {channel === 'email' && (
+            <p className="blitz-seq-note">
+              Email touches open as pre-filled emails in your mail app —
+              you press send there. This inquiry has{' '}
+              {inquiry.email ? `the address ${inquiry.email}` : 'no email address, so the touches will be skipped in the queue'}.
+            </p>
+          )}
         </div>
       )}
 

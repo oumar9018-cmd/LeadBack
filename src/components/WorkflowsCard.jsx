@@ -8,6 +8,7 @@ import {
   loadWorkflowSettings,
   normalizeWorkflowRule,
 } from '../utils/workflows.js'
+import { validateWebhookUrl } from '../utils/outboundWebhook.js'
 
 /**
  * Workflow automations card (Settings) — Round 3.
@@ -16,11 +17,13 @@ import {
  * rule has its own switch. Rules are time-based (a new inquiry left
  * waiting, an inquiry gone stale, an SLA breach) with one action
  * each (assign to the branch manager/owner, assign to a member,
- * create today's follow-up task, or flag as priority). They run in
- * the app-open automation sweep — see AutomationSweep.jsx — never
- * on a server schedule, and nothing is ever sent to customers.
- * Stored in users/{ownerUid}/settings/workflows (same settings-doc
- * pattern: owner/admin write, managers read).
+ * create today's follow-up task, flag as priority, or POST a
+ * webhook to a URL the owner configures — the Zapier/Make bridge).
+ * They run in the app-open automation sweep — see
+ * AutomationSweep.jsx — never on a server schedule, and nothing is
+ * ever sent to customers. Stored in users/{ownerUid}/settings/
+ * workflows (same settings-doc pattern: owner/admin write,
+ * managers read).
  */
 export default function WorkflowsCard() {
   const { workspace, loading: wsLoading } = useWorkspace()
@@ -92,6 +95,7 @@ export default function WorkflowsCard() {
         hours: 4,
         action: 'assign_manager',
         assignTo: '',
+        webhookUrl: '',
       },
     ])
     setSaved(false)
@@ -118,6 +122,13 @@ export default function WorkflowsCard() {
       if (rule.action === 'assign_member' && !rule.assignTo) {
         setError('A rule that assigns to a team member needs a member picked.')
         return
+      }
+      if (rule.action === 'send_webhook') {
+        const check = validateWebhookUrl(rule.webhookUrl)
+        if (!check.ok) {
+          setError(`Webhook rule "${rule.name || 'Untitled'}": ${check.error}`)
+          return
+        }
       }
       const normalized = normalizeWorkflowRule(rule)
       if (!normalized) {
@@ -154,10 +165,13 @@ export default function WorkflowsCard() {
             Off by default. When the master switch is on, these rules run
             when an owner, admin or branch manager opens the app: an
             inquiry that matches a trigger gets that rule&rsquo;s action —
-            assigned, given a follow-up task for today, or flagged as
-            priority. A rule acts on an inquiry at most once until there
-            is new activity on it, and only the first matching rule acts.
-            Nothing is ever sent to customers.
+            assigned, given a follow-up task for today, flagged as
+            priority, or sent as a webhook to a URL you configure (that
+            is how Zapier and Make connect). A rule acts on an inquiry
+            at most once until there is new activity on it, and only the
+            first matching rule acts. Nothing is ever sent to customers.
+            Webhooks fire only while the app is open, and a failed send
+            is counted in the activity log — it is not retried quietly.
           </p>
         </div>
       </div>
@@ -260,6 +274,19 @@ export default function WorkflowsCard() {
                       </option>
                     ))}
                   </select>
+                </label>
+              )}
+              {rule.action === 'send_webhook' && (
+                <label>
+                  <span>Webhook URL (https, from Zapier or Make)</span>
+                  <input
+                    type="url"
+                    value={rule.webhookUrl || ''}
+                    placeholder="https://hooks.zapier.com/hooks/catch/…"
+                    onChange={e =>
+                      updateRule(rule.id, { webhookUrl: e.target.value })
+                    }
+                  />
                 </label>
               )}
               <label>

@@ -23,6 +23,13 @@
  *   - flag_priority: stamp priorityFlaggedAt/priorityFlagRule on the
  *     inquiry and leave a history entry — the visible flag lives in
  *     the inquiry's activity history.
+ *   - send_webhook (Round 5): POST a JSON payload (utils/
+ *     outboundWebhook.js) to the rule's `webhookUrl` — the shape
+ *     Zapier/Make hooks consume. The sweep stamps the episode
+ *     marker exactly like the other actions and then sends; a
+ *     failed send is counted in the sweep's audit summary and is
+ *     never retried silently. Rules whose URL is not a valid
+ *     https URL never fire.
  *
  * Opt-in and OFF by default (master switch AND per-rule switch).
  * Episode dedupe mirrors escalation.js: `workflowFired[ruleId]`
@@ -41,6 +48,10 @@
 
 import { getSlaStatus } from './sla.js'
 import { lastActivityMs } from './graveyard.js'
+import {
+  buildWebhookPayload,
+  validateWebhookUrl,
+} from './outboundWebhook.js'
 
 export const WORKFLOW_TRIGGERS = [
   { id: 'new_inquiry', label: 'New inquiry still waiting' },
@@ -53,6 +64,7 @@ export const WORKFLOW_ACTIONS = [
   { id: 'assign_member', label: 'Assign to a team member' },
   { id: 'create_followup', label: 'Create a follow-up task for today' },
   { id: 'flag_priority', label: 'Flag as priority' },
+  { id: 'send_webhook', label: 'Send a webhook (Zapier / Make)' },
 ]
 
 export const MAX_WORKFLOW_RULES = 10
@@ -118,6 +130,8 @@ export function normalizeWorkflowRule(raw) {
         : defaultHours(raw.trigger),
     action: raw.action,
     assignTo: typeof raw.assignTo === 'string' ? raw.assignTo : '',
+    webhookUrl:
+      typeof raw.webhookUrl === 'string' ? raw.webhookUrl.trim() : '',
   }
 }
 
@@ -171,13 +185,18 @@ function resolveManagerTarget(item, members, ownerUid) {
  *
  * @param {Array} items scoped inquiries ({ id, ...data() } shape)
  * @param {object} settings raw or normalized workflow settings
- * @param {object} options { members, ownerUid, slaHours, nowMs }
+ * @param {object} options { members, ownerUid, slaHours, nowMs,
+ *   workspaceId } (workspaceId defaults to ownerUid in the payload)
  * @returns {Array<{ inquiryId, ruleId, ruleName, action, targetUid,
- *   targetLabel, followup, status, patch, historyEntry, firedPatch }>}
+ *   targetLabel, followup, status, patch, historyEntry, firedPatch,
+ *   webhook }>}
  *   Fields that do not apply to an action are null/undefined; the
  *   sweep applies `patch` + `followup`/`status` writes and appends
  *   `historyEntry` when present. `firedPatch` is the full
- *   workflowFired map to store (existing markers preserved).
+ *   workflowFired map to store (existing markers preserved). For
+ *   `send_webhook`, `webhook` is { url, payload } and there is no
+ *   other write — the sweep stamps only the episode marker, then
+ *   POSTs the payload.
  */
 export function evaluateWorkflows(items, settings, options = {}) {
   const config = normalizeWorkflowSettings(settings)
@@ -235,6 +254,7 @@ export function evaluateWorkflows(items, settings, options = {}) {
         status: null,
         patch: null,
         historyEntry: null,
+        webhook: null,
         firedPatch: { ...firedMap, [rule.id]: activity },
       }
 
@@ -290,6 +310,21 @@ export function evaluateWorkflows(items, settings, options = {}) {
           date: todayKey,
           time: nowTime,
           note: `Flagged as priority by workflow "${rule.name}"`,
+        }
+      } else if (rule.action === 'send_webhook') {
+        // A webhook rule with an unusable URL never fires — the
+        // Settings card also refuses to save one, so this only
+        // guards hand-edited or legacy docs.
+        const check = validateWebhookUrl(rule.webhookUrl)
+        if (!check.ok) continue
+        base.webhook = {
+          url: check.url,
+          payload: buildWebhookPayload({
+            rule,
+            inquiry: item,
+            workspaceId: options.workspaceId || ownerUid,
+            nowMs,
+          }),
         }
       }
 

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { TEMPLATES, waLink, fillTemplate } from './utils/whatsapp.js'
+import { buildEmailStep, stepChannel } from './utils/sequenceEmail.js'
 import {
   CURRENCY_CODES,
   defaultCurrencyForBrowser,
@@ -208,10 +209,13 @@ export default function Followups() {
         {dripDue.length > 0 && (
           <section className="followup-drip">
             <h2>Drip steps due</h2>
-            <p>Saved drip sequences whose day has arrived. Open WhatsApp with the message ready, then mark the step sent.</p>
+            <p>Saved drip sequences whose day has arrived. WhatsApp steps open with the message ready. Email steps open a pre-filled email in your mail app — you press send there; BackWon does not send email by itself. Then mark the step sent.</p>
             <div className="followup-list">
               {dripDue.map(({ item, step, index }) => {
                 const template = TEMPLATES[step.templateId]
+                const channel = stepChannel(step)
+                const emailStep =
+                  channel === 'email' ? buildEmailStep(item, step) : null
                 return (
                   <div className="followup-row" key={`${item.id}-${index}`}>
                     <div className="followup-customer">
@@ -219,26 +223,49 @@ export default function Followups() {
                       <span>{item.phone}</span>
                     </div>
                     <div className="followup-service">
-                      <strong>{template ? template.label : step.templateId}</strong>
+                      <strong>
+                        {template ? template.label : step.templateId}
+                        {channel === 'email' ? ' · Email' : ''}
+                      </strong>
                       <span>Due {step.dueDate}</span>
                     </div>
                     <div className="followup-right">
-                      <button
-                        type="button"
-                        className="ghost-button"
-                        onClick={() => {
-                          const message = template ? fillTemplate(template.text, {
-                            name: item.name?.split(' ')[0],
-                            business: '',
-                            service: item.service,
-                            link: '',
-                          }) : ''
-                          const link = waLink(item.phone, message)
-                          if (link) window.open(link, '_blank', 'noopener')
-                        }}
-                      >
-                        Open WhatsApp
-                      </button>
+                      {channel === 'email' ? (
+                        emailStep?.ok ? (
+                          <button
+                            type="button"
+                            className="ghost-button"
+                            onClick={() => {
+                              window.open(emailStep.href, '_blank', 'noopener')
+                            }}
+                          >
+                            Open email
+                          </button>
+                        ) : (
+                          <span className="followup-skip-note">
+                            Skipped — no email address for this customer.
+                            Add one to the inquiry, or mark this step sent
+                            to clear it.
+                          </span>
+                        )
+                      ) : (
+                        <button
+                          type="button"
+                          className="ghost-button"
+                          onClick={() => {
+                            const message = template ? fillTemplate(template.text, {
+                              name: item.name?.split(' ')[0],
+                              business: '',
+                              service: item.service,
+                              link: '',
+                            }) : ''
+                            const link = waLink(item.phone, message)
+                            if (link) window.open(link, '_blank', 'noopener')
+                          }}
+                        >
+                          Open WhatsApp
+                        </button>
+                      )}
                       <button
                         type="button"
                         className="primary-button"

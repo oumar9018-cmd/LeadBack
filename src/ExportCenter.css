@@ -125,6 +125,66 @@
   cursor: not-allowed;
 }
 
+/* Round 5 — Backup & restore section under the CSV exports. */
+.exports-section-title {
+  margin: 34px 0 16px;
+  color: #172033;
+  font-size: 20px;
+  letter-spacing: -0.4px;
+}
+
+.exports-grid-two {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.restore-file {
+  display: block;
+  margin-top: 16px;
+  color: #172033;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.restore-file input {
+  display: block;
+  margin-top: 8px;
+  font-size: 13px;
+}
+
+.restore-preview {
+  margin-top: 16px;
+  padding: 14px;
+  border: 1px solid #d9e5ff;
+  border-radius: 10px;
+  background: #f5f9ff;
+  color: #3d4b63;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.restore-preview p {
+  margin: 0 0 8px;
+}
+
+.restore-preview ul {
+  margin: 0 0 8px;
+  padding-left: 18px;
+}
+
+.restore-confirm {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 10px 0 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #172033;
+}
+
+.restore-confirm input {
+  margin-top: 3px;
+}
+
 @media (max-width: 900px) {
   .exports-grid {
     grid-template-columns: 1fr;

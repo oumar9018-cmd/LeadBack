@@ -30,6 +30,17 @@
   margin-bottom: 12px;
 }
 
+.blitz-seq-actions select {
+  margin-right: 10px;
+  margin-bottom: 8px;
+  padding: 8px 10px;
+  border: 1px solid #dbe2ec;
+  border-radius: 9px;
+  background: #fff;
+  color: #172033;
+  font-size: 13px;
+}
+
 .blitz-seq-actions .save-button {
   display: inline-flex;
   align-items: center;

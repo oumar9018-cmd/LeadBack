@@ -24,7 +24,12 @@ import { logAudit } from '../utils/audit.js'
  *   2. Auto-escalation of overdue / SLA-breached inquiries
  *      (settings/escalation, opt-in and off by default).
  *   3. Workflow automations — time-based trigger → action rules
- *      (settings/workflows, opt-in and off by default).
+ *      (settings/workflows, opt-in and off by default). A rule's
+ *      action can also be an outbound webhook POST (Round 5): the
+ *      episode marker is stamped like any other action, then the
+ *      payload is sent; sends are counted and ONE summary audit
+ *      entry records sent/failed for this app open — failed sends
+ *      are never retried silently.
  *
  * It renders nothing and runs ONCE per mounted workspace (guard
  * keyed `${ownerUid}:${role}`), only for owner/admin/branch_manager
@@ -245,6 +250,7 @@ export default function AutomationSweep() {
             ownerUid,
             slaHours,
             nowMs,
+            workspaceId: ownerUid,
           })
         } catch (error) {
           console.error(
@@ -253,6 +259,9 @@ export default function AutomationSweep() {
           )
           workflowActions = []
         }
+
+        let webhooksSent = 0
+        let webhooksFailed = 0
 
         for (const action of workflowActions) {
           if (cancelled) return
@@ -281,7 +290,35 @@ export default function AutomationSweep() {
             }
             await inquiryRef(action.inquiryId).set(patch, { merge: true })
 
-            if (action.targetUid) {
+            if (action.webhook) {
+              // The episode marker is already stamped above, so a
+              // failed send is final for this episode — counted in
+              // the summary below, never retried silently.
+              try {
+                const response = await fetch(action.webhook.url, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(action.webhook.payload),
+                })
+                if (response.ok) {
+                  webhooksSent += 1
+                } else {
+                  webhooksFailed += 1
+                  console.error(
+                    'Workflow webhook send failed:',
+                    action.ruleName,
+                    response.status
+                  )
+                }
+              } catch (error) {
+                webhooksFailed += 1
+                console.error(
+                  'Workflow webhook send failed:',
+                  action.ruleName,
+                  error
+                )
+              }
+            } else if (action.targetUid) {
               await logAudit(ownerUid, {
                 action: 'inquiry_assigned',
                 inquiryId: action.inquiryId,
@@ -307,6 +344,13 @@ export default function AutomationSweep() {
               error
             )
           }
+        }
+
+        if (webhooksSent + webhooksFailed > 0) {
+          await logAudit(ownerUid, {
+            action: 'rule_applied',
+            detail: `Workflow webhooks this app open: ${webhooksSent} sent, ${webhooksFailed} failed (failed sends are not retried)`,
+          })
         }
       }
     })()

@@ -3953,6 +3953,15 @@ a {
   gap: 5px;
 }
 
+/* Round 5 — an email drip step with no customer email is skipped
+ * in place, with the reason shown instead of a send button. */
+.followup-skip-note {
+  color: #9a6a12;
+  font-size: 12px;
+  line-height: 1.45;
+  max-width: 260px;
+}
+
 .followup-customer strong,
 .followup-service strong,
 .followup-date strong {

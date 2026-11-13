@@ -1,6 +1,7 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import ApiWebhooks from './components/ApiWebhooks.jsx'
+import OutboundWebhooks from './components/OutboundWebhooks.jsx'
 import { useWorkspace } from './components/WorkspaceContext.jsx'
 import { canManageTeam } from './utils/workspace.js'
 
@@ -53,6 +54,7 @@ export default function Api() {
           </button>
         </header>
         <ApiWebhooks />
+        <OutboundWebhooks />
       </div>
     </div>
   )

@@ -721,6 +721,7 @@ function Dashboard() {
   const [form, setForm] = useState({
     name: '',
     phone: '',
+    email: '',
     service: '',
     value: '',
     status: 'new',
@@ -958,6 +959,9 @@ function Dashboard() {
       id: newDocId(),
       name: form.name.trim(),
       phone: form.phone.trim(),
+      // Optional (Round 5): only stored when given — email follow-up
+      // steps read it; inquiries without one keep the old shape.
+      ...(form.email.trim() ? { email: form.email.trim() } : {}),
       service: form.service.trim(),
       value: Number(form.value),
       status: form.status,
@@ -1046,7 +1050,7 @@ function Dashboard() {
       })
     }
 
-    setForm({ name: '', phone: '', service: '', value: '', status: 'new' })
+    setForm({ name: '', phone: '', email: '', service: '', value: '', status: 'new' })
     setFormError('')
     setShowAddInquiry(false)
     setFilter('all')
@@ -1482,6 +1486,16 @@ function Dashboard() {
                     value={form.phone}
                     onChange={e => setForm({ ...form, phone: e.target.value })}
                     placeholder="+91 98765 43210"
+                  />
+                </label>
+
+                <label>
+                  Email (optional — for email follow-ups)
+                  <input
+                    type="email"
+                    value={form.email}
+                    onChange={e => setForm({ ...form, email: e.target.value })}
+                    placeholder="customer@example.com"
                   />
                 </label>
 
